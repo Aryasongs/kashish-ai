@@ -1,0 +1,17 @@
+# Kashish AI
+
+> Kashish is an AI companion you can chat with by text, talk to by voice, or just hang out with. It has memory that carries over between conversations, image generation, a code assistant (Codex), plugins, and support for the upcoming Kashish IRIS smart glasses.
+
+## Key facts
+- Plans: Free (chat, voice, image generation with daily limits) and Kashish Pro (unlimited chat and images, priority replies, Kashi 3 / Kashi 4 / Kashi Mars models included).
+- Kashi TY 4.5, the next model, launches 24 October 2026.
+- Kashish IRIS: AI smart glasses with camera, hands-free Kashish AI, calls and notifications. In development, release date not announced. Price $471.99 for your region; pre-book fee $100.
+- Minimum age: 13.
+
+## Links
+- [Home](https://kashishai.com/)
+- [About Kashish AI — full details](https://kashishai.com/about)
+- [Help Center](https://kashishai.com/help)
+- [Blog](https://blog.kashishai.com)
+- [Leadership — Gursharn Arya, founder](https://kashishai.com/leadership)
+- [KashishAI.com domain acquisition record](https://kashishai.com/domain-acquisition)
