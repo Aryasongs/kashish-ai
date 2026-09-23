@@ -1,0 +1,7 @@
+# Cloudflare Pages SPA fallback.
+# Kashish is a single-page app — every clean, crawlable path (/, /iris,
+# /pricing, /privacy, /terms, etc.) must be served this same index.html so
+# the client-side router (see CLEAN_ROUTES in the app's <script>) can render
+# the right screen. Without this, a direct load or refresh on any path other
+# than "/" would 404 on Cloudflare Pages.
+/*    /index.html   200
