@@ -2593,6 +2593,7 @@ html[data-theme="dark"] .plus-item:active{background:#363638;}
           <div class="plus-head"><span>Plugins</span></div>
           <button type="button" class="plus-item" onclick="plusPick(function(){plusPrefill('#imagine ')})"><span class="pi" style="color:#4FA8FF"><i class="ph-fill ph-image"></i></span>Create image</button>
           <button type="button" class="plus-item" onclick="plusPick(function(){plusPrefill('Find a video about ')})"><span class="pi" style="color:#FF453A"><i class="ph-fill ph-youtube-logo"></i></span>YouTube</button>
+          <button type="button" class="plus-item" onclick="plusPick(function(){plusPrefill('/find ')})"><span class="pi" style="color:#2E9E6B"><i class="ph-fill ph-magnifying-glass"></i></span>Find product</button>
         </div>
         <div class="chat-pill">
           <button class="mini-btn plus-btn" id="plus-btn" type="button" aria-label="Plugins" onclick="plusMenuToggle()"><i class="ph ph-plus"></i></button>
@@ -10613,6 +10614,112 @@ function formatProductResultsForModel(cards, all, query, budget){
     + (range ? '\n'+range : '');
 }
 
+/* ---------------- Product Finder ----------------
+   Describe a product in your own words (Hindi / Hinglish / English) or attach
+   a photo, and Kashish works out what it is, searches live Google Shopping
+   listings (same Serper key as above), and answers with the closest/exact
+   match, real prices, full details and buying tips.
+   Triggers:
+     - "/find <description>" (also the "Find product" item in the + menu; attach a photo too if you have one)
+     - natural phrases like "same to same aisa bag dhundo", "iske jaisa product chahiye"
+     - a photo + "ye product kahan milega / kitne ka hai / same to same dhundo"           */
+const FINDER_CMD_RE = /^\/(find|finder|dhundo|dhund)\b/i;
+const FINDER_PHRASE_RE = /(same\s*to\s*same|sem\s*to\s*sem|bilkul\s+(?:aisa|aisi|waisa|waisi|vaisa|vaisi|jaisa|jaisi)|(?:aisa|aisi|jaisa|jaisi|waisa|waisi|vaisa|vaisi|aise|jaise)\s+(?:hi\s+)?(?:\w+\s+)?(?:product|item|cheez|chiz|saman|samaan|bag|watch|shoes?|phone|jacket|dress|shirt|chair|lamp)|exact\s+(?:same|match|product)|looks?\s+like|look(?:ing)?\s+for\s+(?:a|an|this)|similar\s+to|find\s+(?:me\s+)?(?:this|that|the\s+same)|dhund(?:o|na|ke|e)?\b|dhoondh|khoj|kahan\s+milega|kaha\s+milega|where\s+(?:can\s+i\s+)?(?:get|buy|find)\s+(?:this|it))/i;
+function needsProductFinder(text, img){
+  const t = (text||'').trim();
+  if(FINDER_CMD_RE.test(t)) return true;
+  if(!appSettings.autoWebSearch) return false;
+  if(t.length > 400) return false;
+  const productWord = /\b(product|item|cheez|chiz|saman|samaan)\b/i.test(t);
+  if(PRODUCT_EXCLUDE_RE.test(t) && !productWord) return false;
+  const phrase = FINDER_PHRASE_RE.test(t);
+  if(img){
+    const wantsInfo = PRODUCT_PRICE_RE.test(t) || PRODUCT_BUY_RE.test(t) || productWord;
+    return phrase
+      || (wantsInfo && /\b(this|ye|yeh|is|isse|isko|iska|iski|same|similar|jaisa|jaisi)\b/i.test(t))
+      || /\b(iske|iski|isi|isse|isko)\b[\s\S]*\b(jaisa|jaisi|waisa|waisi|vaisa|vaisi|chahiye|chaiye|lena|leni|dhund\w*)\b/i.test(t);
+  }
+  const noun = PRODUCT_CATEGORY_RE.test(t) || PRODUCT_BRAND_RE.test(t) || productWord;
+  return phrase && noun;
+}
+function stripFinderCmd(t){ return String(t||'').replace(FINDER_CMD_RE,'').trim(); }
+
+// Step 1 — turn the description / photo into a precise product identity + search queries.
+async function identifyProductForFinder(text, img){
+  const desc = stripFinderCmd(text);
+  const ctx = `You are the product-identification step of a shopping finder. The user ${img?'attached a photo of a product and ':''}${desc?('wrote: "'+desc.replace(/"/g,"'")+'"'):'gave no extra text'}. Work out exactly which product they mean — they may describe it loosely in Hindi, Hinglish or English (colour, shape, material, use, logo, vibe, "jaisa X"). Respond with ONLY compact JSON using exactly these keys and NO "reply" key: {"product_name":"most specific product name you can support — brand + model + variant if visible or known, otherwise a precise generic name","brand":"","category":"","attributes":["colour","material","size","notable design details"],"queries":["shopping search 1: brand + model + variant","shopping search 2: descriptive with key attributes","shopping search 3: broader fallback"],"confidence":"high|medium|low","budget":null,"note":"one short sentence: what you based this on, or what is unclear"}. Rules: every query is a plain English shopping search of 2-8 words (no quotes, no hashtags); never invent a brand or model you cannot see or reasonably infer — if unsure leave brand empty and describe the product by its attributes; "budget" is a number in INR only if the user stated a limit, otherwise null.`;
+  const out = await kashishReply([{role:'user', text: desc || 'Identify this product and give shopping searches for it.'}], null, ctx, 650, img ? img.dataUrl : null, false);
+  let j = null;
+  try{ j = JSON.parse(out.reply); }catch(e){ j = extractJson(out.reply); }
+  if(!j || typeof j !== 'object') return null;
+  const clean = v => String(v||'').replace(/["“”#]/g,' ').replace(/\s+/g,' ').trim();
+  let queries = Array.isArray(j.queries) ? j.queries.map(clean).filter(q=>q.length>=2) : [];
+  const name = clean(j.product_name) || clean(j.category) || desc;
+  if(!queries.length && name) queries = [name];
+  if(!queries.length && desc) queries = [clean(desc)];
+  if(!queries.length) return null;
+  const b = Number(j.budget);
+  return {
+    product_name: name,
+    brand: clean(j.brand),
+    category: clean(j.category),
+    attributes: Array.isArray(j.attributes) ? j.attributes.map(clean).filter(Boolean).slice(0,8) : [],
+    queries: queries.slice(0,3),
+    confidence: /^(high|medium|low)$/i.test(j.confidence) ? String(j.confidence).toLowerCase() : 'medium',
+    budget: isFinite(b) && b > 0 ? Math.round(b) : (extractProductBudget(desc) || null),
+    note: clean(j.note)
+  };
+}
+// Step 2 — run every query on Google Shopping in parallel and merge the listings.
+async function finderSearch(fd){
+  const qs = Array.from(new Set(fd.queries));
+  const rs = await Promise.all(qs.map(q=>productSearch(q)));
+  const seen = new Set(), all = [];
+  rs.forEach((r, qi)=>{
+    (r.items||[]).forEach(it=>{
+      const k = it.link || it.title;
+      if(seen.has(k)) return;
+      seen.add(k); all.push(Object.assign({}, it, { _q: qi }));
+    });
+  });
+  return all;
+}
+// Step 3 — rank by how closely each listing matches the identified product.
+function pickFinderCards(all, fd){
+  const ref = [fd.product_name, fd.brand].concat(fd.attributes||[]).join(' ');
+  let scored = all.map(it=>({ it, s: productOverlap(ref, it.title) }));
+  scored.forEach(x=>{ x.rank = x.s*100 + (x.it.image?6:0) + (x.it.rating?3:0) - x.it._q*4; });
+  scored.sort((a,b)=>b.rank - a.rank);
+  if(fd.budget){
+    const inB = scored.filter(x=>x.it.priceNum && x.it.priceNum <= fd.budget);
+    if(inB.length) scored = inB;
+  }
+  const seen = new Set(), cards = [];
+  let best = 0;
+  for(const x of scored){
+    const k = x.it.title.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,36);
+    if(seen.has(k)) continue;
+    seen.add(k); cards.push(x.it); best = Math.max(best, x.s);
+    if(cards.length >= 6) break;
+  }
+  const strength = (best >= 0.75 && fd.confidence !== 'low') ? 'strong' : (best >= 0.5 ? 'good' : 'weak');
+  return { cards, strength };
+}
+function formatProductFinderForModel(fd, picked, all, hadPhoto){
+  const nums = all.map(i=>i.priceNum).filter(Boolean).sort((a,b)=>a-b);
+  const range = nums.length ? `Price range across all ${all.length} listings found: ${all.find(i=>i.priceNum===nums[0]).price} to ${all.find(i=>i.priceNum===nums[nums.length-1]).price}.` : '';
+  const matchLine = { strong:'The top listings match the identified product closely.', good:'The top listings are a good but not certain match.', weak:'The listings are only loosely similar — treat them as closest alternatives, not the exact item.' }[picked.strength];
+  return `PRODUCT FINDER. The user ${hadPhoto?'showed a photo of':'described'} a product and wants that exact same product found with price and full information.\n`
+    + `Identified as: "${fd.product_name}"${fd.brand?(' (brand: '+fd.brand+')'):''} — confidence ${fd.confidence}. ${fd.note||''}${fd.attributes.length?(' Attributes: '+fd.attributes.join(', ')+'.'):''}\n`
+    + `Live Google Shopping listings (already shown to the user as tappable product cards right below your reply; tapping a card opens a full page with details and prices on other websites — do NOT paste links or re-list everything):\n`
+    + picked.cards.map((c,i)=>`${i+1}. ${c.title} — ${c.price||'price n/a'} at ${c.source}${c.rating?(' — rated '+c.rating+'/5'+(c.ratingCount?(' ('+c.ratingCount+' reviews)'):'')):''}`).join('\n')
+    + (range ? '\n'+range : '') + `\n${matchLine}\n`
+    + `Write a complete but scannable answer in the same language style the user used (Hinglish if they wrote Hinglish). Cover, in order: (1) which product this is and whether the listings look like the EXACT same item or only the closest match — be honest, and if it is only close say what may differ (brand, colour, size, material); (2) price — the realistic range and the cheapest store, using ONLY prices listed above, never invent or guess a price; (3) full info — what it is, key features, specs, material, size/colour options, what's in the box — only what you can support from the photo, the listing titles or well-known facts, and say plainly when something is uncertain; (4) buying tips — variant/size, warranty, authenticity, return policy; (5) one or two similar alternatives by name if useful. End by offering to narrow it down (budget, colour, size, brand) or to look for a cheaper lookalike.`;
+}
+function formatProductFinderMissForModel(fd, hadPhoto){
+  return `PRODUCT FINDER. The user ${hadPhoto?'showed a photo of':'described'} a product. Identified as "${fd.product_name}" (confidence ${fd.confidence}), but the shopping lookup returned no listings. Tell them (in your normal reply style) what you think it is and what you could tell from it, give whatever you're confident about from general knowledge WITHOUT quoting any prices, and ask for one or two more details — brand name or logo, a clearer photo with the label visible, colour, size, or budget — so you can search again.`;
+}
+
 /* ----- small card under a reply ----- */
 function buildProductList(items){
   const list = document.createElement('div'); list.className = 'prod-list';
@@ -10693,8 +10800,8 @@ async function loadProductAbout(p, offers){
   const key = p.title;
   if(productAboutCache[key]) return productAboutCache[key];
   const stores = offers.filter(o=>o.price).map(o=>`${o.source}: ${o.price}`).join('; ');
-  const ctx = `You are writing the short "What to know" blurb for a product page inside a shopping card. Product listing title: "${p.title}". Seen on: ${stores || p.source}.${p.rating?(' Rating: '+p.rating+'/5.'):''}\nWrite 3-4 sentences of plain text (no markdown, no bullet points, no emoji): what the product is, who it suits, and one genuinely useful buying tip (for example size/variant, warranty, authenticity, or what price is realistic). Only state specs you are confident about from the title or general knowledge — never invent specs or prices. Do not mention being an AI. Respond with ONLY compact JSON: {"reply":"the blurb"}`;
-  const out = await kashishReply([{role:'user', text:'What to know about: '+p.title}], null, ctx, 350, null, false);
+  const ctx = `You are writing the short "What to know" blurb for a product page inside a shopping card. Product listing title: "${p.title}". Seen on: ${stores || p.source}.${p.rating?(' Rating: '+p.rating+'/5.'):''}\nWrite plain text (no markdown, no emoji) in exactly three parts separated by blank lines. Part 1: 2-3 sentences on what the product is and who it suits. Part 2: the line 'Key features' followed by 4-6 short lines, each starting with '• ' (specs, material, size/colour options, what's included). Part 3: the line 'Good to know' followed by 2-3 short lines, each starting with '• ' (buying tip, warranty, authenticity, return policy, realistic price). Use \\n for line breaks inside the JSON string. Only state specs you are confident about from the title or general knowledge — never invent specs or prices. Do not mention being an AI. Respond with ONLY compact JSON: {"reply":"the blurb"}`;
+  const out = await kashishReply([{role:'user', text:'What to know about: '+p.title}], null, ctx, 700, null, false);
   const txt = (out && out.reply || '').trim();
   if(txt) productAboutCache[key] = txt;
   return txt;
@@ -10794,7 +10901,7 @@ function openProductSheet(p){
     return loadProductAbout(p, offers);
   }).then(txt=>{
     if(prodSheetEl !== ov || txt === undefined) return;
-    about.textContent = txt || 'No summary available for this one yet — the store pages below have the full details.';
+    about.style.whiteSpace = 'pre-line'; about.textContent = txt || 'No summary available for this one yet — the store pages below have the full details.';
   }).catch(e=>{
     console.warn('[KASHISH] product sheet load failed:', e);
     if(prodSheetEl !== ov) return;
@@ -14680,7 +14787,32 @@ async function send(){
   // Product info — "iPhone 16 price", "best laptop under 50000", "/product Birkin 25".
   // Real Google Shopping listings feed both the reply text and the cards. If
   // nothing usable comes back, quietly fall through to the normal flow.
-  if(!img && needsProductInfo(text)){
+  // Product Finder — "same to same aisa product dhundo" / photo of a product / "/find ...".
+  // Identifies the product, searches live listings, answers with price + full info.
+  let finderHandled = false;
+  if(needsProductFinder(text, img)){
+    finderHandled = true;
+    addSearchIndicator(img ? 'Looking at the photo…' : 'Working out the product…');
+    let fd = null;
+    try{ fd = await identifyProductForFinder(text, img); }
+    catch(e){ console.warn('[KASHISH] product identify failed:', e); }
+    if(fd){
+      updateSearchIndicator('Finding it in stores…');
+      let all = [];
+      try{ all = await finderSearch(fd); }catch(e){ console.warn('[KASHISH] finder search failed:', e); }
+      const picked = pickFinderCards(all, fd);
+      if(picked.cards.length){
+        productResults = picked.cards;
+        searchContext = formatProductFinderForModel(fd, picked, all, !!img);
+      } else {
+        searchContext = formatProductFinderMissForModel(fd, !!img);
+      }
+    } else {
+      searchContext = 'The user wanted a product found from ' + (img ? 'a photo' : 'a description') + ' but it could not be identified this time. Tell them (in your normal reply style) you could not pin it down, and ask for a clearer photo (front view, logo or label visible) or a few more details — brand, colour, size, budget. Do not guess.';
+    }
+    updateSearchIndicator('Putting together an answer…');
+  }
+  if(!finderHandled && !img && needsProductInfo(text)){
     const forcedProduct = /^\/(product|shop)\b/i.test(text);
     const pq = extractProductQuery(text);
     if(!pq){
