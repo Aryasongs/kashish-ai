@@ -2,51 +2,46 @@
 <html lang="en">
 <head>
 <!--
-=== FIREBASE SECURITY RULES (copy into Firebase Console; merge with existing rules, do not replace) ===
+=== FIREBASE SETUP (do this once) ===
+1) Firebase Console > Build > Firestore Database: create it if missing.
+2) Firebase Console > Build > Storage: click "Get started" (required for resume upload; without it the upload never finishes).
+3) Paste/merge these rules. Firestore has ONE rules file per project: merge with your existing Nexor Sparks rules, do not replace them.
 
---- FIRESTORE RULES ---
-// Add these blocks INSIDE your existing "match /databases/{database}/documents { ... }"
-// (Firestore has one rules file per project, so merge — do not replace — your Nexor Sparks rules.)
-
-match /career_applications/{refNo} {
-  // Applicants can only create. Nobody can read/list/update/delete from the browser.
-  // You read applications in the Firebase Console (admin access bypasses rules).
-  allow create: if request.resource.data.refNo == refNo
-                && request.resource.data.status == 'Received'
+--- FIRESTORE RULES (add inside: match /databases/{database}/documents { ... }) ---
+match /career_acks/{ackNo} {
+  allow create: if request.resource.data.ackNo == ackNo
+                && request.resource.data.status == 'Started'
                 && request.resource.data.fullName is string
-                && request.resource.data.fullName.size() < 120
-                && request.resource.data.email is string
-                && request.resource.data.email.size() < 130
-                && request.resource.data.tokenNo is string
-                && request.resource.data.tokenNo.size() == 9;
+                && request.resource.data.email is string;
   allow read, update, delete: if false;
 }
-
+match /career_applications/{refNo} {
+  allow create: if request.resource.data.refNo == refNo
+                && request.resource.data.status == 'Received'
+                && request.resource.data.tokenNo is string
+                && request.resource.data.tokenNo.size() == 9
+                && exists(/databases/$(database)/documents/career_acks/$(request.resource.data.ackNo));
+  allow read, update, delete: if false;   // read applications in the Firebase Console
+}
 match /career_status/{refNo} {
-  // Tracking page reads ONE doc by exact reference number; listing is blocked.
-  // Change "status" in the Firebase Console to update what candidates see.
-  allow get: if true;
+  allow get: if true;                     // tracking page reads one doc by exact reference number
   allow list: if false;
   allow create: if request.resource.data.status == 'Received';
-  allow update, delete: if false;
+  allow update, delete: if false;         // edit "status" in the Console to update candidates
 }
-
 match /career_counters/{id} {
-  allow read: if id == 'applications';
-  allow create: if id == 'applications' && request.resource.data.count == 1;
-  allow update: if id == 'applications'
-                && request.resource.data.count == resource.data.count + 1;
+  allow read: if id in ['applications', 'acks'];
+  allow create: if id in ['applications', 'acks'] && request.resource.data.count == 1;
+  allow update: if id in ['applications', 'acks'] && request.resource.data.count == resource.data.count + 1;
   allow delete: if false;
 }
 
---- STORAGE RULES ---
-// Add inside your existing "match /b/{bucket}/o { ... }" block.
+--- STORAGE RULES (add inside: match /b/{bucket}/o { ... }) ---
 match /career_resumes/{file} {
   allow create: if request.resource.size < 3 * 1024 * 1024
                 && request.resource.contentType == 'application/pdf';
-  allow read, update, delete: if false;   // view resumes from the Firebase Console
+  allow read, update, delete: if false;   // view resumes in the Firebase Console
 }
-
 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -172,7 +167,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 /* drawer */
 .scrim{position:fixed;inset:0;background:rgba(3,6,14,.66);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
 .scrim.on{opacity:1;pointer-events:auto}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:min(720px,100%);background:var(--ink);border-left:1px solid var(--line);z-index:50;transform:translateX(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(800px,100%);background:var(--ink);border-left:1px solid var(--line);z-index:50;transform:translateX(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
 .drawer.on{transform:none}
 .d-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
 .d-head button{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}
@@ -205,7 +200,33 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .actions{display:flex;gap:10px;flex-wrap:wrap}
 .warn{margin-top:18px;font-size:14px;color:#fde68a;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.35);padding:12px 14px;border-radius:10px}
 
+/* application flow */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.fgrid .full,.fgrid .subhead{grid-column:1/-1}
+.hide{display:none!important}
+.subhead{font-family:var(--display);font-size:17px;margin:22px 0 12px;padding-top:6px}
+.intro{color:var(--muted);margin:6px 0 20px;max-width:60ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;font-size:15px}
+.opt input{accent-color:var(--accent);width:16px;height:16px}
+.opt:has(input:checked){border-color:var(--accent);background:rgba(0,200,255,.09)}
+.skillrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:0!important;flex-wrap:wrap}
+.rate{display:flex;gap:6px}
+.rate .opt{padding:7px 13px}
+.prog{display:flex;gap:6px;margin:8px 0 6px}
+.prog i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.prog i.on{background:var(--accent)}
+.stepmeta{color:var(--muted);font-size:13.5px}
+.count{font-size:12.5px;color:var(--muted);text-align:right;margin-top:4px}
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:24px;position:sticky;bottom:0;padding:14px 0;background:linear-gradient(0deg,var(--ink) 80%,transparent)}
+.saved{color:var(--muted);font-size:12.5px;text-align:center;flex:1}
+.resume-banner{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border:1px solid var(--accent);background:rgba(0,200,255,.07);border-radius:14px;padding:16px 18px;margin-bottom:22px}
+.resume-banner p{color:var(--muted);font-size:14px}
+.formerr .actions{display:flex;gap:8px}
+select.in{appearance:auto}
+
 @media (max-width:860px){
+  .fgrid{grid-template-columns:1fr}
   .hero{padding-top:44px}
   .hero .wrap,.track .wrap{grid-template-columns:1fr;gap:36px}
   .row{grid-template-columns:1fr auto;gap:6px 12px;padding:18px 4px}
@@ -267,6 +288,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
   <section class="roles" id="roles">
     <div class="wrap">
+      <div id="draftBanner"></div>
       <div class="roles-head">
         <h2>Open roles</h2>
         <div class="filters">
@@ -352,6 +374,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
+storage.setMaxUploadRetryTime(15000);
+storage.setMaxOperationRetryTime(15000);
 
 /* =====================================================================
    2) JOBS  — edit freely. Each job controls its own apply requirements:
@@ -371,9 +395,15 @@ const JOBS = [
     must:["2+ years building production web apps with JavaScript","Strong HTML, CSS and responsive layout skills","Experience calling REST or Firebase APIs","A public GitHub profile or live project we can open"],
     nice:["React or Vue experience","Firebase Auth / Firestore experience","PWA and offline caching knowledge"],
     linkLabel:"GitHub or live project link", linkRequired:true,
+    skills:["HTML and CSS","JavaScript","React or Vue","Responsive design","Performance tuning","Firebase or REST APIs","Git and code review"],
     questions:[
-      {id:"q1", label:"Describe a UI you built that you're proud of. What was hard about it?", required:true},
-      {id:"q2", label:"How would you make a long, infinite-scrolling feed feel fast?", required:false}
+      {id:"fe1", type:"long",  req:true,  min:60, label:"Describe a UI you built that you're proud of. What was hard about it and how did you solve it?"},
+      {id:"fe2", type:"long",  req:true,  min:60, label:"How would you make a long, infinite-scrolling feed feel fast on a mid-range phone?"},
+      {id:"fe3", type:"short", req:true,  label:"Which JavaScript framework or library do you prefer, and why?"},
+      {id:"fe4", type:"choice",req:true,  options:["Vanilla JS","React","Vue","Angular","Other"], label:"Which do you use most day to day?"},
+      {id:"fe5", type:"yesno", req:true,  label:"Have you published a web app that real users use?"},
+      {id:"fe6", type:"long",  req:false, label:"Explain the difference between debounce and throttle, with an example of when you would use each."},
+      {id:"fe7", type:"short", req:false, label:"Link to a bug you fixed or a pull request you are proud of"}
     ]
   },
   {
@@ -385,9 +415,15 @@ const JOBS = [
     must:["2+ years of backend experience with Node.js","Hands-on Firebase (Firestore or Realtime Database)","Understanding of authentication and security rules","Comfort reading logs and debugging in production"],
     nice:["Cloud Functions at scale","Rate limiting and abuse prevention","Experience with push notifications"],
     linkLabel:"GitHub or project link", linkRequired:false,
+    skills:["Node.js","Firestore or Realtime Database","Security rules","Cloud Functions","REST API design","SQL basics","Debugging in production"],
     questions:[
-      {id:"q1", label:"How would you stop one user from reading another user's private data in Firestore?", required:true},
-      {id:"q2", label:"Tell us about a bug you only found in production.", required:false}
+      {id:"be1", type:"long",  req:true,  min:60, label:"How would you stop one user from reading another user's private data in Firestore?"},
+      {id:"be2", type:"long",  req:true,  min:80, label:"Design the data model for a follow system (followers, following, counts) in Firestore. Explain your choices and the costs."},
+      {id:"be3", type:"short", req:true,  label:"Which Firebase products have you used in real projects?"},
+      {id:"be4", type:"choice",req:true,  options:["Firestore","Realtime Database","Depends on the case"], label:"For a busy live chat, which would you pick first?"},
+      {id:"be5", type:"yesno", req:true,  label:"Have you written and deployed Cloud Functions in production?"},
+      {id:"be6", type:"long",  req:false, label:"Tell us about a bug you only found in production and how you tracked it down."},
+      {id:"be7", type:"long",  req:false, label:"How would you reduce a Firestore bill that doubled this month?"}
     ]
   },
   {
@@ -399,8 +435,14 @@ const JOBS = [
     must:["1+ year of product or UI/UX design experience","Fluent in Figma","A portfolio with at least 2 shipped or realistic case studies","Good eye for typography, spacing and color"],
     nice:["Motion design in Figma or After Effects","Experience designing social or chat products","Basic HTML/CSS knowledge"],
     linkLabel:"Portfolio link", linkRequired:true,
+    skills:["Figma","UI visual design","UX research","Prototyping","Design systems","Motion design","HTML and CSS basics"],
     questions:[
-      {id:"q1", label:"Pick one app you use daily. What would you change and why?", required:true}
+      {id:"pd1", type:"long",  req:true,  min:60, label:"Pick one app you use daily. What would you change and why?"},
+      {id:"pd2", type:"long",  req:true,  min:80, label:"Walk us through your design process on a recent project, from the problem to the final screens."},
+      {id:"pd3", type:"short", req:true,  label:"Which tools do you use besides Figma?"},
+      {id:"pd4", type:"yesno", req:true,  label:"Have you handed off designs directly to developers?"},
+      {id:"pd5", type:"choice",req:true,  options:["Mostly web","Some mobile","Mostly mobile apps"], label:"What have you designed for most?"},
+      {id:"pd6", type:"long",  req:false, label:"Look at the Nexor Sparks home screen. What is the first thing you would fix?"}
     ]
   },
   {
@@ -411,9 +453,15 @@ const JOBS = [
     does:["Review reports and take action following the guidelines","Reply to user questions politely and clearly","Flag trends and repeat offenders to the team","Suggest improvements to the guidelines"],
     must:["Fluent written English and Hindi","Calm, fair judgement when handling sensitive content","Able to work at least 20 hours a week, including evenings or weekends","Own phone or laptop with a stable internet connection"],
     nice:["Prior moderation or customer support experience","Knowledge of other regional languages"],
-    linkLabel:"LinkedIn or profile link (optional)", linkRequired:false,
+    linkLabel:"LinkedIn or profile link", linkRequired:false,
+    skills:["Reading reports quickly","Written English","Written Hindi","Handling conflict","Empathy with users","Spreadsheets"],
     questions:[
-      {id:"q1", label:"A popular user posts something borderline, and reports are coming in. What do you do?", required:true}
+      {id:"cm1", type:"long",  req:true,  min:60, label:"A popular user posts something borderline and reports are coming in. What do you do, step by step?"},
+      {id:"cm2", type:"long",  req:true,  min:60, label:"Two users are fighting and you can't tell who started it. How do you decide what action to take?"},
+      {id:"cm3", type:"choice",req:true,  options:["20 to 25 hours","25 to 35 hours","35+ hours"], label:"How many hours a week can you commit?"},
+      {id:"cm4", type:"yesno", req:true,  label:"Are you comfortable reviewing sensitive or disturbing content as part of the job?"},
+      {id:"cm5", type:"short", req:true,  label:"Which languages can you moderate in?"},
+      {id:"cm6", type:"long",  req:false, label:"Write a polite three-sentence reply to a user whose account was suspended and who is angry about it."}
     ]
   },
   {
@@ -425,8 +473,14 @@ const JOBS = [
     must:["Currently studying or recently graduated","Strong written English or Hindi","Active on at least two social platforms","Able to commit 20+ hours a week for 3 months"],
     nice:["Basic video editing (CapCut, Premiere or similar)","Canva or Figma basics"],
     linkLabel:"Link to your best post, reel or writing sample", linkRequired:false,
+    skills:["Writing captions","Video editing","Canva or Figma","Instagram and Reels knowledge","Trend research","Photography"],
     questions:[
-      {id:"q1", label:"Share one post or video you admire and say why it works.", required:true}
+      {id:"ci1", type:"long",  req:true,  min:60, label:"Share one post or video you admire and explain why it works."},
+      {id:"ci2", type:"long",  req:true,  min:60, label:"Write three caption ideas to announce a new Nexor Sparks feature."},
+      {id:"ci3", type:"short", req:true,  label:"Which social platforms do you use most?"},
+      {id:"ci4", type:"choice",req:true,  options:["Yes, 20+ hours a week","Partly, 10 to 20 hours","No"], label:"Can you commit 20+ hours a week for 3 months?"},
+      {id:"ci5", type:"yesno", req:true,  label:"Does your phone record clear 1080p video?"},
+      {id:"ci6", type:"short", req:false, label:"Link to your best reel, post or writing sample"}
     ]
   },
   {
@@ -438,9 +492,14 @@ const JOBS = [
     must:["1+ year in growth, performance or social media marketing","Comfortable with spreadsheets and basic analytics","Clear writing and fast follow-through","Examples of campaigns you ran, with results"],
     nice:["App install or referral campaign experience","SQL or Looker Studio basics"],
     linkLabel:"LinkedIn or work samples link", linkRequired:true,
+    skills:["Social media marketing","Analytics","Spreadsheets","Creator outreach","Copywriting","A/B testing","SQL or Looker Studio"],
     questions:[
-      {id:"q1", label:"Describe one campaign you ran. What was the goal and what did the numbers show?", required:true},
-      {id:"q2", label:"You have a small budget and one week. How would you get 1,000 new users for a social app?", required:false}
+      {id:"gm1", type:"long",  req:true,  min:80, label:"Describe one campaign you ran: the goal, what you did, and the numbers it produced."},
+      {id:"gm2", type:"long",  req:true,  min:60, label:"You have a small budget and one week. How would you get 1,000 new users for a social app?"},
+      {id:"gm3", type:"short", req:true,  label:"Which metrics do you track every week?"},
+      {id:"gm4", type:"choice",req:true,  options:["Instagram","YouTube","X (Twitter)","LinkedIn","Other"], label:"Which channel have you grown the most?"},
+      {id:"gm5", type:"yesno", req:true,  label:"Have you worked with creators or influencers before?"},
+      {id:"gm6", type:"long",  req:false, label:"What is the first thing you would test on the Nexor Sparks sign-up flow?"}
     ]
   }
 ];
@@ -518,7 +577,7 @@ function openJob(id, trigger){
     <div class="sec nice"><h3>Nice to have</h3><ul>${li(j.nice)}</ul></div>
     <div class="sec"><h3>Hiring process</h3><p>Application review, a short call, a practical task or conversation with the team, then an offer. You can follow every stage with your reference number.</p></div>
     <div class="sticky-apply">
-      <span>Takes about 5 minutes.</span>
+      <span>Get an acknowledgment number, then fill a 7-page application (about 25 minutes).</span>
       <button class="btn" type="button" id="goApply">Apply for this role</button>
     </div>`;
   $('#goApply').addEventListener('click', () => showForm(j));
@@ -526,108 +585,11 @@ function openJob(id, trigger){
   body.scrollTop = 0;
 }
 
-/* ---------- application form ---------- */
-function showForm(j){
-  const qs = j.questions.map(q => `
-    <div class="grp" data-f="${q.id}">
-      <label class="lb" for="f_${q.id}">${esc(q.label)} ${q.required ? '' : '<i>(optional)</i>'}</label>
-      <textarea class="in" id="f_${q.id}" maxlength="1200"></textarea>
-      <div class="err">Please answer this question (at least 20 characters).</div>
-    </div>`).join('');
-
-  body.innerHTML = `
-    <button class="back" type="button" id="backBtn">Back to role</button>
-    <h2>Apply: ${esc(j.title)}</h2>
-    <div class="note">Minimum requirement: ${j.minExp ? j.minExp + ' year' + (j.minExp > 1 ? 's' : '') + ' of experience.' : 'freshers are welcome.'} Make sure you meet the must-have list before applying.</div>
-    <form id="appForm" novalidate>
-      <div class="hp" aria-hidden="true"><label>Website <input id="f_website" tabindex="-1" autocomplete="off"></label></div>
-      <div class="two">
-        <div class="grp" data-f="fullName"><label class="lb" for="f_fullName">Full name</label><input class="in" id="f_fullName" autocomplete="name" maxlength="100"><div class="err">Enter your full name.</div></div>
-        <div class="grp" data-f="email"><label class="lb" for="f_email">Email</label><input class="in" id="f_email" type="email" autocomplete="email" maxlength="120"><div class="err">Enter a valid email address.</div></div>
-      </div>
-      <div class="two">
-        <div class="grp" data-f="phone"><label class="lb" for="f_phone">Phone (WhatsApp preferred)</label><input class="in" id="f_phone" type="tel" autocomplete="tel" maxlength="20"><div class="err">Enter a valid phone number (10 to 15 digits).</div></div>
-        <div class="grp" data-f="city"><label class="lb" for="f_city">City</label><input class="in" id="f_city" autocomplete="address-level2" maxlength="80"><div class="err">Enter your city.</div></div>
-      </div>
-      <div class="two">
-        <div class="grp" data-f="experience"><label class="lb" for="f_experience">Years of experience</label><input class="in" id="f_experience" type="number" min="0" max="40" step="0.5" inputmode="decimal" placeholder="0 if fresher"><div class="err" id="expErr">Enter your years of experience.</div></div>
-        <div class="grp" data-f="notice"><label class="lb" for="f_notice">Availability</label>
-          <select class="in" id="f_notice"><option value="">Select</option><option>Immediately</option><option>Within 15 days</option><option>Within 30 days</option><option>More than 30 days</option></select>
-          <div class="err">Select when you can start.</div></div>
-      </div>
-      <div class="grp" data-f="org"><label class="lb" for="f_org">Current company or college <i>(optional)</i></label><input class="in" id="f_org" maxlength="120"></div>
-      <div class="grp" data-f="link"><label class="lb" for="f_link">${esc(j.linkLabel)}</label><input class="in" id="f_link" type="url" placeholder="https://" maxlength="300"><div class="err">${j.linkRequired ? 'Enter a valid link starting with https://' : 'Enter a valid link starting with https://, or leave this empty.'}</div></div>
-      <div class="grp" data-f="resume">
-        <label class="lb" for="f_resume">Resume (PDF, up to 3 MB)</label>
-        <input class="in" id="f_resume" type="file" accept="application/pdf,.pdf">
-        <div class="hint">Or paste a link to your resume below.</div>
-        <input class="in" id="f_resumeLink" type="url" placeholder="https://drive.google.com/..." maxlength="300" style="margin-top:8px" aria-label="Resume link">
-        <div class="err" id="resumeErr">Upload a PDF resume or paste a resume link.</div>
-      </div>
-      ${qs}
-      <div class="grp" data-f="confirm">
-        <label class="check"><input type="checkbox" id="f_confirm"><span>I have read the must-have requirements and I meet them. The details I gave are true.</span></label>
-        <div class="err">Please confirm before submitting.</div>
-      </div>
-      <button class="btn" id="submitBtn" type="submit">Submit application</button>
-      <div class="formerr" id="formErr" role="alert"></div>
-    </form>`;
-  body.scrollTop = 0;
-  $('#backBtn').addEventListener('click', () => openJob(j.id, lastFocus));
-  $('#appForm').addEventListener('submit', e => { e.preventDefault(); submitApp(j); });
-}
-
-const setBad = (name, msg) => {
-  const g = body.querySelector(`[data-f="${name}"]`);
-  if(!g) return;
-  g.classList.add('bad');
-  if(msg){ const er = g.querySelector('.err'); if(er) er.textContent = msg; }
-};
+/* ---------- shared helpers ---------- */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const isUrl = v => { try{ const u = new URL(v); return u.protocol === 'https:' || u.protocol === 'http:'; }catch{ return false; } };
-
-function validate(j){
-  body.querySelectorAll('.grp.bad').forEach(g => g.classList.remove('bad'));
-  const v = id => ($('#f_' + id).value || '').trim();
-  const bad = [];
-  const fail = (n, m) => { setBad(n, m); bad.push(n); };
-
-  if(v('fullName').length < 2) fail('fullName');
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email'))) fail('email');
-  const digits = v('phone').replace(/\D/g, '');
-  if(digits.length < 10 || digits.length > 15) fail('phone');
-  if(v('city').length < 2) fail('city');
-  const exp = parseFloat(v('experience'));
-  if(isNaN(exp) || exp < 0 || exp > 40) fail('experience', 'Enter your years of experience.');
-  else if(exp < j.minExp) fail('experience', `This role needs at least ${j.minExp} year${j.minExp > 1 ? 's' : ''} of experience. Check our other open roles.`);
-  if(!v('notice')) fail('notice');
-
-  const link = v('link');
-  if(j.linkRequired ? !isUrl(link) : (link && !isUrl(link))) fail('link');
-
-  const file = $('#f_resume').files[0];
-  const rLink = v('resumeLink');
-  if(file){
-    if(file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) fail('resume', 'Resume must be a PDF file.');
-    else if(file.size > 3 * 1024 * 1024) fail('resume', 'Resume is larger than 3 MB. Upload a smaller PDF or paste a link.');
-  } else if(!isUrl(rLink)){
-    fail('resume', rLink ? 'Enter a valid resume link starting with https://' : 'Upload a PDF resume or paste a resume link.');
-  }
-
-  j.questions.forEach(q => {
-    const a = v(q.id);
-    if((q.required && a.length < 20) || (a && a.length < 20)) fail(q.id);
-  });
-  if(!$('#f_confirm').checked) fail('confirm');
-
-  if(bad.length){
-    const first = body.querySelector(`[data-f="${bad[0]}"]`);
-    first.scrollIntoView({behavior:'smooth', block:'center'});
-    const inp = first.querySelector('input,select,textarea'); if(inp) inp.focus({preventScroll:true});
-  }
-  return bad.length === 0;
-}
-
-/* ---------- reference + token ---------- */
+const pad5 = n => String(n).padStart(5, '0');
+const withTimeout = (p, ms, code) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error(code), {code})), ms))]);
 function makeToken(){
   const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I
   const b = new Uint8Array(8); crypto.getRandomValues(b);
@@ -640,71 +602,506 @@ async function sha256(s){
 }
 const normToken = s => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
 const normEmail = s => s.trim().toLowerCase();
+const isErrPerm = err => err && (err.code === 'permission-denied' || /unauthorized|unauthenticated/.test(err.code || ''));
 
-async function submitApp(j){
-  if($('#f_website').value) return;                 // honeypot
-  if(!validate(j)) return;
-  const btn = $('#submitBtn'), fe = $('#formErr');
-  fe.classList.remove('on');
-  btn.disabled = true; btn.textContent = 'Submitting…';
+/* =====================================================================
+   THE 7-PAGE APPLICATION  — edit questions here.
+   Field keys: id, type, label, req, half, opts, max, min, hint, ph, showIf, ro, lo, hi
+   Types: text email tel url date month number select radio multi checkbox textarea rating file head note
+   ===================================================================== */
+const YN = ['Yes','No'];
+const LEVELS = ['Beginner','Intermediate','Advanced'];
+function buildSteps(j){
+  const employed = v => v.status && !/^Fresher/.test(v.status);
+  const fresher  = v => /^Fresher/.test(v.status || '');
+  const roleFields = [
+    {type:'head', label:'Rate your skills'},
+    {type:'note', label:'1 = beginner, 5 = expert. Be honest: we test what you claim.'},
+    ...j.skills.map((s, i) => ({id:'sk' + i, type:'rating', label:s, req:true})),
+    {type:'head', label:'Questions for this role'},
+    ...j.questions.map(q => {
+      const base = {id:q.id, label:q.label, req:q.req};
+      if(q.type === 'long')  return {...base, type:'textarea', max:1500, min:q.min || 0};
+      if(q.type === 'short') return {...base, type:'text', max:200};
+      if(q.type === 'yesno') return {...base, type:'radio', opts:YN};
+      return {...base, type:'radio', opts:q.options};
+    })
+  ];
+  return [
+    {id:'personal', title:'Personal details',
+     intro:'Tell us who you are and how to reach you. Use details that match your official documents.',
+     fields:[
+      {id:'fullName', type:'text', label:'Full name', req:true, half:true, max:100},
+      {id:'preferredName', type:'text', label:'Preferred name', half:true, max:60, hint:'What your teammates should call you.'},
+      {id:'dob', type:'date', label:'Date of birth', req:true, half:true},
+      {id:'gender', type:'select', label:'Gender', req:true, half:true, opts:['Female','Male','Non-binary','Prefer not to say']},
+      {id:'nationality', type:'text', label:'Nationality', req:true, half:true, max:60, def:'Indian'},
+      {id:'email', type:'email', label:'Email', req:true, half:true, max:120, ro:true, hint:'This is the email you used for your acknowledgment number.'},
+      {id:'phone', type:'tel', label:'Mobile number', req:true, half:true, max:20},
+      {id:'whatsapp', type:'tel', label:'WhatsApp number', half:true, max:20, hint:'Leave empty if same as mobile.'},
+      {id:'altEmail', type:'email', label:'Alternate email', half:true, max:120},
+      {id:'emName', type:'text', label:'Emergency contact name', req:true, half:true, max:100},
+      {id:'emPhone', type:'tel', label:'Emergency contact number', req:true, half:true, max:20},
+      {type:'head', label:'Current address'},
+      {id:'addr1', type:'text', label:'House, street and area', req:true, max:200},
+      {id:'city', type:'text', label:'City', req:true, half:true, max:80},
+      {id:'state', type:'text', label:'State', req:true, half:true, max:80},
+      {id:'pin', type:'text', label:'PIN code', req:true, half:true, max:10, pattern:/^\d{5,8}$/, patErr:'Enter a valid PIN code (digits only).'},
+      {id:'country', type:'text', label:'Country', req:true, half:true, max:60, def:'India'},
+      {id:'sameAddr', type:'checkbox', label:'My permanent address is the same as my current address'},
+      {id:'permAddr', type:'textarea', label:'Permanent address', req:true, max:300, min:10, showIf:v => !v.sameAddr},
+      {type:'head', label:'Languages'},
+      {id:'languages', type:'multi', label:'Languages you can speak or write', req:true, opts:['English','Hindi','Punjabi','Urdu','Bengali','Tamil','Telugu','Marathi','Gujarati','Other']},
+      {id:'englishLevel', type:'select', label:'Your English level', req:true, half:true, opts:['Basic','Conversational','Fluent','Native']},
+      {id:'hindiLevel', type:'select', label:'Your Hindi level', req:true, half:true, opts:['Basic','Conversational','Fluent','Native']},
+      {id:'aboutShort', type:'textarea', label:'Describe yourself in 2 to 3 sentences', req:true, max:400, min:40}
+    ]},
 
-  const v = id => ($('#f_' + id).value || '').trim();
-  const tokenNo = makeToken();
-  const email = normEmail(v('email'));
+    {id:'education', title:'Education and learning',
+     intro:'Start with your latest qualification. Approximate marks are fine if you do not remember exactly.',
+     fields:[
+      {id:'highestQual', type:'select', label:'Highest qualification', req:true, half:true, opts:['10th','12th','Diploma','Bachelor\'s degree','Master\'s degree','PhD','Other']},
+      {id:'course', type:'text', label:'Course and branch', req:true, half:true, max:120, ph:'e.g. B.Tech Computer Science'},
+      {id:'institute', type:'text', label:'College or institute', req:true, half:true, max:150},
+      {id:'university', type:'text', label:'University or board', half:true, max:150},
+      {id:'gradYear', type:'number', label:'Year of completion (or expected)', req:true, half:true, lo:1980, hi:2035},
+      {id:'score', type:'text', label:'Percentage or CGPA', req:true, half:true, max:20},
+      {id:'twelfth', type:'text', label:'12th or diploma percentage', half:true, max:20},
+      {id:'tenth', type:'text', label:'10th percentage', half:true, max:20},
+      {id:'studying', type:'radio', label:'Are you currently studying?', req:true, opts:YN},
+      {id:'studyDetails', type:'text', label:'What are you studying, and when does it finish?', req:true, max:200, showIf:v => v.studying === 'Yes'},
+      {id:'certs', type:'textarea', label:'Certifications and courses', max:800, hint:'Name, provider and year. One per line.'},
+      {id:'awards', type:'textarea', label:'Awards, rankings or competitions', max:600},
+      {id:'extra', type:'textarea', label:'Projects, clubs, volunteering or open-source work', max:800}
+    ]},
+
+    {id:'work', title:'Work experience',
+     intro:'Be specific about what you did. Fresher? Tell us about internships and projects instead.',
+     fields:[
+      {id:'status', type:'select', label:'Your current situation', req:true, opts:['Fresher or student','Employed full-time','Employed part-time','Freelancer or self-employed','Between jobs']},
+      {id:'totalExp', type:'number', label:'Total years of experience', req:true, half:true, lo:0, hi:40, step:'0.5', hint:'Enter 0 if you are a fresher.'},
+      {id:'relevantExp', type:'number', label:'Years in this field', req:true, half:true, lo:0, hi:40, step:'0.5'},
+      {id:'company', type:'text', label:'Current or last company', req:true, half:true, max:120, showIf:employed},
+      {id:'designation', type:'text', label:'Your designation', req:true, half:true, max:100, showIf:employed},
+      {id:'startDate', type:'month', label:'Started on', req:true, half:true, showIf:employed},
+      {id:'endDate', type:'month', label:'Ended on', half:true, showIf:employed, hint:'Leave empty if you still work there.'},
+      {id:'responsibilities', type:'textarea', label:'Your main responsibilities there', req:true, max:1200, min:40, showIf:employed},
+      {id:'fresherWork', type:'textarea', label:'Internships, projects or freelance work you have done', req:true, max:1200, min:40, showIf:fresher},
+      {id:'prevCompany', type:'text', label:'Previous company', half:true, max:120, showIf:employed},
+      {id:'prevRole', type:'text', label:'Previous designation', half:true, max:100, showIf:employed},
+      {id:'prevDuration', type:'text', label:'How long you worked there', half:true, max:60, showIf:employed},
+      {id:'prevReason', type:'text', label:'Why you left', half:true, max:200, showIf:employed},
+      {id:'tools', type:'textarea', label:'Tools and technologies you use every day', req:true, max:500, min:10},
+      {id:'proud', type:'textarea', label:'Your proudest achievement, with numbers if you can', req:true, max:1200, min:60},
+      {id:'change', type:'textarea', label:'Why are you looking for a change?', max:600, showIf:employed},
+      {id:'gap', type:'textarea', label:'Any gap in your career or studies? Explain.', max:600},
+      {type:'head', label:'Pay and joining'},
+      {id:'currentCtc', type:'text', label:'Current yearly pay (INR)', half:true, max:30, hint:'Optional. Write 0 or leave empty if not applicable.'},
+      {id:'expectedCtc', type:'text', label:'Expected yearly pay (INR)', req:true, half:true, max:30},
+      {id:'notice', type:'select', label:'Notice period', req:true, half:true, opts:['Immediately','Within 15 days','Within 30 days','Within 60 days','More than 60 days']},
+      {id:'joinDate', type:'date', label:'Earliest joining date', req:true, half:true}
+    ]},
+
+    {id:'role', title:'Skills and role questions',
+     intro:`These questions are specific to the ${j.title} role. Short answers are fine where a short answer is asked; long answers need real detail.`,
+     fields:roleFields},
+
+    {id:'links', title:'Links, resume and cover letter',
+     intro:'Show us your work. Add every link that helps, then upload your resume.',
+     fields:[
+      {id:'primaryLink', type:'url', label:j.linkLabel, req:j.linkRequired, ph:'https://', max:300},
+      {id:'linkedin', type:'url', label:'LinkedIn profile', half:true, ph:'https://', max:300},
+      {id:'github', type:'url', label:'GitHub profile', half:true, ph:'https://', max:300},
+      {id:'portfolio', type:'url', label:'Portfolio or website', half:true, ph:'https://', max:300},
+      {id:'otherLink', type:'url', label:'Any other link', half:true, ph:'https://', max:300},
+      {id:'resume', type:'file', label:'Resume (PDF, up to 3 MB)'},
+      {id:'resumeLink', type:'url', label:'Or paste a resume link', ph:'https://drive.google.com/...', max:300, hint:'Use this if the upload fails or your file is too large. Make sure the link is open to anyone.'},
+      {id:'coverLetter', type:'textarea', label:'Cover letter: why are you a strong fit for this role?', req:true, max:2500, min:120},
+      {id:'workSample', type:'textarea', label:'Describe the one piece of work you are most proud of', req:true, max:1500, min:60, hint:'What was the problem, what did you do, and what happened? Add its link above if it is online.'}
+    ]},
+
+    {id:'motivation', title:'About you and how you work',
+     intro:'There are no trick questions. We want to understand how you think and how you work with others.',
+     fields:[
+      {id:'whyNexor', type:'textarea', label:'Why do you want to work at Nexor?', req:true, max:1500, min:80},
+      {id:'whyRole', type:'textarea', label:`Why ${j.title}? What draws you to this role?`, req:true, max:1200, min:60},
+      {id:'strengths', type:'textarea', label:'What are your three biggest strengths?', req:true, max:600, min:30},
+      {id:'weakness', type:'textarea', label:'What is one weakness you are working on?', req:true, max:600, min:30},
+      {id:'challenge', type:'textarea', label:'Describe a hard problem you solved. What did you do and what was the result?', req:true, max:1500, min:80},
+      {id:'teamwork', type:'textarea', label:'Tell us about a disagreement with a teammate and how you handled it', req:true, max:1000, min:60},
+      {id:'goals', type:'textarea', label:'Where do you want to be in 3 to 5 years?', req:true, max:800, min:40},
+      {id:'learning', type:'textarea', label:'What is the last new thing you taught yourself, and how?', max:600},
+      {type:'head', label:'Quick ones'},
+      {id:'threeWords', type:'text', label:'Describe yourself in three words', req:true, half:true, max:60},
+      {id:'favApp', type:'text', label:'Your favourite app, and why', req:true, half:true, max:200},
+      {id:'hobbies', type:'text', label:'Hobbies and interests', half:true, max:200},
+      {id:'workStyle', type:'select', label:'I work best...', half:true, opts:['Independently','In a small team','A mix of both']},
+      {type:'head', label:'Work setup'},
+      {id:'remote', type:'radio', label:'Are you comfortable working fully remote?', req:true, opts:YN},
+      {id:'device', type:'select', label:'Device you will work on', req:true, half:true, opts:['Own laptop or desktop','Own phone only','Both laptop and phone','I do not have one yet']},
+      {id:'internet', type:'select', label:'Internet speed at home', req:true, half:true, opts:['Under 10 Mbps','10 to 50 Mbps','Over 50 Mbps','Not sure']},
+      {id:'hours', type:'select', label:'Hours you can give each week', req:true, half:true, opts:['Under 20 hours','20 to 30 hours','30 to 40 hours','40+ hours']},
+      {id:'relocate', type:'radio', label:'Would you travel or relocate if needed?', half:true, opts:['Yes','No','Maybe']},
+      {id:'workWindow', type:'multi', label:'Times you are usually available', req:true, opts:['Mornings','Afternoons','Evenings','Nights','Weekends']}
+    ]},
+
+    {id:'final', title:'References and declaration',
+     intro:'Last page. Add at least one reference, then read and sign the declaration.',
+     fields:[
+      {type:'head', label:'Reference 1 (required)'},
+      {id:'r1Name', type:'text', label:'Name', req:true, half:true, max:100},
+      {id:'r1Rel', type:'text', label:'Relationship', req:true, half:true, max:80, ph:'e.g. Manager, Professor'},
+      {id:'r1Company', type:'text', label:'Company or college', req:true, half:true, max:120},
+      {id:'r1Phone', type:'tel', label:'Phone', req:true, half:true, max:20},
+      {id:'r1Email', type:'email', label:'Email', half:true, max:120},
+      {type:'head', label:'Reference 2 (optional)'},
+      {id:'r2Name', type:'text', label:'Name', half:true, max:100},
+      {id:'r2Rel', type:'text', label:'Relationship', half:true, max:80},
+      {id:'r2Company', type:'text', label:'Company or college', half:true, max:120},
+      {id:'r2Phone', type:'tel', label:'Phone', half:true, max:20},
+      {id:'r2Email', type:'email', label:'Email', half:true, max:120},
+      {type:'head', label:'A few last things'},
+      {id:'heard', type:'select', label:'How did you hear about this role?', req:true, half:true, opts:['Nexor Sparks app','Instagram','LinkedIn','Friend or colleague','Job portal','Other']},
+      {id:'referredBy', type:'text', label:'Referred by (name)', half:true, max:100},
+      {id:'extraInfo', type:'textarea', label:'Anything else we should know?', max:1000},
+      {id:'askUs', type:'textarea', label:'Any questions for us?', max:600},
+      {type:'head', label:'Declaration'},
+      {id:'rightToWork', type:'radio', label:'Are you legally eligible to work in India?', req:true, opts:YN},
+      {id:'bgCheck', type:'checkbox', req:true, label:'I agree that Nexor may verify my education, experience and references.'},
+      {id:'dataConsent', type:'checkbox', req:true, label:'I agree that Nexor may store and process my data for recruitment.'},
+      {id:'truth', type:'checkbox', req:true, label:'All information in this application is true and complete. I understand false information can lead to rejection or termination.'},
+      {id:'signName', type:'text', label:'Type your full name as your signature', req:true, half:true, max:100},
+      {id:'signDate', type:'text', label:'Date', half:true, ro:true}
+    ]}
+  ];
+}
+
+/* ---------- state + draft ---------- */
+const DRAFT_KEY = 'nexor_career_draft_v1';
+let STATE = null;
+const skipTypes = ['head','note','file'];
+const visible = (f, v) => !f.showIf || f.showIf(v);
+
+function saveDraft(){
+  if(!STATE) return;
+  try{ localStorage.setItem(DRAFT_KEY, JSON.stringify({ack:STATE.ack, jobId:STATE.job.id, i:STATE.i, values:STATE.values, savedAt:Date.now()})); }catch{}
+  const n = $('#savedNote'); if(n) n.textContent = 'Draft saved on this device';
+}
+const clearDraft = () => { try{ localStorage.removeItem(DRAFT_KEY); }catch{} };
+function loadDraft(){ try{ return JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); }catch{ return null; } }
+
+function showDraftBanner(){
+  const box = $('#draftBanner'); const d = loadDraft();
+  const job = d && JOBS.find(x => x.id === d.jobId);
+  if(!d || !job || !d.ack){ box.innerHTML = ''; return; }
+  const steps = buildSteps(job);
+  box.innerHTML = `
+    <div class="resume-banner">
+      <div><strong>You have an unfinished application</strong>
+        <p>${esc(job.title)} | ${esc(d.ack)} | page ${Math.min(d.i + 1, steps.length)} of ${steps.length}</p></div>
+      <div class="actions"><button class="btn" type="button" id="resBtn">Continue</button><button class="btn ghost" type="button" id="disBtn">Discard</button></div>
+    </div>`;
+  $('#resBtn').addEventListener('click', e => {
+    STATE = {job, ack:d.ack, steps, i:Math.min(d.i, steps.length - 1), values:d.values || {}, file:null, skipUpload:false};
+    $('#dCrumb').textContent = job.dept; lastFocus = e.target; openDrawer(e.target); renderStep();
+  });
+  $('#disBtn').addEventListener('click', () => { if(confirm('Discard this draft? Your acknowledgment number stays valid but your answers will be deleted from this device.')){ clearDraft(); box.innerHTML = ''; } });
+}
+
+/* ---------- STEP 0: acknowledgment number ---------- */
+function showForm(j){
+  body.innerHTML = `
+    <button class="back" type="button" id="backBtn">Back to role</button>
+    <h2>Apply: ${esc(j.title)}</h2>
+    <div class="note"><strong>How applying works</strong><br>
+      1. Get your acknowledgment number (1 minute).<br>
+      2. Fill the full 7-page application, about 25 to 30 minutes. Your progress saves on this device.<br>
+      3. Submit to receive your reference number, token and a signed PDF.</div>
+    <div class="note">Minimum requirement: ${j.minExp ? j.minExp + ' year' + (j.minExp > 1 ? 's' : '') + ' of experience.' : 'freshers are welcome.'} Read the must-have list before you start.</div>
+    <form id="ackForm" novalidate>
+      <div class="hp" aria-hidden="true"><label>Website <input id="a_website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="fgrid">
+        <div class="grp" data-f="a_name"><label class="lb" for="a_name">Full name</label><input class="in" id="a_name" autocomplete="name" maxlength="100"><div class="err">Enter your full name.</div></div>
+        <div class="grp" data-f="a_email"><label class="lb" for="a_email">Email</label><input class="in" id="a_email" type="email" autocomplete="email" maxlength="120"><div class="err">Enter a valid email address.</div></div>
+        <div class="grp" data-f="a_phone"><label class="lb" for="a_phone">Mobile number</label><input class="in" id="a_phone" type="tel" autocomplete="tel" maxlength="20"><div class="err">Enter a valid phone number (10 to 15 digits).</div></div>
+        <div class="grp full" data-f="a_ok"><label class="check"><input type="checkbox" id="a_ok"><span>I have read the must-have requirements and I meet them.</span></label><div class="err">Please confirm before continuing.</div></div>
+      </div>
+      <button class="btn" id="ackBtn" type="submit">Get acknowledgment number</button>
+      <div class="formerr" id="ackErr" role="alert"></div>
+    </form>`;
+  body.scrollTop = 0;
+  $('#backBtn').addEventListener('click', () => openJob(j.id, lastFocus));
+  $('#ackForm').addEventListener('submit', e => { e.preventDefault(); getAck(j); });
+}
+
+async function getAck(j){
+  if($('#a_website').value) return;
+  const name = $('#a_name').value.trim(), email = normEmail($('#a_email').value), phone = $('#a_phone').value.trim();
+  const ok = {a_name: name.length >= 2, a_email: EMAIL_RE.test(email), a_phone: (() => { const d = phone.replace(/\D/g, ''); return d.length >= 10 && d.length <= 15; })(), a_ok: $('#a_ok').checked};
+  let firstBad = null;
+  Object.entries(ok).forEach(([k, v]) => { const g = body.querySelector(`[data-f="${k}"]`); g.classList.toggle('bad', !v); if(!v && !firstBad) firstBad = g; });
+  if(firstBad){ firstBad.scrollIntoView({block:'center', behavior:'smooth'}); return; }
+
+  const btn = $('#ackBtn'), fe = $('#ackErr'); fe.classList.remove('on');
+  btn.disabled = true; btn.textContent = 'Generating...';
+  try{
+    const counter = db.collection('career_counters').doc('acks'); const year = new Date().getFullYear();
+    const ack = await withTimeout(db.runTransaction(async tx => {
+      const s = await tx.get(counter); const n = (s.exists ? s.data().count : 0) + 1;
+      const id = `ACK-${year}-${pad5(n)}`;
+      tx.set(counter, {count:n});
+      tx.set(db.collection('career_acks').doc(id), {ackNo:id, jobId:j.id, jobTitle:j.title, fullName:name, email, phone, status:'Started', createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      return id;
+    }), 20000, 'ack-timeout');
+    STATE = {job:j, ack, steps:buildSteps(j), i:0, values:{fullName:name, email, phone}, file:null, skipUpload:false};
+    saveDraft(); showAck();
+  }catch(err){
+    console.error('Ack failed:', err);
+    fe.textContent = isErrPerm(err) ? 'Applications are not open yet. Please try again later.'
+      : err && err.code === 'ack-timeout' ? 'This took too long. Check your internet connection and try again.'
+      : 'We could not create your acknowledgment number. Check your connection and try again.';
+    fe.classList.add('on'); btn.disabled = false; btn.textContent = 'Get acknowledgment number';
+  }
+}
+
+function showAck(){
+  const S = STATE;
+  body.innerHTML = `
+    <div class="ok-badge">Step 1 complete</div>
+    <h2>Your acknowledgment number</h2>
+    <div class="slip big">
+      <div class="main">
+        <small>Acknowledgment number</small>
+        <div class="code">${esc(S.ack)}</div>
+        <div class="role" style="margin-top:14px">${esc(S.job.title)}</div>
+        <small>${esc(S.values.email)}</small>
+      </div>
+      <div class="stub"><small>Next</small><div class="tok" style="font-size:15px;letter-spacing:0">7-page application</div></div>
+    </div>
+    <div class="note">Note this number down. Your application has 7 pages: personal details, education, work experience, role questions, links and resume, about you, and a final declaration. It takes about 25 to 30 minutes. Your answers save on this device as you go, so you can close this window and continue later. On a shared computer, finish in one sitting.</div>
+    <div class="actions"><button class="btn" type="button" id="startBtn">Start application</button><button class="btn ghost" type="button" id="copyAck">Copy number</button></div>`;
+  body.scrollTop = 0;
+  $('#startBtn').addEventListener('click', () => renderStep());
+  $('#copyAck').addEventListener('click', async e => { try{ await navigator.clipboard.writeText(S.ack); e.target.textContent = 'Copied'; }catch{ e.target.textContent = 'Copy failed'; } });
+}
+
+/* ---------- rendering a page ---------- */
+function fieldHTML(f, S){
+  if(f.type === 'head') return `<h3 class="subhead">${esc(f.label)}</h3>`;
+  if(f.type === 'note') return `<p class="hint full" style="grid-column:1/-1;margin:-6px 0 6px">${esc(f.label)}</p>`;
+  const v = S.values[f.id], id = 'ff_' + f.id;
+  const hide = visible(f, S.values) ? '' : ' hide';
+  const wrap = (inner, labelHTML = true) => `<div class="grp${f.half ? '' : ' full'}${hide}" data-f="${f.id}">${labelHTML ? `<label class="lb" for="${id}">${esc(f.label)}${f.req ? '' : ' <i>(optional)</i>'}</label>` : ''}${inner}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ''}<div class="err">This field is required.</div></div>`;
+  const val = esc(v != null && v !== '' ? v : (f.def || ''));
+  const inputAttrs = `class="in" id="${id}" ${f.max ? `maxlength="${f.max}"` : ''} ${f.ph ? `placeholder="${esc(f.ph)}"` : ''} ${f.ro ? 'readonly' : ''}`;
+  switch(f.type){
+    case 'textarea': {
+      const n = (v || '').length;
+      return wrap(`<textarea ${inputAttrs} rows="${f.max > 700 ? 7 : f.max > 300 ? 5 : 3}">${esc(v || '')}</textarea><div class="count"><span data-cnt="${f.id}">${n}</span> / ${f.max}${f.min ? ` (write at least ${f.min})` : ''}</div>`);
+    }
+    case 'select':
+      return wrap(`<select ${inputAttrs}><option value="">Select</option>${f.opts.map(o => `<option${o === v ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select>`);
+    case 'radio':
+      return wrap(`<div class="opts" id="${id}">${f.opts.map(o => `<label class="opt"><input type="radio" name="${f.id}" value="${esc(o)}"${o === v ? ' checked' : ''}>${esc(o)}</label>`).join('')}</div>`);
+    case 'multi':
+      return wrap(`<div class="opts" id="${id}">${f.opts.map(o => `<label class="opt"><input type="checkbox" name="${f.id}" value="${esc(o)}"${(v || []).includes(o) ? ' checked' : ''}>${esc(o)}</label>`).join('')}</div>`);
+    case 'rating':
+      return `<div class="grp full skillrow${hide}" data-f="${f.id}"><div><span class="lb" style="margin:0">${esc(f.label)}</span><div class="err">Rate this skill from 1 to 5.</div></div><div class="rate">${[1,2,3,4,5].map(n => `<label class="opt"><input type="radio" name="${f.id}" value="${n}"${String(v) === String(n) ? ' checked' : ''}>${n}</label>`).join('')}</div></div>`;
+    case 'checkbox':
+      return `<div class="grp full${hide}" data-f="${f.id}"><label class="check"><input type="checkbox" id="${id}"${v ? ' checked' : ''}><span>${esc(f.label)}</span></label><div class="err">Please tick this box to continue.</div></div>`;
+    case 'file':
+      return wrap(`<input class="in" type="file" id="${id}" accept="application/pdf,.pdf"><div class="hint" id="fileNote">${S.file ? 'Selected: ' + esc(S.file.name) + ' (' + Math.round(S.file.size / 1024) + ' KB)' : 'No file selected.'}</div>`);
+    case 'number':
+      return wrap(`<input ${inputAttrs} type="number" inputmode="decimal" min="${f.lo ?? 0}" max="${f.hi ?? ''}" step="${f.step || 1}" value="${val}">`);
+    default:
+      return wrap(`<input ${inputAttrs} type="${f.type}" value="${val}"${f.id === 'dob' ? ` max="${new Date().toISOString().slice(0, 10)}"` : ''}>`);
+  }
+}
+
+function renderStep(){
+  const S = STATE, st = S.steps[S.i], total = S.steps.length, last = S.i === total - 1;
+  if(st.id === 'final' && !S.values.signDate) S.values.signDate = new Date().toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+  body.innerHTML = `
+    <div class="stepmeta">${esc(S.job.title)} | ${esc(S.ack)}</div>
+    <div class="prog" role="progressbar" aria-valuemin="1" aria-valuemax="${total}" aria-valuenow="${S.i + 1}" aria-label="Application progress">${S.steps.map((_, i) => `<i class="${i <= S.i ? 'on' : ''}"></i>`).join('')}</div>
+    <div class="stepmeta">Page ${S.i + 1} of ${total}</div>
+    <h2 style="margin-top:6px">${esc(st.title)}</h2>
+    <p class="intro">${esc(st.intro)}</p>
+    <form id="stepForm" novalidate>
+      <div class="fgrid">${st.fields.map(f => fieldHTML(f, S)).join('')}</div>
+      <div class="formerr" id="stepErr" role="alert"></div>
+      <div class="nav-row">
+        <button class="btn ghost" type="button" id="prevBtn" ${S.i === 0 ? 'style="visibility:hidden"' : ''}>Back</button>
+        <span class="saved" id="savedNote"></span>
+        <button class="btn" type="submit" id="nextBtn">${last ? 'Submit application' : 'Next page'}</button>
+      </div>
+    </form>`;
+  body.scrollTop = 0;
+  const form = $('#stepForm');
+  form.addEventListener('input', onChange); form.addEventListener('change', onChange);
+  const fi = $('#ff_resume'); if(fi) fi.addEventListener('change', () => { S.file = fi.files[0] || null; $('#fileNote').textContent = S.file ? 'Selected: ' + S.file.name + ' (' + Math.round(S.file.size / 1024) + ' KB)' : 'No file selected.'; });
+  $('#prevBtn').addEventListener('click', () => { readStep(); S.i--; saveDraft(); renderStep(); });
+  form.addEventListener('submit', e => { e.preventDefault(); if(!validateStep()) return; if(last){ submitApp(); } else { S.i++; saveDraft(); renderStep(); } });
+}
+
+function readStep(){
+  const S = STATE, st = S.steps[S.i];
+  st.fields.forEach(f => {
+    if(!f.id || skipTypes.includes(f.type)) return;
+    const w = body.querySelector(`[data-f="${f.id}"]`); if(!w) return;
+    if(f.type === 'radio' || f.type === 'rating'){ const c = w.querySelector('input:checked'); S.values[f.id] = c ? c.value : ''; }
+    else if(f.type === 'multi'){ S.values[f.id] = [...w.querySelectorAll('input:checked')].map(x => x.value); }
+    else if(f.type === 'checkbox'){ S.values[f.id] = w.querySelector('input').checked; }
+    else { S.values[f.id] = w.querySelector('.in').value; }
+  });
+}
+function onChange(e){
+  readStep();
+  const S = STATE, st = S.steps[S.i];
+  st.fields.forEach(f => { if(f.showIf){ const w = body.querySelector(`[data-f="${f.id}"]`); if(w) w.classList.toggle('hide', !visible(f, S.values)); } });
+  if(e.target.matches('textarea')){ const c = body.querySelector(`[data-cnt="${e.target.id.slice(3)}"]`); if(c) c.textContent = e.target.value.length; }
+  const g = e.target.closest('.grp'); if(g) g.classList.remove('bad');
+  clearTimeout(onChange.t); onChange.t = setTimeout(saveDraft, 400);
+}
+
+/* ---------- validation ---------- */
+function checkField(f, val){
+  const empty = val == null || val === '' || val === false || (Array.isArray(val) && !val.length);
+  if(empty){
+    if(!f.req) return '';
+    if(f.type === 'checkbox') return 'Please tick this box to continue.';
+    if(['radio','select','multi'].includes(f.type)) return 'Please choose an option.';
+    if(f.type === 'rating') return 'Rate this skill from 1 to 5.';
+    return 'This field is required.';
+  }
+  const s = typeof val === 'string' ? val.trim() : '';
+  if(f.type === 'email' && !EMAIL_RE.test(s)) return 'Enter a valid email address.';
+  if(f.type === 'tel'){ const d = s.replace(/\D/g, ''); if(d.length < 10 || d.length > 15) return 'Enter a valid phone number (10 to 15 digits).'; }
+  if(f.type === 'url' && !isUrl(s)) return 'Enter a full link starting with https://';
+  if(f.type === 'number'){ const n = parseFloat(s), lo = f.lo ?? 0, hi = f.hi ?? 9999999; if(isNaN(n) || n < lo || n > hi) return `Enter a number between ${lo} and ${hi}.`; }
+  if(f.type === 'date'){
+    const d = new Date(s); if(isNaN(d)) return 'Enter a valid date.';
+    if(f.id === 'dob'){ const age = (Date.now() - d) / 31557600000; if(age < 18) return 'You must be at least 18 years old to apply.'; if(age > 80) return 'Check the date of birth.'; }
+    if(f.id === 'joinDate' && d < new Date(new Date().toDateString())) return 'Choose today or a future date.';
+  }
+  if(f.min && s.length < f.min) return `Write at least ${f.min} characters (you have ${s.length}).`;
+  if(f.pattern && !f.pattern.test(s)) return f.patErr || 'Check this value.';
+  return '';
+}
+function validateStep(){
+  readStep();
+  const S = STATE, st = S.steps[S.i], v = S.values; let first = null;
+  body.querySelectorAll('.grp.bad').forEach(g => g.classList.remove('bad'));
+  const bad = (id, msg) => { const w = body.querySelector(`[data-f="${id}"]`); if(!w) return; w.classList.add('bad'); const e = w.querySelector('.err'); if(e && msg) e.textContent = msg; first = first || w; };
+  st.fields.forEach(f => {
+    if(!f.id || f.type === 'file' || !visible(f, v)) return;
+    const m = checkField(f, v[f.id]); if(m) bad(f.id, m);
+  });
+  if(st.id === 'work'){
+    const n = parseFloat(v.totalExp);
+    if(!isNaN(n) && n < S.job.minExp) bad('totalExp', `This role needs at least ${S.job.minExp} year${S.job.minExp > 1 ? 's' : ''} of experience. Check our other open roles.`);
+    if(!isNaN(n) && !isNaN(parseFloat(v.relevantExp)) && parseFloat(v.relevantExp) > n) bad('relevantExp', 'Years in this field cannot be more than total experience.');
+  }
+  if(st.id === 'links'){
+    const f = S.file, rl = (v.resumeLink || '').trim();
+    if(f && f.type !== 'application/pdf' && !/\.pdf$/i.test(f.name)) bad('resume', 'Resume must be a PDF file.');
+    else if(f && f.size > 3 * 1024 * 1024) bad('resume', 'Resume is larger than 3 MB. Upload a smaller PDF or paste a link.');
+    else if(!f && !rl) bad('resume', 'Upload a PDF resume or paste a resume link below.');
+  }
+  if(st.id === 'final'){
+    const norm = s => (s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    if(v.signName && norm(v.signName) !== norm(v.fullName)) bad('signName', 'Type your name exactly as you entered it on page 1: ' + v.fullName);
+    if(v.rightToWork === 'No') bad('rightToWork', 'You need to be legally eligible to work in India to apply for this role.');
+  }
+  const fe = $('#stepErr');
+  if(first){
+    fe.textContent = 'Some answers need your attention. Fix the highlighted fields to continue.'; fe.classList.add('on');
+    first.scrollIntoView({behavior:'smooth', block:'center'});
+    const inp = first.querySelector('input,select,textarea'); if(inp) inp.focus({preventScroll:true});
+    return false;
+  }
+  fe.classList.remove('on'); return true;
+}
+
+/* ---------- final submit ---------- */
+function uploadResume(file, path, onProgress){
+  return new Promise((resolve, reject) => {
+    const task = storage.ref(path).put(file, {contentType:'application/pdf'});
+    let timer; const arm = () => { clearTimeout(timer); timer = setTimeout(() => { task.cancel(); reject(Object.assign(new Error('upload stalled'), {code:'upload-stalled'})); }, 20000); };
+    arm(); let last = 0;
+    task.on('state_changed', s => { if(s.bytesTransferred !== last){ last = s.bytesTransferred; arm(); } onProgress(Math.round(100 * s.bytesTransferred / s.totalBytes)); },
+      err => { clearTimeout(timer); reject(err); }, () => { clearTimeout(timer); resolve(path); });
+  });
+}
+
+async function submitApp(){
+  const S = STATE, j = S.job, v = S.values;
+  const btn = $('#nextBtn'), fe = $('#stepErr'); fe.classList.remove('on'); fe.innerHTML = '';
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  const tokenNo = makeToken(), email = normEmail(v.email);
+  let resumePath = '', resumeName = S.file ? S.file.name.slice(0, 120) : '', resumeStatus = 'link';
 
   try{
-    // 1) optional resume upload
-    let resumePath = '', resumeName = '';
-    const file = $('#f_resume').files[0];
-    if(file){
-      btn.textContent = 'Uploading resume…';
+    if(S.file && !S.skipUpload){
       resumePath = `career_resumes/${normToken(tokenNo)}-${Date.now()}.pdf`;
-      resumeName = file.name.slice(0, 120);
-      await storage.ref(resumePath).put(file, {contentType:'application/pdf'});
-      btn.textContent = 'Submitting…';
-    }
+      btn.textContent = 'Uploading resume 0%';
+      try{ await uploadResume(S.file, resumePath, p => { btn.textContent = `Uploading resume ${p}%`; }); resumeStatus = 'uploaded'; }
+      catch(upErr){ console.error('Resume upload failed:', upErr); resumePath = ''; uploadFailed(upErr); return; }
+    } else if(S.file && S.skipUpload){ resumeStatus = 'upload_failed'; }
+    btn.textContent = 'Saving application...';
 
-    const [tokenHash, emailHash] = await Promise.all([sha256(normToken(tokenNo)), sha256(email)]);
-    const answers = {}; j.questions.forEach(q => { answers[q.id] = {question:q.label, answer:v(q.id)}; });
-    const counterRef = db.collection('career_counters').doc('applications');
-    const year = new Date().getFullYear();
-
-    // 2) sequential reference number + application + public status doc, atomically
-    const refNo = await db.runTransaction(async tx => {
-      const snap = await tx.get(counterRef);
-      const next = (snap.exists ? snap.data().count : 0) + 1;
-      const ref = `NXR-${year}-${String(next).padStart(5, '0')}`;
-      tx.set(counterRef, {count: next});
-      tx.set(db.collection('career_applications').doc(ref), {
-        refNo: ref, tokenNo, tokenHash,
-        jobId: j.id, jobTitle: j.title, dept: j.dept,
-        fullName: v('fullName'), email, phone: v('phone'), city: v('city'),
-        experienceYears: parseFloat(v('experience')), availability: v('notice'),
-        organization: v('org'), link: v('link'),
-        resumeLink: v('resumeLink'), resumePath, resumeName,
-        answers, status: 'Received',
-        appliedAt: firebase.firestore.FieldValue.serverTimestamp()
+    const data = {}, sections = [];
+    S.steps.forEach(st => {
+      const items = [];
+      st.fields.forEach(f => {
+        if(!f.id || skipTypes.includes(f.type) || !visible(f, v)) return;
+        let x = v[f.id]; if(x === '' || x == null || x === false || (Array.isArray(x) && !x.length)) return;
+        if(f.type === 'multi') x = x.join(', '); else if(f.type === 'checkbox') x = 'Yes'; else if(f.type === 'rating') x = x + ' / 5'; else x = String(x).trim();
+        data[f.id] = {l:f.label, v:x}; items.push({l:f.label, v:x, long:f.type === 'textarea'});
       });
-      tx.set(db.collection('career_status').doc(ref), {
-        refNo: ref, jobTitle: j.title, status: 'Received',
-        tokenHash, emailHash,
-        appliedAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      return ref;
+      sections.push({title:st.title, items});
     });
 
-    const rec = {refNo, tokenNo, jobTitle:j.title, dept:j.dept, location:j.location, type:j.type,
-      fullName:v('fullName'), email, phone:v('phone'), city:v('city'), experienceYears:v('experience'),
-      availability:v('notice'), organization:v('org'), link:v('link'), resumeName, resumeLink:v('resumeLink'),
-      answers, appliedAt:new Date()};
-    showSuccess(j, rec);
+    const [tokenHash, emailHash] = await Promise.all([sha256(normToken(tokenNo)), sha256(email)]);
+    const counter = db.collection('career_counters').doc('applications'), year = new Date().getFullYear();
+    const refNo = await withTimeout(db.runTransaction(async tx => {
+      const snap = await tx.get(counter); const n = (snap.exists ? snap.data().count : 0) + 1;
+      const ref = `NXR-${year}-${pad5(n)}`;
+      tx.set(counter, {count:n});
+      tx.set(db.collection('career_applications').doc(ref), {
+        refNo:ref, ackNo:S.ack, tokenNo, tokenHash, jobId:j.id, jobTitle:j.title, dept:j.dept,
+        fullName:v.fullName.trim(), email, phone:v.phone.trim(), city:(v.city || '').trim(),
+        experienceYears:parseFloat(v.totalExp), availability:v.notice,
+        resumeStatus, resumePath, resumeName, resumeLink:(v.resumeLink || '').trim(),
+        data, status:'Received', appliedAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+      tx.set(db.collection('career_status').doc(ref), {refNo:ref, jobTitle:j.title, status:'Received', tokenHash, emailHash, appliedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      return ref;
+    }), 25000, 'save-timeout');
+
+    clearDraft();
+    const rec = {refNo, ackNo:S.ack, tokenNo, jobTitle:j.title, dept:j.dept, location:j.location, type:j.type,
+      fullName:v.fullName.trim(), email, phone:v.phone.trim(), resumeStatus, resumeName, resumeLink:(v.resumeLink || '').trim(), sections, appliedAt:new Date()};
+    STATE = null; showSuccess(j, rec);
   }catch(err){
     console.error('Application failed:', err);
-    let msg = 'We could not submit your application. Check your connection and try again.';
-    if(err && err.code === 'permission-denied' || (err && /unauthorized/.test(err.code || ''))) msg = 'Submissions are not enabled yet. Please try again later or contact the hiring team.';
-    fe.textContent = msg; fe.classList.add('on');
-    btn.disabled = false; btn.textContent = 'Submit application';
+    fe.textContent = isErrPerm(err) ? 'Submissions are not enabled yet. Your answers are saved on this device. Please try again later.'
+      : err && err.code === 'save-timeout' ? 'Saving took too long. Your answers are safe on this device. Check your connection and press Submit again.'
+      : 'We could not submit your application. Your answers are saved on this device. Check your connection and press Submit again.';
+    fe.classList.add('on'); btn.disabled = false; btn.textContent = 'Submit application';
   }
+}
+
+function uploadFailed(err){
+  const S = STATE, btn = $('#nextBtn'), fe = $('#stepErr');
+  const hasLink = isUrl((S.values.resumeLink || '').trim());
+  const why = isErrPerm(err) ? 'file storage is not enabled for this site yet' : err && err.code === 'upload-stalled' ? 'the upload stalled' : 'the upload did not finish';
+  fe.innerHTML = `Your resume could not be uploaded because ${esc(why)}. Your answers are safe. ` + (hasLink
+    ? `You can try again, or submit without the file and we will use your resume link. <div class="actions" style="margin-top:10px"><button class="btn ghost" type="button" id="skipUp">Submit without the file</button></div>`
+    : `Go back to page 5 and paste a resume link (Google Drive or Dropbox, open to anyone), then submit again. <div class="actions" style="margin-top:10px"><button class="btn ghost" type="button" id="toLinks">Go to page 5</button></div>`);
+  fe.classList.add('on'); btn.disabled = false; btn.textContent = 'Submit application';
+  const sk = $('#skipUp'); if(sk) sk.addEventListener('click', () => { S.skipUpload = true; submitApp(); });
+  const tl = $('#toLinks'); if(tl) tl.addEventListener('click', () => { S.i = S.steps.findIndex(s => s.id === 'links'); saveDraft(); renderStep(); });
 }
 
 function showSuccess(j, rec){
@@ -717,7 +1114,7 @@ function showSuccess(j, rec){
         <small>Reference number</small>
         <div class="code" id="sRef">${esc(refNo)}</div>
         <div class="role" style="margin-top:14px">${esc(j.title)}</div>
-        <small>${esc(email)}</small>
+        <small>Acknowledgment ${esc(rec.ackNo)} | ${esc(email)}</small>
       </div>
       <div class="stub"><small>Token</small><div class="tok" id="sTok">${esc(tokenNo)}</div></div>
     </div>
@@ -726,21 +1123,18 @@ function showSuccess(j, rec){
       <button class="btn ghost" type="button" id="copyBtn">Copy details</button>
       <button class="btn ghost" type="button" id="doneBtn">Done</button>
     </div>
-    <div class="warn">Save your reference number and token now. You need both, plus your email, to check your status later. We do not send an email confirmation, so download the PDF for your records.</div>`;
+    <div class="warn">Save your reference number and token now. You need both, plus your email, to check your status later. We do not send an email confirmation, so download the PDF for your records.</div>
+    ${rec.resumeStatus === 'upload_failed' ? '<div class="warn">Your resume file could not be uploaded. We will use the resume link you provided.</div>' : ''}`;
   body.scrollTop = 0;
-
-  const text = `Nexor Career - Application slip\nReference number: ${refNo}\nToken: ${tokenNo}\nRole: ${j.title}\nEmail: ${email}\nTrack at: ${location.origin}${location.pathname}#track`;
-  $('#copyBtn').addEventListener('click', async e => {
-    try{ await navigator.clipboard.writeText(text); e.target.textContent = 'Copied'; }
-    catch{ e.target.textContent = 'Copy failed. Select the text manually.'; }
-  });
+  const text = `Nexor Career - Application slip\nAcknowledgment number: ${rec.ackNo}\nReference number: ${refNo}\nToken: ${tokenNo}\nRole: ${j.title}\nEmail: ${email}\nTrack at: ${location.origin}${location.pathname}#track`;
+  $('#copyBtn').addEventListener('click', async e => { try{ await navigator.clipboard.writeText(text); e.target.textContent = 'Copied'; }catch{ e.target.textContent = 'Copy failed. Select the text manually.'; } });
   $('#pdfApp').addEventListener('click', async e => {
     const b = e.target; b.disabled = true; b.textContent = 'Preparing PDF...';
-    try{ await applicationPdf(rec); b.textContent = 'Download again'; }
-    catch(err){ console.error(err); b.textContent = 'PDF failed. Try again'; }
+    try{ await applicationPdf(rec); b.textContent = 'Download again'; }catch(err){ console.error(err); b.textContent = 'PDF failed. Try again'; }
     b.disabled = false;
   });
   $('#doneBtn').addEventListener('click', closeDrawer);
+  showDraftBanner();
 }
 
 /* =====================================================================
@@ -857,43 +1251,46 @@ async function applicationPdf(r){
   const P = await newPdf('Application Confirmation',
     'Issued on ' + new Date().toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'}));
   P.h2('Application summary');
-  P.kv([['Reference number', r.refNo], ['Token', r.tokenNo], ['Position', r.jobTitle], ['Team', r.dept],
+  P.kv([['Reference number', r.refNo], ['Token', r.tokenNo], ['Acknowledgment no.', r.ackNo], ['Position', r.jobTitle], ['Team', r.dept],
         ['Location and type', r.location + ', ' + r.type], ['Status', 'Received'],
-        ['Applied on', r.appliedAt.toLocaleString('en-GB', {day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'})]]);
-  P.h2('Applicant details');
-  P.kv([['Full name', r.fullName], ['Email', r.email], ['Phone', r.phone], ['City', r.city],
-        ['Experience', r.experienceYears + ' years'], ['Availability', r.availability],
-        ['Current company or college', r.organization], ['Profile or portfolio link', r.link],
-        ['Resume', r.resumeName ? r.resumeName + ' (uploaded)' : r.resumeLink]]);
-  const qa = Object.values(r.answers).filter(a => a.answer);
-  if(qa.length){
-    P.h2('Your answers');
-    qa.forEach(a => { P.text(a.question, 9.5, true, P.c.INK, 0, .8); P.text(a.answer, 10, false, P.c.MUT, 3, 4); });
-  }
+        ['Applied on', r.appliedAt.toLocaleString('en-GB', {day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'})],
+        ['Resume', r.resumeStatus === 'uploaded' ? r.resumeName + ' (uploaded)' : r.resumeLink ? r.resumeLink : r.resumeName]]);
+  r.sections.forEach((s, i) => {
+    P.h2(`${i + 1}. ${s.title}`);
+    s.items.forEach(it => {
+      if(!it.long && it.l.length <= 28 && it.v.length <= 80){ P.kv([[it.l, it.v]]); }
+      else { P.text(it.l, 9.5, true, P.c.INK, 0, .6); P.text(it.v, 10, false, P.c.MUT, 3, 3.5); }
+    });
+  });
   P.h2('Message from HR');
   P.text(`Dear ${r.fullName.split(' ')[0]},`, 10, false, P.c.INK, 0, 2);
-  P.text(`Thank you for applying for the position of ${r.jobTitle} at Nexor. We have received your application and it has been added to our review queue. Our hiring team reads every application and will update your status as it moves forward.`, 10, false, P.c.INK, 0, 3, .52);
+  P.text(`Thank you for applying for the position of ${r.jobTitle} at Nexor. We have received your complete application and it has been added to our review queue. Our hiring team reads every application and will update your status as it moves forward.`, 10, false, P.c.INK, 0, 3, .52);
   P.text('What happens next', 10, true, P.c.INK, 0, 1);
   ['Application review by the hiring team', 'A short introductory call, if shortlisted', 'A practical task or team conversation', 'Final decision and offer'].forEach(P.bullet);
   P.y += 2;
-  P.text(`To check your status, open the Nexor Career website, go to "Track application" and enter your reference number, token and email address. Please keep this document safe: it is the only record of your token.`, 10, false, P.c.INK, 0, 2, .52);
+  P.text('To check your status, open the Nexor Career website, go to "Track application" and enter your reference number, token and email address. Please keep this document safe: it is the only record of your token.', 10, false, P.c.INK, 0, 2, .52);
   P.sign();
   P.save(`Nexor-Application-${r.refNo}.pdf`);
 }
 
 async function questionsPdf(){
-  const P = await newPdf('Application Questions and Requirements', 'Every question candidates answer, for each open role.');
-  P.h2('Questions asked for every role');
-  ['Full name','Email (also used to track the application)','Phone (WhatsApp preferred)','City','Years of experience (must meet the role minimum)','Availability','Current company or college (optional)','Resume: PDF up to 3 MB, or a resume link','Confirmation that the candidate meets the must-have list'].forEach(P.bullet);
+  const P = await newPdf('Application Questions and Requirements', 'The 7-page application every candidate completes, and the questions for each open role.');
+  P.text('Candidates first get an acknowledgment number (name, email, mobile). They then complete the 7 pages below and receive a reference number, a token and a signed PDF.', 10, false, P.c.INK, 0, 2, .52);
+  buildSteps(JOBS[0]).forEach((st, i) => {
+    P.h2(`Page ${i + 1}: ${st.title}`);
+    if(st.id === 'role'){ P.text('Skill ratings (1 to 5) and the role-specific questions listed further below.', 10, false, P.c.MUT, 0, 2); return; }
+    st.fields.forEach(f => { if(f.id && !skipTypes.includes(f.type) || f.type === 'file') P.bullet(`${f.label}${f.req ? '' : ' (optional)'}`); });
+  });
   JOBS.forEach(j => {
     P.need(48); P.y += 6;
     P.text(j.title, 14, true, P.c.INK, 0, 1);
     P.text(`${j.dept} | ${j.location} | ${j.type} | ${j.minExp ? j.minExp + '+ years' : 'Freshers welcome'}`, 9.5, false, P.c.MUT, 0, 2);
     P.text('Must have', 10.5, true, P.c.ACC, 0, 1); j.must.forEach(P.bullet);
-    P.text('Nice to have', 10.5, true, P.c.ACC, 0.5, 1); j.nice.forEach(P.bullet);
-    P.text('Role-specific fields and questions', 10.5, true, P.c.ACC, 0.5, 1);
+    P.text('Nice to have', 10.5, true, P.c.ACC, 0, 1); j.nice.forEach(P.bullet);
+    P.text('Skills rated 1 to 5', 10.5, true, P.c.ACC, 0, 1); P.bullet(j.skills.join(', '));
+    P.text('Role questions', 10.5, true, P.c.ACC, 0, 1);
     P.bullet(`${j.linkLabel} (${j.linkRequired ? 'required' : 'optional'})`);
-    j.questions.forEach(q => P.bullet(`${q.label} (${q.required ? 'required' : 'optional'})`));
+    j.questions.forEach(q => P.bullet(`${q.label} (${q.req ? 'required' : 'optional'}, ${q.type === 'long' ? 'long answer' : q.type === 'short' ? 'short answer' : 'choice'})`));
   });
   P.sign();
   P.save('Nexor-Career-Questions.pdf');
@@ -955,6 +1352,7 @@ function renderStatus(d){
       <ul class="steps">${steps}</ul>
     </div>`;
 }
+showDraftBanner();
 </script>
 </body>
 </html>
