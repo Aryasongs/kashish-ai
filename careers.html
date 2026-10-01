@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+=== FIREBASE SECURITY RULES (copy into Firebase Console; merge with existing rules, do not replace) ===
+
+--- FIRESTORE RULES ---
+// Add these blocks INSIDE your existing "match /databases/{database}/documents { ... }"
+// (Firestore has one rules file per project, so merge — do not replace — your Nexor Sparks rules.)
+
+match /career_applications/{refNo} {
+  // Applicants can only create. Nobody can read/list/update/delete from the browser.
+  // You read applications in the Firebase Console (admin access bypasses rules).
+  allow create: if request.resource.data.refNo == refNo
+                && request.resource.data.status == 'Received'
+                && request.resource.data.fullName is string
+                && request.resource.data.fullName.size() < 120
+                && request.resource.data.email is string
+                && request.resource.data.email.size() < 130
+                && request.resource.data.tokenNo is string
+                && request.resource.data.tokenNo.size() == 9;
+  allow read, update, delete: if false;
+}
+
+match /career_status/{refNo} {
+  // Tracking page reads ONE doc by exact reference number; listing is blocked.
+  // Change "status" in the Firebase Console to update what candidates see.
+  allow get: if true;
+  allow list: if false;
+  allow create: if request.resource.data.status == 'Received';
+  allow update, delete: if false;
+}
+
+match /career_counters/{id} {
+  allow read: if id == 'applications';
+  allow create: if id == 'applications' && request.resource.data.count == 1;
+  allow update: if id == 'applications'
+                && request.resource.data.count == resource.data.count + 1;
+  allow delete: if false;
+}
+
+--- STORAGE RULES ---
+// Add inside your existing "match /b/{bucket}/o { ... }" block.
+match /career_resumes/{file} {
+  allow create: if request.resource.size < 3 * 1024 * 1024
+                && request.resource.contentType == 'application/pdf';
+  allow read, update, delete: if false;   // view resumes from the Firebase Console
+}
+
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nexor Career — Open roles at Nexor</title>
+<meta name="description" content="Join Nexor. Browse open roles, apply in a few minutes and track your application with a reference number and token.">
+<meta name="theme-color" content="#0B0F1A">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23050A14'/%3E%3Cpath d='M7 2v11h3v9l7-12h-4l4-8z' fill='%2300C8FF'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=DM+Sans:wght@400;500;600&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#0B0F1A;
+  --panel:#121828;
+  --panel-2:#171E32;
+  --line:#242D47;
+  --text:#E9EDF7;
+  --muted:#97A3C1;
+  --accent:#00C8FF;
+  --accent-ink:#031821;
+  --violet:#8B5CF6;
+  --ok:#34D399;
+  --bad:#F87171;
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'DM Sans',system-ui,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:rgba(11,15,26,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.01em}
+.brand svg{width:30px;height:30px}
+.brand span{color:var(--muted);font-weight:500}
+.nav{display:flex;gap:6px}
+.nav a{padding:8px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:500;font-size:15px}
+.nav a:hover{color:var(--text);background:var(--panel)}
+
+/* hero */
+.hero{padding:72px 0 56px}
+.hero .wrap{display:grid;grid-template-columns:1.25fr .9fr;gap:56px;align-items:center}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(38px,6vw,68px);line-height:1.02;letter-spacing:-.03em;max-width:12ch}
+.lead{margin-top:22px;color:var(--muted);font-size:18px;max-width:46ch}
+.hero-actions{margin-top:32px;display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:12px;border:1px solid transparent;background:var(--accent);color:var(--accent-ink);font-weight:600;cursor:pointer;text-decoration:none;transition:transform .12s,background .12s}
+.btn:hover{background:#33d4ff}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--text)}
+.btn.ghost:hover{background:var(--panel)}
+.btn[disabled]{opacity:.6;cursor:progress}
+
+/* the application slip (the memorable element) */
+.slip{position:relative;display:grid;grid-template-columns:1fr 128px;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.slip .main{padding:22px 22px 22px 24px}
+.slip .stub{padding:22px 16px;border-left:2px dashed var(--line);background:var(--panel-2);display:flex;flex-direction:column;justify-content:center;gap:4px}
+.slip::before,.slip::after{content:"";position:absolute;right:112px;width:20px;height:20px;border-radius:50%;background:var(--ink);border:1px solid var(--line)}
+.slip::before{top:-11px}
+.slip::after{bottom:-11px}
+.slip small{display:block;color:var(--muted);font-size:13px}
+.slip .code{font-family:var(--mono);font-size:clamp(17px,2.4vw,22px);font-weight:600;color:var(--accent);letter-spacing:.02em;word-break:break-all}
+.slip .role{font-family:var(--display);font-size:21px;font-weight:700;margin:2px 0 14px;letter-spacing:-.01em}
+.slip .tok{font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:.06em}
+.slip .sample-note{margin-top:14px;font-size:13px;color:var(--muted)}
+
+/* roles */
+.roles{padding:24px 0 80px}
+.roles-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+h2{font-family:var(--display);font-size:clamp(26px,3.4vw,36px);letter-spacing:-.02em;line-height:1.1}
+.filters{display:flex;gap:10px;flex-wrap:wrap}
+.field-inline{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 14px;min-width:0}
+.field-inline:focus{outline:2px solid var(--accent);outline-offset:1px}
+select.field-inline{padding-right:30px}
+.list{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:1.5fr 1fr 1fr 120px;gap:16px;align-items:center;padding:22px 8px;border-bottom:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left;cursor:pointer;color:inherit}
+.row:hover{background:var(--panel)}
+.row h3{font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:-.01em}
+.row p{color:var(--muted);font-size:14px}
+.row .where{color:var(--text);font-size:15px}
+.row .go{justify-self:end;color:var(--accent);font-weight:600;font-size:15px}
+.empty{padding:48px 8px;color:var(--muted)}
+
+/* track */
+.track{padding:64px 0 88px;background:var(--panel);border-block:1px solid var(--line)}
+.track .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.track p.sub{color:var(--muted);margin-top:12px;max-width:44ch}
+form .grp{margin-bottom:16px}
+label.lb{display:block;font-weight:500;font-size:14px;margin-bottom:6px}
+label.lb i{font-style:normal;color:var(--muted);font-weight:400}
+.in{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.in:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+textarea.in{min-height:96px;resize:vertical}
+.hint{font-size:13px;color:var(--muted);margin-top:5px}
+.err{display:none;font-size:13px;color:var(--bad);margin-top:5px}
+.grp.bad .err{display:block}
+.grp.bad .in{border-color:var(--bad)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.result{margin-top:22px;border:1px solid var(--line);border-radius:14px;padding:20px;background:var(--ink)}
+.result h4{font-family:var(--display);font-size:19px}
+.steps{list-style:none;margin-top:16px;display:grid;gap:0}
+.steps li{position:relative;padding:0 0 18px 28px;color:var(--muted);font-size:15px}
+.steps li::before{content:"";position:absolute;left:3px;top:6px;width:10px;height:10px;border-radius:50%;border:2px solid var(--line);background:var(--ink)}
+.steps li::after{content:"";position:absolute;left:7px;top:18px;bottom:0;width:2px;background:var(--line)}
+.steps li:last-child{padding-bottom:0}
+.steps li:last-child::after{display:none}
+.steps li.done{color:var(--text)}
+.steps li.done::before{background:var(--accent);border-color:var(--accent)}
+.steps li.now{color:var(--text);font-weight:600}
+.steps li.now::before{background:var(--ink);border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,200,255,.18)}
+.steps li.stop::before{background:var(--bad);border-color:var(--bad)}
+
+/* footer */
+footer{padding:34px 0;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(3,6,14,.66);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(720px,100%);background:var(--ink);border-left:1px solid var(--line);z-index:50;transform:translateX(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.d-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
+.d-head button{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}
+.d-body{flex:1;overflow-y:auto;padding:28px 24px 48px;overscroll-behavior:contain}
+.d-body h2{font-size:clamp(26px,4vw,34px)}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 6px}
+.tag{padding:5px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line);font-size:13px;color:var(--muted)}
+.sec{margin-top:30px}
+.sec h3{font-family:var(--display);font-size:18px;margin-bottom:10px}
+.sec p{color:var(--muted)}
+.sec ul{list-style:none;display:grid;gap:9px}
+.sec li{position:relative;padding-left:20px;color:var(--text)}
+.sec li::before{content:"";position:absolute;left:2px;top:.7em;width:7px;height:7px;border-radius:2px;background:var(--accent)}
+.sec.nice li::before{background:var(--violet)}
+.sticky-apply{position:sticky;bottom:0;margin:36px -24px -48px;padding:16px 24px;background:linear-gradient(0deg,var(--ink) 70%,transparent);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.sticky-apply span{color:var(--muted);font-size:14px}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:14px;color:var(--muted);margin-bottom:22px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.check input{margin-top:5px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.formerr{display:none;margin-top:14px;padding:12px 14px;border-radius:10px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.4);color:#fecaca;font-size:14px}
+.formerr.on{display:block}
+.back{background:none;border:0;color:var(--accent);cursor:pointer;font-weight:600;margin-bottom:16px;padding:0}
+
+/* success */
+.ok-badge{display:inline-flex;align-items:center;gap:8px;color:var(--ok);font-weight:600;margin-bottom:10px}
+.slip.big{margin:22px 0}
+.slip.big .code{font-size:clamp(20px,3.6vw,28px)}
+.slip.big .tok{font-size:22px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.warn{margin-top:18px;font-size:14px;color:#fde68a;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.35);padding:12px 14px;border-radius:10px}
+
+@media (max-width:860px){
+  .hero{padding-top:44px}
+  .hero .wrap,.track .wrap{grid-template-columns:1fr;gap:36px}
+  .row{grid-template-columns:1fr auto;gap:6px 12px;padding:18px 4px}
+  .row .col2,.row .col3{grid-column:1;font-size:14px}
+  .row .go{grid-column:2;grid-row:1}
+  .two{grid-template-columns:1fr}
+  .slip{grid-template-columns:1fr 104px}
+  .slip::before,.slip::after{right:88px}
+  .nav a{padding:8px 10px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Nexor Career home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#050A14"/><path d="M7 2v11h3v9l7-12h-4l4-8z" fill="#00C8FF"/></svg>
+      Nexor <span>Career</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#roles">Open roles</a>
+      <a href="#track">Track application</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Build the apps people open every day.</h1>
+        <p class="lead">Nexor is a small, remote-first team shipping Nexor Sparks and what comes next. Pick a role, apply in about five minutes, and follow your application with a reference number.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#roles">See <span id="roleCount">6</span> open roles</a>
+          <a class="btn ghost" href="#track">Track an application</a>
+        </div>
+      </div>
+      <aside aria-label="Sample application slip">
+        <div class="slip">
+          <div class="main">
+            <small>Reference number</small>
+            <div class="code">NXR-2026-00042</div>
+            <div class="role" style="margin-top:14px">Frontend Engineer</div>
+            <small>Received</small>
+            <p class="sample-note">You get a slip like this after you apply. Keep it to track your status.</p>
+          </div>
+          <div class="stub">
+            <small>Token</small>
+            <div class="tok">K7QM-4TX9</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="roles" id="roles">
+    <div class="wrap">
+      <div class="roles-head">
+        <h2>Open roles</h2>
+        <div class="filters">
+          <input id="q" class="field-inline" type="search" placeholder="Search roles" aria-label="Search roles">
+          <select id="dept" class="field-inline" aria-label="Filter by team">
+            <option value="">All teams</option>
+          </select>
+        </div>
+      </div>
+      <div class="list" id="list"></div>
+    </div>
+  </section>
+
+  <section class="track" id="track">
+    <div class="wrap">
+      <div>
+        <h2>Track your application</h2>
+        <p class="sub">Enter the reference number and token from your slip, along with the email you applied with.</p>
+      </div>
+      <div>
+        <form id="trackForm" novalidate>
+          <div class="grp" data-f="ref">
+            <label class="lb" for="t_ref">Reference number</label>
+            <input class="in" id="t_ref" placeholder="NXR-2026-00042" autocomplete="off" autocapitalize="characters">
+            <div class="err">Enter a reference number like NXR-2026-00042.</div>
+          </div>
+          <div class="grp" data-f="token">
+            <label class="lb" for="t_tok">Token</label>
+            <input class="in" id="t_tok" placeholder="K7QM-4TX9" autocomplete="off" autocapitalize="characters">
+            <div class="err">Enter the 8-character token from your slip.</div>
+          </div>
+          <div class="grp" data-f="email">
+            <label class="lb" for="t_email">Email used to apply</label>
+            <input class="in" id="t_email" type="email" placeholder="you@example.com" autocomplete="email">
+            <div class="err">Enter a valid email address.</div>
+          </div>
+          <button class="btn" id="trackBtn" type="submit">Check status</button>
+          <div class="formerr" id="trackErr" role="alert"></div>
+        </form>
+        <div id="trackOut"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr"></span> Nexor. All rights reserved.</span>
+    <button type="button" id="pdfBtn" style="background:none;border:0;color:var(--accent);cursor:pointer;font-weight:600">Download application questions (PDF)</button>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" aria-hidden="true">
+  <div class="d-head">
+    <strong id="dCrumb">Role</strong>
+    <button type="button" id="dClose">Close</button>
+  </div>
+  <div class="d-body" id="dBody"></div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script>
+/* =====================================================================
+   1) FIREBASE CONFIG
+   Pre-filled from your Nexor Sparks project. Replace with a separate
+   project's config if you want careers data kept apart from Sparks.
+   Data is stored ONLY in these collections:
+     career_applications, career_status, career_counters
+   and resumes in Storage under: career_resumes/
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyC30TcmMVhP_8HdFYS1WufRiZwSDYNMTF0",
+  authDomain: "pulse2-92372.firebaseapp.com",
+  projectId: "pulse2-92372",
+  storageBucket: "pulse2-92372.firebasestorage.app",
+  messagingSenderId: "276235725177",
+  appId: "1:276235725177:web:0f4e0789fae80a435927a8"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+/* =====================================================================
+   2) JOBS  — edit freely. Each job controls its own apply requirements:
+   minExp        minimum years of experience (0 = freshers welcome)
+   must / nice   requirement lists shown to candidates
+   linkLabel     label of the portfolio/profile field
+   linkRequired  whether that link is mandatory
+   questions     screening questions asked in the form
+   ===================================================================== */
+const JOBS = [
+  {
+    id:"frontend-engineer", title:"Frontend Engineer", dept:"Engineering",
+    location:"Remote (India)", type:"Full-time", minExp:2,
+    summary:"Own the web experience of Nexor Sparks: feeds, profiles, chat and the interactions in between.",
+    about:"You will build fast, accessible interfaces for a social app used on phones first. You will work directly with design and backend, ship weekly, and care about how the product feels at 60 fps on a mid-range device.",
+    does:["Build and maintain features in vanilla JS and modern frameworks","Turn designs into responsive, accessible screens","Profile and improve load time, scrolling and animation performance","Write clear code and review teammates' work"],
+    must:["2+ years building production web apps with JavaScript","Strong HTML, CSS and responsive layout skills","Experience calling REST or Firebase APIs","A public GitHub profile or live project we can open"],
+    nice:["React or Vue experience","Firebase Auth / Firestore experience","PWA and offline caching knowledge"],
+    linkLabel:"GitHub or live project link", linkRequired:true,
+    questions:[
+      {id:"q1", label:"Describe a UI you built that you're proud of. What was hard about it?", required:true},
+      {id:"q2", label:"How would you make a long, infinite-scrolling feed feel fast?", required:false}
+    ]
+  },
+  {
+    id:"backend-engineer", title:"Backend Engineer (Firebase & Node.js)", dept:"Engineering",
+    location:"Remote (India)", type:"Full-time", minExp:2,
+    summary:"Design the data, rules and cloud functions that keep Sparks secure, cheap to run and quick.",
+    about:"You will model data in Firestore and Realtime Database, write security rules, build Cloud Functions, and keep costs predictable as usage grows.",
+    does:["Design data models and indexes for feeds, follows and chat","Write and test Firestore / Storage security rules","Build Cloud Functions in Node.js","Monitor cost, errors and abuse, then fix the cause"],
+    must:["2+ years of backend experience with Node.js","Hands-on Firebase (Firestore or Realtime Database)","Understanding of authentication and security rules","Comfort reading logs and debugging in production"],
+    nice:["Cloud Functions at scale","Rate limiting and abuse prevention","Experience with push notifications"],
+    linkLabel:"GitHub or project link", linkRequired:false,
+    questions:[
+      {id:"q1", label:"How would you stop one user from reading another user's private data in Firestore?", required:true},
+      {id:"q2", label:"Tell us about a bug you only found in production.", required:false}
+    ]
+  },
+  {
+    id:"product-designer", title:"Product Designer (UI/UX)", dept:"Design",
+    location:"Remote (India)", type:"Full-time", minExp:1,
+    summary:"Shape how Nexor looks and behaves, from first sign-up to the tenth Pulse of the day.",
+    about:"You will run the design process end to end: research, flows, high-fidelity screens and handoff. You will work closely with engineers so what ships matches what you designed.",
+    does:["Design mobile-first flows and polished UI","Create and maintain the Nexor design system","Test designs with real users and iterate","Hand off clear specs to engineering"],
+    must:["1+ year of product or UI/UX design experience","Fluent in Figma","A portfolio with at least 2 shipped or realistic case studies","Good eye for typography, spacing and color"],
+    nice:["Motion design in Figma or After Effects","Experience designing social or chat products","Basic HTML/CSS knowledge"],
+    linkLabel:"Portfolio link", linkRequired:true,
+    questions:[
+      {id:"q1", label:"Pick one app you use daily. What would you change and why?", required:true}
+    ]
+  },
+  {
+    id:"community-moderator", title:"Community Moderator", dept:"Community",
+    location:"Remote (India)", type:"Part-time", minExp:0,
+    summary:"Keep Sparks welcoming by reviewing reports and responding to users with good judgement.",
+    about:"You will review reported content, enforce community guidelines fairly, and help users who write in. Shifts are flexible but we need coverage across evenings and weekends.",
+    does:["Review reports and take action following the guidelines","Reply to user questions politely and clearly","Flag trends and repeat offenders to the team","Suggest improvements to the guidelines"],
+    must:["Fluent written English and Hindi","Calm, fair judgement when handling sensitive content","Able to work at least 20 hours a week, including evenings or weekends","Own phone or laptop with a stable internet connection"],
+    nice:["Prior moderation or customer support experience","Knowledge of other regional languages"],
+    linkLabel:"LinkedIn or profile link (optional)", linkRequired:false,
+    questions:[
+      {id:"q1", label:"A popular user posts something borderline, and reports are coming in. What do you do?", required:true}
+    ]
+  },
+  {
+    id:"content-intern", title:"Content & Social Media Intern", dept:"Marketing",
+    location:"Remote (India)", type:"Internship", minExp:0,
+    summary:"Write posts, make short videos and help grow Nexor's voice on social platforms.",
+    about:"A 3-month paid internship for students and fresh graduates. You will draft captions, edit short videos and track what performs, with a mentor reviewing your work each week.",
+    does:["Draft posts and captions for Nexor's social accounts","Edit short vertical videos","Track post performance in a simple weekly report","Join content brainstorms and bring ideas"],
+    must:["Currently studying or recently graduated","Strong written English or Hindi","Active on at least two social platforms","Able to commit 20+ hours a week for 3 months"],
+    nice:["Basic video editing (CapCut, Premiere or similar)","Canva or Figma basics"],
+    linkLabel:"Link to your best post, reel or writing sample", linkRequired:false,
+    questions:[
+      {id:"q1", label:"Share one post or video you admire and say why it works.", required:true}
+    ]
+  },
+  {
+    id:"growth-associate", title:"Growth Marketing Associate", dept:"Marketing",
+    location:"Remote (India)", type:"Full-time", minExp:1,
+    summary:"Find new ways to bring people to Nexor and keep them coming back.",
+    about:"You will plan and run small experiments across social, creators and referrals, measure what works, and double down. You'll report directly to the founders.",
+    does:["Plan and run weekly growth experiments","Work with creators and communities","Analyze funnels from install to retention","Write briefs for design and content"],
+    must:["1+ year in growth, performance or social media marketing","Comfortable with spreadsheets and basic analytics","Clear writing and fast follow-through","Examples of campaigns you ran, with results"],
+    nice:["App install or referral campaign experience","SQL or Looker Studio basics"],
+    linkLabel:"LinkedIn or work samples link", linkRequired:true,
+    questions:[
+      {id:"q1", label:"Describe one campaign you ran. What was the goal and what did the numbers show?", required:true},
+      {id:"q2", label:"You have a small budget and one week. How would you get 1,000 new users for a social app?", required:false}
+    ]
+  }
+];
+
+/* ===================================================================== */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const STATUS_FLOW = ['Received','Under review','Shortlisted','Interview','Offer'];
+let lastFocus = null;
+
+$('#yr').textContent = new Date().getFullYear();
+$('#roleCount').textContent = JOBS.length;
+
+/* ---------- role list ---------- */
+const deptSel = $('#dept');
+[...new Set(JOBS.map(j => j.dept))].forEach(d => deptSel.insertAdjacentHTML('beforeend', `<option>${esc(d)}</option>`));
+
+function renderList(){
+  const q = $('#q').value.trim().toLowerCase();
+  const d = deptSel.value;
+  const items = JOBS.filter(j =>
+    (!d || j.dept === d) &&
+    (!q || (j.title + ' ' + j.dept + ' ' + j.summary).toLowerCase().includes(q)));
+  $('#list').innerHTML = items.length ? items.map(j => `
+    <button class="row" data-id="${j.id}" type="button">
+      <div><h3>${esc(j.title)}</h3><p>${esc(j.dept)}</p></div>
+      <div class="col2 where">${esc(j.location)}</div>
+      <div class="col3 where">${esc(j.type)} · ${j.minExp ? j.minExp + '+ yrs' : 'Freshers welcome'}</div>
+      <span class="go">View role</span>
+    </button>`).join('') : `<div class="empty">No roles match your search. Clear the filters to see all open roles.</div>`;
+}
+$('#q').addEventListener('input', renderList);
+deptSel.addEventListener('change', renderList);
+$('#list').addEventListener('click', e => {
+  const row = e.target.closest('.row');
+  if(row) openJob(row.dataset.id, row);
+});
+renderList();
+
+/* ---------- drawer ---------- */
+const drawer = $('#drawer'), scrim = $('#scrim'), body = $('#dBody');
+function openDrawer(trigger){
+  lastFocus = trigger || document.activeElement;
+  drawer.classList.add('on'); scrim.classList.add('on');
+  drawer.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => $('#dClose').focus(), 50);
+}
+function closeDrawer(){
+  drawer.classList.remove('on'); scrim.classList.remove('on');
+  drawer.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+  if(lastFocus) lastFocus.focus();
+}
+$('#dClose').addEventListener('click', closeDrawer);
+scrim.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && drawer.classList.contains('on')) closeDrawer(); });
+
+const li = arr => arr.map(x => `<li>${esc(x)}</li>`).join('');
+
+function openJob(id, trigger){
+  const j = JOBS.find(x => x.id === id);
+  if(!j) return;
+  $('#dCrumb').textContent = j.dept;
+  body.innerHTML = `
+    <h2 id="dTitle">${esc(j.title)}</h2>
+    <div class="tags">
+      <span class="tag">${esc(j.location)}</span>
+      <span class="tag">${esc(j.type)}</span>
+      <span class="tag">${j.minExp ? j.minExp + '+ years experience' : 'Freshers welcome'}</span>
+    </div>
+    <div class="sec"><p>${esc(j.about)}</p></div>
+    <div class="sec"><h3>What you'll do</h3><ul>${li(j.does)}</ul></div>
+    <div class="sec"><h3>You must have</h3><ul>${li(j.must)}</ul></div>
+    <div class="sec nice"><h3>Nice to have</h3><ul>${li(j.nice)}</ul></div>
+    <div class="sec"><h3>Hiring process</h3><p>Application review, a short call, a practical task or conversation with the team, then an offer. You can follow every stage with your reference number.</p></div>
+    <div class="sticky-apply">
+      <span>Takes about 5 minutes.</span>
+      <button class="btn" type="button" id="goApply">Apply for this role</button>
+    </div>`;
+  $('#goApply').addEventListener('click', () => showForm(j));
+  openDrawer(trigger);
+  body.scrollTop = 0;
+}
+
+/* ---------- application form ---------- */
+function showForm(j){
+  const qs = j.questions.map(q => `
+    <div class="grp" data-f="${q.id}">
+      <label class="lb" for="f_${q.id}">${esc(q.label)} ${q.required ? '' : '<i>(optional)</i>'}</label>
+      <textarea class="in" id="f_${q.id}" maxlength="1200"></textarea>
+      <div class="err">Please answer this question (at least 20 characters).</div>
+    </div>`).join('');
+
+  body.innerHTML = `
+    <button class="back" type="button" id="backBtn">Back to role</button>
+    <h2>Apply: ${esc(j.title)}</h2>
+    <div class="note">Minimum requirement: ${j.minExp ? j.minExp + ' year' + (j.minExp > 1 ? 's' : '') + ' of experience.' : 'freshers are welcome.'} Make sure you meet the must-have list before applying.</div>
+    <form id="appForm" novalidate>
+      <div class="hp" aria-hidden="true"><label>Website <input id="f_website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="two">
+        <div class="grp" data-f="fullName"><label class="lb" for="f_fullName">Full name</label><input class="in" id="f_fullName" autocomplete="name" maxlength="100"><div class="err">Enter your full name.</div></div>
+        <div class="grp" data-f="email"><label class="lb" for="f_email">Email</label><input class="in" id="f_email" type="email" autocomplete="email" maxlength="120"><div class="err">Enter a valid email address.</div></div>
+      </div>
+      <div class="two">
+        <div class="grp" data-f="phone"><label class="lb" for="f_phone">Phone (WhatsApp preferred)</label><input class="in" id="f_phone" type="tel" autocomplete="tel" maxlength="20"><div class="err">Enter a valid phone number (10 to 15 digits).</div></div>
+        <div class="grp" data-f="city"><label class="lb" for="f_city">City</label><input class="in" id="f_city" autocomplete="address-level2" maxlength="80"><div class="err">Enter your city.</div></div>
+      </div>
+      <div class="two">
+        <div class="grp" data-f="experience"><label class="lb" for="f_experience">Years of experience</label><input class="in" id="f_experience" type="number" min="0" max="40" step="0.5" inputmode="decimal" placeholder="0 if fresher"><div class="err" id="expErr">Enter your years of experience.</div></div>
+        <div class="grp" data-f="notice"><label class="lb" for="f_notice">Availability</label>
+          <select class="in" id="f_notice"><option value="">Select</option><option>Immediately</option><option>Within 15 days</option><option>Within 30 days</option><option>More than 30 days</option></select>
+          <div class="err">Select when you can start.</div></div>
+      </div>
+      <div class="grp" data-f="org"><label class="lb" for="f_org">Current company or college <i>(optional)</i></label><input class="in" id="f_org" maxlength="120"></div>
+      <div class="grp" data-f="link"><label class="lb" for="f_link">${esc(j.linkLabel)}</label><input class="in" id="f_link" type="url" placeholder="https://" maxlength="300"><div class="err">${j.linkRequired ? 'Enter a valid link starting with https://' : 'Enter a valid link starting with https://, or leave this empty.'}</div></div>
+      <div class="grp" data-f="resume">
+        <label class="lb" for="f_resume">Resume (PDF, up to 3 MB)</label>
+        <input class="in" id="f_resume" type="file" accept="application/pdf,.pdf">
+        <div class="hint">Or paste a link to your resume below.</div>
+        <input class="in" id="f_resumeLink" type="url" placeholder="https://drive.google.com/..." maxlength="300" style="margin-top:8px" aria-label="Resume link">
+        <div class="err" id="resumeErr">Upload a PDF resume or paste a resume link.</div>
+      </div>
+      ${qs}
+      <div class="grp" data-f="confirm">
+        <label class="check"><input type="checkbox" id="f_confirm"><span>I have read the must-have requirements and I meet them. The details I gave are true.</span></label>
+        <div class="err">Please confirm before submitting.</div>
+      </div>
+      <button class="btn" id="submitBtn" type="submit">Submit application</button>
+      <div class="formerr" id="formErr" role="alert"></div>
+    </form>`;
+  body.scrollTop = 0;
+  $('#backBtn').addEventListener('click', () => openJob(j.id, lastFocus));
+  $('#appForm').addEventListener('submit', e => { e.preventDefault(); submitApp(j); });
+}
+
+const setBad = (name, msg) => {
+  const g = body.querySelector(`[data-f="${name}"]`);
+  if(!g) return;
+  g.classList.add('bad');
+  if(msg){ const er = g.querySelector('.err'); if(er) er.textContent = msg; }
+};
+const isUrl = v => { try{ const u = new URL(v); return u.protocol === 'https:' || u.protocol === 'http:'; }catch{ return false; } };
+
+function validate(j){
+  body.querySelectorAll('.grp.bad').forEach(g => g.classList.remove('bad'));
+  const v = id => ($('#f_' + id).value || '').trim();
+  const bad = [];
+  const fail = (n, m) => { setBad(n, m); bad.push(n); };
+
+  if(v('fullName').length < 2) fail('fullName');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email'))) fail('email');
+  const digits = v('phone').replace(/\D/g, '');
+  if(digits.length < 10 || digits.length > 15) fail('phone');
+  if(v('city').length < 2) fail('city');
+  const exp = parseFloat(v('experience'));
+  if(isNaN(exp) || exp < 0 || exp > 40) fail('experience', 'Enter your years of experience.');
+  else if(exp < j.minExp) fail('experience', `This role needs at least ${j.minExp} year${j.minExp > 1 ? 's' : ''} of experience. Check our other open roles.`);
+  if(!v('notice')) fail('notice');
+
+  const link = v('link');
+  if(j.linkRequired ? !isUrl(link) : (link && !isUrl(link))) fail('link');
+
+  const file = $('#f_resume').files[0];
+  const rLink = v('resumeLink');
+  if(file){
+    if(file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) fail('resume', 'Resume must be a PDF file.');
+    else if(file.size > 3 * 1024 * 1024) fail('resume', 'Resume is larger than 3 MB. Upload a smaller PDF or paste a link.');
+  } else if(!isUrl(rLink)){
+    fail('resume', rLink ? 'Enter a valid resume link starting with https://' : 'Upload a PDF resume or paste a resume link.');
+  }
+
+  j.questions.forEach(q => {
+    const a = v(q.id);
+    if((q.required && a.length < 20) || (a && a.length < 20)) fail(q.id);
+  });
+  if(!$('#f_confirm').checked) fail('confirm');
+
+  if(bad.length){
+    const first = body.querySelector(`[data-f="${bad[0]}"]`);
+    first.scrollIntoView({behavior:'smooth', block:'center'});
+    const inp = first.querySelector('input,select,textarea'); if(inp) inp.focus({preventScroll:true});
+  }
+  return bad.length === 0;
+}
+
+/* ---------- reference + token ---------- */
+function makeToken(){
+  const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I
+  const b = new Uint8Array(8); crypto.getRandomValues(b);
+  const t = [...b].map(x => A[x % A.length]).join('');
+  return t.slice(0,4) + '-' + t.slice(4);
+}
+async function sha256(s){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+}
+const normToken = s => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
+const normEmail = s => s.trim().toLowerCase();
+
+async function submitApp(j){
+  if($('#f_website').value) return;                 // honeypot
+  if(!validate(j)) return;
+  const btn = $('#submitBtn'), fe = $('#formErr');
+  fe.classList.remove('on');
+  btn.disabled = true; btn.textContent = 'Submitting…';
+
+  const v = id => ($('#f_' + id).value || '').trim();
+  const tokenNo = makeToken();
+  const email = normEmail(v('email'));
+
+  try{
+    // 1) optional resume upload
+    let resumePath = '', resumeName = '';
+    const file = $('#f_resume').files[0];
+    if(file){
+      btn.textContent = 'Uploading resume…';
+      resumePath = `career_resumes/${normToken(tokenNo)}-${Date.now()}.pdf`;
+      resumeName = file.name.slice(0, 120);
+      await storage.ref(resumePath).put(file, {contentType:'application/pdf'});
+      btn.textContent = 'Submitting…';
+    }
+
+    const [tokenHash, emailHash] = await Promise.all([sha256(normToken(tokenNo)), sha256(email)]);
+    const answers = {}; j.questions.forEach(q => { answers[q.id] = {question:q.label, answer:v(q.id)}; });
+    const counterRef = db.collection('career_counters').doc('applications');
+    const year = new Date().getFullYear();
+
+    // 2) sequential reference number + application + public status doc, atomically
+    const refNo = await db.runTransaction(async tx => {
+      const snap = await tx.get(counterRef);
+      const next = (snap.exists ? snap.data().count : 0) + 1;
+      const ref = `NXR-${year}-${String(next).padStart(5, '0')}`;
+      tx.set(counterRef, {count: next});
+      tx.set(db.collection('career_applications').doc(ref), {
+        refNo: ref, tokenNo, tokenHash,
+        jobId: j.id, jobTitle: j.title, dept: j.dept,
+        fullName: v('fullName'), email, phone: v('phone'), city: v('city'),
+        experienceYears: parseFloat(v('experience')), availability: v('notice'),
+        organization: v('org'), link: v('link'),
+        resumeLink: v('resumeLink'), resumePath, resumeName,
+        answers, status: 'Received',
+        appliedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      tx.set(db.collection('career_status').doc(ref), {
+        refNo: ref, jobTitle: j.title, status: 'Received',
+        tokenHash, emailHash,
+        appliedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      return ref;
+    });
+
+    const rec = {refNo, tokenNo, jobTitle:j.title, dept:j.dept, location:j.location, type:j.type,
+      fullName:v('fullName'), email, phone:v('phone'), city:v('city'), experienceYears:v('experience'),
+      availability:v('notice'), organization:v('org'), link:v('link'), resumeName, resumeLink:v('resumeLink'),
+      answers, appliedAt:new Date()};
+    showSuccess(j, rec);
+  }catch(err){
+    console.error('Application failed:', err);
+    let msg = 'We could not submit your application. Check your connection and try again.';
+    if(err && err.code === 'permission-denied' || (err && /unauthorized/.test(err.code || ''))) msg = 'Submissions are not enabled yet. Please try again later or contact the hiring team.';
+    fe.textContent = msg; fe.classList.add('on');
+    btn.disabled = false; btn.textContent = 'Submit application';
+  }
+}
+
+function showSuccess(j, rec){
+  const {refNo, tokenNo, email} = rec;
+  body.innerHTML = `
+    <div class="ok-badge">Application submitted</div>
+    <h2>Thanks, we have your application.</h2>
+    <div class="slip big">
+      <div class="main">
+        <small>Reference number</small>
+        <div class="code" id="sRef">${esc(refNo)}</div>
+        <div class="role" style="margin-top:14px">${esc(j.title)}</div>
+        <small>${esc(email)}</small>
+      </div>
+      <div class="stub"><small>Token</small><div class="tok" id="sTok">${esc(tokenNo)}</div></div>
+    </div>
+    <div class="actions">
+      <button class="btn" type="button" id="pdfApp">Download application PDF</button>
+      <button class="btn ghost" type="button" id="copyBtn">Copy details</button>
+      <button class="btn ghost" type="button" id="doneBtn">Done</button>
+    </div>
+    <div class="warn">Save your reference number and token now. You need both, plus your email, to check your status later. We do not send an email confirmation, so download the PDF for your records.</div>`;
+  body.scrollTop = 0;
+
+  const text = `Nexor Career - Application slip\nReference number: ${refNo}\nToken: ${tokenNo}\nRole: ${j.title}\nEmail: ${email}\nTrack at: ${location.origin}${location.pathname}#track`;
+  $('#copyBtn').addEventListener('click', async e => {
+    try{ await navigator.clipboard.writeText(text); e.target.textContent = 'Copied'; }
+    catch{ e.target.textContent = 'Copy failed. Select the text manually.'; }
+  });
+  $('#pdfApp').addEventListener('click', async e => {
+    const b = e.target; b.disabled = true; b.textContent = 'Preparing PDF...';
+    try{ await applicationPdf(rec); b.textContent = 'Download again'; }
+    catch(err){ console.error(err); b.textContent = 'PDF failed. Try again'; }
+    b.disabled = false;
+  });
+  $('#doneBtn').addEventListener('click', closeDrawer);
+}
+
+/* =====================================================================
+   PDF KIT  (jsPDF) — logos + handwritten HR signature + footer
+   Nexor logo   : loaded from the official link below. If the browser blocks
+                  it (CORS), put IMG_8305.png next to index.html and set
+                  NEXOR_LOGO_URL = 'IMG_8305.png'. A built-in bolt mark is the fallback.
+   Kashish logo : embedded (taken from kashishai.com's own icon).
+   ===================================================================== */
+const NEXOR_LOGO_URL = 'https://nexor-f4d.pages.dev/IMG_8305.png';
+const KASHISH_LOGO = 'data:image/png;base64,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';
+const HR_NAME = 'James Carter', HR_TITLE = 'Human Resources Manager, Nexor';
+
+const pdfSafe = s => String(s == null ? '' : s).replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '?');
+
+function loadImage(src){
+  return new Promise(res => {
+    const i = new Image(); i.crossOrigin = 'anonymous';
+    i.onload = () => { try{
+      const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight;
+      c.getContext('2d').drawImage(i, 0, 0); res({data:c.toDataURL('image/png'), w:c.width, h:c.height});
+    }catch{ res(null); } };
+    i.onerror = () => res(null);
+    i.src = src;
+  });
+}
+function boltFallback(){
+  const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
+  x.fillStyle = '#050A14'; x.beginPath(); x.roundRect(0,0,256,256,56); x.fill();
+  x.scale(256/24, 256/24); x.fillStyle = '#00C8FF'; x.fill(new Path2D('M7 2v11h3v9l7-12h-4l4-8z'));
+  return {data:c.toDataURL('image/png'), w:256, h:256};
+}
+async function makeSignature(){
+  try{ await document.fonts.load('120px "Mrs Saint Delafield"', HR_NAME); }catch{}
+  const c = document.createElement('canvas'); c.width = 1000; c.height = 300; const x = c.getContext('2d');
+  x.fillStyle = '#14213D'; x.strokeStyle = '#14213D';
+  x.font = '130px "Mrs Saint Delafield","Segoe Script","Brush Script MT",cursive';
+  x.save(); x.translate(30, 190); x.rotate(-0.045); x.fillText(HR_NAME, 0, 0); x.restore();
+  const w = Math.min(x.measureText(HR_NAME).width, 900);
+  x.lineWidth = 4; x.lineCap = 'round'; x.beginPath();
+  x.moveTo(50, 232); x.bezierCurveTo(50 + w*.3, 208, 50 + w*.6, 258, 50 + w*.95, 220); x.stroke();
+  return {data:c.toDataURL('image/png'), w:1000, h:300};
+}
+let _assets = null;
+function pdfAssets(){
+  if(!_assets) _assets = Promise.all([
+    loadImage(NEXOR_LOGO_URL).then(r => r || boltFallback()),
+    loadImage(KASHISH_LOGO),
+    makeSignature()
+  ]).catch(e => { _assets = null; throw e; });
+  return _assets;
+}
+
+async function newPdf(title, subtitle){
+  if(!window.jspdf) throw new Error('jsPDF not loaded');
+  const [nex, kas, sig] = await pdfAssets();
+  const doc = new window.jspdf.jsPDF({unit:'mm', format:'a4'});
+  const P = {doc, y:0, L:20, W:170, sig, title};
+  const INK=[11,15,26], ACC=[0,135,179], MUT=[91,103,133], LINE=[213,219,234];
+  P.c = {INK, ACC, MUT, LINE};
+  const fit = (im, h) => ({w: h * im.w / im.h, h});
+
+  // header
+  const n = fit(nex, 17); doc.addImage(nex.data, 'PNG', P.L, 12, n.w, n.h);
+  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(...INK); doc.text('Nexor Career', P.L + n.w + 4, 20.5);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(...MUT); doc.text('Official hiring communication', P.L + n.w + 4, 25.5);
+  if(kas){
+    const k = fit(kas, 15); doc.addImage(kas.data, 'PNG', 190 - k.w, 11.5, k.w, k.h);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...INK); doc.text('Kashish AI', 190 - k.w - 2, 20.5, {align:'right'});
+  }
+  doc.setDrawColor(...ACC); doc.setLineWidth(.7); doc.line(P.L, 33, 190, 33);
+  P.y = 44;
+
+  P.need = h => { if(P.y + h > 272){ doc.addPage(); P.y = 22; } };
+  P.text = (t, size=10, bold=false, color=INK, indent=0, gap=1.5, lh=.5) => {
+    doc.setFont('helvetica', bold ? 'bold':'normal'); doc.setFontSize(size); doc.setTextColor(...color);
+    doc.splitTextToSize(pdfSafe(t), P.W - indent).forEach(line => { P.need(size*lh+1); doc.text(line, P.L + indent, P.y); P.y += size*lh + .4; });
+    P.y += gap;
+  };
+  P.h1 = t => P.text(t, 20, true, INK, 0, 1.5, .45);
+  P.sub = t => P.text(t, 10.5, false, MUT, 0, 7);
+  P.h2 = t => { P.need(14); P.y += 4; P.text(t, 11.5, true, ACC, 0, 2); doc.setDrawColor(...LINE); doc.setLineWidth(.3); doc.line(P.L, P.y - 2.2, 190, P.y - 2.2); P.y += 1.5; };
+  P.bullet = t => P.text('-  ' + t, 10, false, INK, 3, .6);
+  P.kv = rows => rows.filter(r => r[1] !== '' && r[1] != null).forEach(([k, v]) => {
+    const lines = doc.splitTextToSize(pdfSafe(v), 118);
+    P.need(lines.length * 5 + 3);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(...MUT); doc.text(k, P.L, P.y);
+    doc.setFont('helvetica','bold'); doc.setTextColor(...INK); doc.text(lines, P.L + 52, P.y);
+    P.y += lines.length * 5 + 1.5; doc.setDrawColor(...LINE); doc.setLineWidth(.2); doc.line(P.L, P.y - 3.2, 190, P.y - 3.2);
+  });
+  P.sign = () => {
+    P.need(52); P.y += 8;
+    P.text('Sincerely,', 10, false, INK, 0, 0);
+    const s = fit(sig, 17); doc.addImage(sig.data, 'PNG', P.L - 2, P.y - 2, s.w, s.h); P.y += s.h + 1;
+    doc.setDrawColor(...INK); doc.setLineWidth(.3); doc.line(P.L, P.y, P.L + 62, P.y); P.y += 5;
+    P.text(HR_NAME, 11, true, INK, 0, 0); P.text(HR_TITLE, 9.5, false, MUT, 0, 0);
+  };
+  P.save = name => {
+    const total = doc.getNumberOfPages();
+    for(let i = 1; i <= total; i++){
+      doc.setPage(i); doc.setDrawColor(...LINE); doc.setLineWidth(.3); doc.line(P.L, 282, 190, 282);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...MUT);
+      doc.text('Nexor Career  |  Confidential. Issued by the Nexor Human Resources department.', P.L, 287);
+      doc.text(`Page ${i} of ${total}`, 190, 287, {align:'right'});
+    }
+    doc.setProperties({title: pdfSafe(title), author: 'Nexor HR', creator: 'Nexor Career'});
+    doc.save(name);
+  };
+  P.h1(title); P.sub(subtitle);
+  return P;
+}
+
+async function applicationPdf(r){
+  const P = await newPdf('Application Confirmation',
+    'Issued on ' + new Date().toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'}));
+  P.h2('Application summary');
+  P.kv([['Reference number', r.refNo], ['Token', r.tokenNo], ['Position', r.jobTitle], ['Team', r.dept],
+        ['Location and type', r.location + ', ' + r.type], ['Status', 'Received'],
+        ['Applied on', r.appliedAt.toLocaleString('en-GB', {day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'})]]);
+  P.h2('Applicant details');
+  P.kv([['Full name', r.fullName], ['Email', r.email], ['Phone', r.phone], ['City', r.city],
+        ['Experience', r.experienceYears + ' years'], ['Availability', r.availability],
+        ['Current company or college', r.organization], ['Profile or portfolio link', r.link],
+        ['Resume', r.resumeName ? r.resumeName + ' (uploaded)' : r.resumeLink]]);
+  const qa = Object.values(r.answers).filter(a => a.answer);
+  if(qa.length){
+    P.h2('Your answers');
+    qa.forEach(a => { P.text(a.question, 9.5, true, P.c.INK, 0, .8); P.text(a.answer, 10, false, P.c.MUT, 3, 4); });
+  }
+  P.h2('Message from HR');
+  P.text(`Dear ${r.fullName.split(' ')[0]},`, 10, false, P.c.INK, 0, 2);
+  P.text(`Thank you for applying for the position of ${r.jobTitle} at Nexor. We have received your application and it has been added to our review queue. Our hiring team reads every application and will update your status as it moves forward.`, 10, false, P.c.INK, 0, 3, .52);
+  P.text('What happens next', 10, true, P.c.INK, 0, 1);
+  ['Application review by the hiring team', 'A short introductory call, if shortlisted', 'A practical task or team conversation', 'Final decision and offer'].forEach(P.bullet);
+  P.y += 2;
+  P.text(`To check your status, open the Nexor Career website, go to "Track application" and enter your reference number, token and email address. Please keep this document safe: it is the only record of your token.`, 10, false, P.c.INK, 0, 2, .52);
+  P.sign();
+  P.save(`Nexor-Application-${r.refNo}.pdf`);
+}
+
+async function questionsPdf(){
+  const P = await newPdf('Application Questions and Requirements', 'Every question candidates answer, for each open role.');
+  P.h2('Questions asked for every role');
+  ['Full name','Email (also used to track the application)','Phone (WhatsApp preferred)','City','Years of experience (must meet the role minimum)','Availability','Current company or college (optional)','Resume: PDF up to 3 MB, or a resume link','Confirmation that the candidate meets the must-have list'].forEach(P.bullet);
+  JOBS.forEach(j => {
+    P.need(48); P.y += 6;
+    P.text(j.title, 14, true, P.c.INK, 0, 1);
+    P.text(`${j.dept} | ${j.location} | ${j.type} | ${j.minExp ? j.minExp + '+ years' : 'Freshers welcome'}`, 9.5, false, P.c.MUT, 0, 2);
+    P.text('Must have', 10.5, true, P.c.ACC, 0, 1); j.must.forEach(P.bullet);
+    P.text('Nice to have', 10.5, true, P.c.ACC, 0.5, 1); j.nice.forEach(P.bullet);
+    P.text('Role-specific fields and questions', 10.5, true, P.c.ACC, 0.5, 1);
+    P.bullet(`${j.linkLabel} (${j.linkRequired ? 'required' : 'optional'})`);
+    j.questions.forEach(q => P.bullet(`${q.label} (${q.required ? 'required' : 'optional'})`));
+  });
+  P.sign();
+  P.save('Nexor-Career-Questions.pdf');
+}
+$('#pdfBtn').addEventListener('click', async e => {
+  const b = e.target, t = b.textContent; b.disabled = true; b.textContent = 'Preparing PDF...';
+  try{ await questionsPdf(); }catch(err){ console.error(err); alert('Could not create the PDF. Check your connection and try again.'); }
+  b.disabled = false; b.textContent = t;
+});
+
+/* ---------- tracking ---------- */
+function trackBad(name, on){ document.querySelector(`#trackForm [data-f="${name}"]`).classList.toggle('bad', on); }
+
+$('#trackForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const out = $('#trackOut'), er = $('#trackErr'), btn = $('#trackBtn');
+  out.innerHTML = ''; er.classList.remove('on');
+
+  const ref = $('#t_ref').value.trim().toUpperCase();
+  const tok = normToken($('#t_tok').value);
+  const em = normEmail($('#t_email').value);
+  const okRef = /^NXR-\d{4}-\d{5,}$/.test(ref), okTok = tok.length === 8, okEm = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em);
+  trackBad('ref', !okRef); trackBad('token', !okTok); trackBad('email', !okEm);
+  if(!(okRef && okTok && okEm)) return;
+
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try{
+    const snap = await db.collection('career_status').doc(ref).get();
+    const [th, eh] = await Promise.all([sha256(tok), sha256(em)]);
+    const d = snap.exists ? snap.data() : null;
+    if(!d || d.tokenHash !== th || d.emailHash !== eh){
+      er.textContent = 'No application matches these details. Check the reference number, token and email, then try again.';
+      er.classList.add('on');
+    } else {
+      renderStatus(d);
+    }
+  }catch(err){
+    console.error('Track failed:', err);
+    er.textContent = 'Could not check status right now. Try again in a moment.';
+    er.classList.add('on');
+  }
+  btn.disabled = false; btn.textContent = 'Check status';
+});
+
+function renderStatus(d){
+  const rejected = d.status === 'Not selected';
+  const idx = STATUS_FLOW.indexOf(d.status);
+  const when = d.appliedAt && d.appliedAt.toDate ? d.appliedAt.toDate().toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}) : '';
+  let steps;
+  if(rejected){
+    steps = `<li class="done">Received</li><li class="stop now">Not selected</li>`;
+  } else {
+    steps = STATUS_FLOW.map((s,i) => `<li class="${i < idx ? 'done' : i === idx ? 'now done' : ''}">${s}</li>`).join('');
+  }
+  $('#trackOut').innerHTML = `
+    <div class="result">
+      <h4>${esc(d.jobTitle)}</h4>
+      <p style="color:var(--muted);font-size:14px">${esc(d.refNo)}${when ? ' · Applied ' + esc(when) : ''}</p>
+      <ul class="steps">${steps}</ul>
+    </div>`;
+}
+</script>
+</body>
+</html>
