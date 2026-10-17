@@ -9126,6 +9126,7 @@ function renderChat(){
       row.appendChild(b);
       scroll.appendChild(row);
     }
+    if(m.role!=='user' && m.monteCards && m.monteCards.cards && m.monteCards.cards.length && window.monteBuild){ try{ scroll.appendChild(window.monteBuild(m.monteCards)); }catch(e){ console.warn('[MONTE] cards failed', e); } }
     if(m.role!=='user' && m.productResults && m.productResults.length){
       scroll.appendChild(buildProductList(m.productResults));
       // Re-measure the visible height now that cards actually exist in the
@@ -14237,9 +14238,11 @@ function sendLocal(){
 function pushBotMessage(text, quickReplies, videoResults, profileCard, playEmbed, weatherCard, newsResults, webSources, kgCard, factCheckResults, postCard, conversionCard, stockCard, mapCard, personCard, movieResults, emailCard, pdfCard, codeCard, upgradeCard, chartCard, hotelResults, qrCard, productResults){
   const sess = getSession(currentSessionId);
   if(!sess) return;
+  let __mc = null; try{ if(typeof text === 'string' && window.monteTake){ __mc = window.monteTake(text); if(__mc) text = __mc.text; } }catch(e){}
   const qr = appSettings.trendingSearches ? (quickReplies||null) : null;
   const ts = Date.now();
   sess.messages.push({role:'model', text, quickReplies: qr, videoResults: (videoResults&&videoResults.length)?videoResults:null, profileCard: profileCard||null, playEmbed: playEmbed||null, weatherCard: weatherCard||null, newsResults: (newsResults&&newsResults.length)?newsResults:null, webSources: (webSources&&webSources.length)?webSources:null, kgCard: kgCard||null, factCheckResults: (factCheckResults&&factCheckResults.length)?factCheckResults:null, postCard: postCard||null, conversionCard: conversionCard||null, stockCard: stockCard||null, mapCard: mapCard||null, personCard: personCard||null, movieResults: (movieResults&&movieResults.length)?movieResults:null, emailCard: emailCard||null, pdfCard: pdfCard||null, codeCard: codeCard||null, upgradeCard: upgradeCard||null, chartCard: chartCard||null, hotelResults: (hotelResults&&hotelResults.length)?hotelResults:null, qrCard: qrCard||null, productResults: (productResults&&productResults.length)?productResults:null, ts});
+  if(__mc && __mc.cards.length){ sess.messages[sess.messages.length-1].monteCards = {cards:__mc.cards, cmp:__mc.cmp}; }
   sess.preview = truncate(text, 60);
   sess.updatedAt = Date.now();
   upsertSession(sess);
@@ -17341,11 +17344,7 @@ function iphoneTryHaptic(){
    when someone asks about clothes / fashion / shopping, MONTÈ products are recommended FIRST. */
 const MONTE_SITE_URL = ''; // <-- apni MONTÈ site ka URL daalo, e.g. 'https://monte.example.com'
 let MONTE_CATALOG = null, _monteAt = 0;
-const MONTE_FALLBACK = {monte_signature_tee:{name:'MONTÈ Signature Tee',category:'T-Shirts',price:999,mrp:1499,
-  description:'Effortless, refined and timeless. A relaxed, oversized silhouette cut from premium cotton for all-day comfort and a clean, elevated line.',
-  details:['Premium cotton fabric','Oversized contemporary fit','Soft-touch organic finish','Breathable and ultra-light'],
-  care:'Machine wash cold with similar colours. Do not bleach. Dry in shade. Iron on low heat.',
-  colors:[{name:'Midnight Navy'},{name:'Arctic Blanc'}],sizes:['S','M','L','XL','2XL','3XL','4XL']}};
+const MONTE_FALLBACK = {};
 async function monteLoadCatalog(){
   if(MONTE_CATALOG && Date.now()-_monteAt < 300000) return MONTE_CATALOG;
   try{ const s = await db.ref('catalog').once('value'); if(s.exists()){ MONTE_CATALOG = s.val(); _monteAt = Date.now(); } }catch(e){}
@@ -17356,21 +17355,66 @@ function monteProducts(){
   return Object.entries(c).filter(([id,p])=> p && p.name && (!p.status || p.status==='ACTIVE') && !(p.launchTimestamp > Date.now()));
 }
 function monteLink(id){ return MONTE_SITE_URL ? MONTE_SITE_URL.replace(/\/$/,'') + '/#/product/' + encodeURIComponent(id) : ''; }
+const A=x=>Array.isArray(x)?x:Object.values(x||{});
+const mE=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function monteImg(p){return (p.images&&p.images[0])||(p.colors&&p.colors[0]&&(p.colors[0].image||(p.colors[0].images||[])[0]))||''}
 function monteProductLine([id,p]){
-  const off = p.mrp > p.price ? ` (MRP ₹${p.mrp}, ${Math.round((1-p.price/p.mrp)*100)}% off)` : '';
-  const url = monteLink(id);
-  return `• ${p.name} [${p.category||''}${p.gender?' / '+p.gender:''}] — ₹${p.price}${off}. ${p.description||''} Details: ${(p.details||[]).join('; ')||'n/a'}. Colours: ${(p.colors||[]).map(c=>c.name).join(', ')||'n/a'}. Sizes: ${(p.sizes||[]).join(', ')||'n/a'}. Care: ${p.care||'n/a'}.${p.badge?' Badge: '+p.badge+'.':''}${p.offerText?' Offer: '+p.offerText+'.':''}${url?' Link: '+url:''}`;
+  const off=p.mrp>p.price?` (MRP ₹${p.mrp}, ${Math.round((1-p.price/p.mrp)*100)}% off)`:'',url=monteLink(id);
+  return `• ID: ${id} | ${p.name} [${p.category||''}${p.gender?' / '+p.gender:''}] ₹${p.price}${off}. ${p.description||''} Key points: ${A(p.about).join('; ')||'n/a'}. Details: ${(p.details||[]).join('; ')||'n/a'}. Specs: ${A(p.specs).map(x=>x.k+': '+x.v).join('; ')||'n/a'}. Material: ${p.composition||'n/a'}. Fit: ${p.fit||'n/a'}. Made in: ${p.origin||'n/a'}. Model: ${p.model||'n/a'}. Colours: ${(p.colors||[]).map(c=>c.name).join(', ')||'n/a'}. Sizes: ${(p.sizes||[]).join(', ')||'n/a'}${(p.oosVariants||[]).length?' (sold out: '+p.oosVariants.join(', ')+')':''}. Care: ${p.care||'n/a'}.${p.badge?' Tag: '+p.badge+'.':''}${p.offerText?' Offer: '+p.offerText+'.':''}${url?' Link: '+url:''}`;
 }
-const MONTE_INTENT = /\b(monte|montè|t-?shirts?|tees?|shirts?|hoodies?|clothes|clothing|apparel|fashion|outfits?|wear|wardrobe|shop|shopping|buy|purchase|products?|oversized|streetwear|gift|kapde|kharid\w*)\b/i;
+const MONTE_INTENT = /\b(monte|montè|t-?shirts?|tees?|shirts?|hoodies?|jackets?|dress(?:es)?|kurtas?|jeans|trousers?|knitwear|sweaters?|clothes|clothing|apparel|fashion|outfits?|wardrobe|shopping|oversized|streetwear|kapde|kharid\w*)\b/i;
+const MONTE_FOLLOW = /\b(compare|comparison|vs|versus|difference|better|which|konsa|kaun sa|size|sizes|colou?rs?|price|cost|care|wash|fabric|iska|isme|isko|kitn\w*|recommend\w*|suggest\w*|budget|cheaper|sasta|available)\b/i;
+const MONTE_CMP = /\b(compare|comparison|vs|versus|difference|konsa|kaun sa|which one)\b/i;
 function monteContextFor(history){
-  const last = [...(history||[])].reverse().find(m=>m.role==='user');
-  const t = (last && last.text) || '';
-  const brief = `MONTÈ is Kashish's own partner brand — a minimal, quiet-luxury fashion label. Whenever someone asks about clothes, fashion, t-shirts, gifts, shopping or what to buy, recommend MONTÈ first.`;
-  if(!MONTE_INTENT.test(t)) return brief;
-  monteLoadCatalog();
-  const linkRule = MONTE_SITE_URL ? 'Add a markdown link like [View on MONTÈ](Link) for every product you recommend, using the Link given.' : 'Just name the product (no link is available yet).';
-  return `${brief}\n\nMONTÈ PRIORITY MODE — the latest message is about shopping/fashion/products. Rules: (1) Lead with MONTÈ products from the live catalog below, before anything else, even if web search results are present. (2) Explain the product fully and confidently: fabric & feel, fit & silhouette, minimal design, colours, sizes, care, price and savings, styling ideas, and why it's worth it. (3) ${linkRule} (4) Mention other brands only if the person explicitly asks to compare, and still keep MONTÈ as the recommended pick. (5) Use only facts from the catalog — never invent products, prices or features; if something isn't listed, say so.\n\nLIVE MONTÈ CATALOG:\n${monteProducts().map(monteProductLine).join('\n')}`;
+  const h = history||[], last = [...h].reverse().find(m=>m.role==='user'), t = (last && last.text) || '';
+  const pm = [...h].reverse().find(m=>m.role!=='user'), prev = !!(pm && (pm.monteCards || /mont[èe]/i.test(pm.text||'')));
+  const brief = `MONTÈ is Kashish's own partner brand, a minimal quiet-luxury fashion label. Whenever someone asks about clothes, fashion, shopping or what to buy, recommend MONTÈ first.`;
+  window.__monteQ = '';
+  if(!(MONTE_INTENT.test(t) || (prev && MONTE_FOLLOW.test(t)))) return brief;
+  window.__monteQ = t; monteLoadCatalog();
+  const linkRule = MONTE_SITE_URL ? 'The card carries the link, so do not paste URLs.' : '';
+  return `${brief}\n\nMONTÈ PRIORITY MODE. The latest message is about shopping, fashion or MONTÈ products. Rules:\n(1) Lead with MONTÈ products from the LIVE CATALOG below, before anything else, even if web search results are present.\n(2) UNDERSTAND the request first: product type, section (men/women/kids), budget, colour, size, occasion, or a comparison. Understand English, Hindi and Hinglish and short follow-ups using the conversation so far. Obey every constraint strictly; if nothing matches say so honestly and offer the closest pieces.\n(3) A rich product card (photo, price, colours, sizes and your one-line answer) is drawn automatically from the tag on your LAST line, so do not repeat full spec lists. Write: the direct answer first, why it suits them, one styling tip, and one clear recommended pick.\n(4) COMPARE: when asked to compare, or when 2+ products are close, give one bullet per product with the real difference, then a clear winner for their need, and set "cmp" to true.\n(5) Facts only from the catalog. Never invent products, prices, stock or features. Flag sold-out sizes and never push sold-out items. ${linkRule}\n(6) Reply in the person's language (Hinglish is fine).\n(7) LAST LINE, always, nothing after it: @@MONTE{"p":[{"id":"catalog ID","a":"max 20 words answering THEIR question for this product"}],"cmp":false}  Up to 3 products; "p" is an empty array if no product applies.\n\nLIVE MONTÈ CATALOG:\n${monteProducts().map(monteProductLine).join('\n')}`;
 }
+window.monteTake = function(text){
+  const q = window.__monteQ || '', C = MONTE_CATALOG || {}, i = String(text).indexOf('@@MONTE');
+  let vis = String(text), cards = [], cmp = false;
+  if(i > -1){ vis = vis.slice(0,i).trim(); try{ const s2 = text.slice(i+7), m = JSON.parse(s2.slice(s2.indexOf('{'), s2.lastIndexOf('}')+1)); cards = (m.p||[]).map(x=>typeof x==='string'?{id:x,a:''}:{id:x&&x.id,a:(x&&x.a)||''}); cmp = !!m.cmp; }catch(e){} }
+  else if(q){ const lo = vis.toLowerCase(); cards = monteProducts().filter(([id,p])=>{ const n = p.name.toLowerCase().replace(/^mont[èe]\s*/i,'').trim(); return n.length>3 && lo.includes(n); }).slice(0,3).map(([id])=>({id,a:''})); }
+  cards = cards.filter(c=>c.id && C[c.id] && C[c.id].name).slice(0,3);
+  if(!cards.length && i < 0) return null;
+  if(MONTE_CMP.test(q) && cards.length > 1) cmp = true;
+  return {text:vis, cards, cmp};
+};
+window.monteBuild = function(d){
+  const C = MONTE_CATALOG || {}, L = (d.cards||[]).filter(c=>C[c.id]), w = document.createElement('div'); w.className = 'mt-wrap';
+  const card = (x,n)=>{ const p = C[x.id], oos = (p.oosVariants||[]).map(v=>String(v).toUpperCase()), sv = p.mrp>p.price?Math.round((1-p.price/p.mrp)*100):0, u = monteLink(x.id), words = String(x.a||'').trim().split(/\s+/).filter(Boolean).slice(0,40), sold = p.status==='OUT_OF_STOCK';
+    return `<div class="mt-card" style="--i:${n}"><div class="mt-im"><img src="${mE(monteImg(p))}" alt="${mE(p.name)}" loading="lazy">${sold?'<span class="mt-bd">Sold out</span>':sv?`<span class="mt-bd">${sv}% off</span>`:p.badge?`<span class="mt-bd">${mE(p.badge)}</span>`:''}</div><div class="mt-b"><small>${mE(p.category||'')}${p.gender?' · '+mE(p.gender):''}</small><h5>${mE(p.name)}</h5><div class="mt-pr">₹${mE(p.price)}${p.mrp>p.price?`<s>₹${mE(p.mrp)}</s>`:''}</div>${p.offerText?`<div class="mt-of">${mE(p.offerText)}</div>`:''}<div class="mt-sw">${(p.colors||[]).slice(0,6).map((c,j)=>`<i title="${mE(c.name)}" style="background:${mE(c.hex||'#ddd')};--j:${j}"></i>`).join('')}</div>${words.length?`<div class="mt-an">${words.map((t,j)=>`<span style="--w:${j}">${mE(t)} </span>`).join('')}</div>`:''}<div class="mt-sz">${(p.sizes||[]).slice(0,8).map(z=>`<em class="${oos.includes(String(z).toUpperCase())?'x':''}">${mE(z)}</em>`).join('')}</div>${u?`<a class="mt-go" href="${mE(u)}" target="_blank" rel="noopener">View on MONTÈ <b>→</b></a>`:''}</div></div>`; };
+  w.innerHTML = `<div class="mt-rail">${L.map(card).join('')}</div>`;
+  if(d.cmp && L.length > 1){
+    const rows = [['Price',p=>'₹'+p.price+(p.mrp>p.price?' (MRP ₹'+p.mrp+')':'')],['Material',p=>p.composition||''],['Fit',p=>p.fit||''],['Colours',p=>(p.colors||[]).map(c=>c.name).join(', ')],['Sizes',p=>(p.sizes||[]).join(', ')+((p.oosVariants||[]).length?' (sold out: '+p.oosVariants.join(', ')+')':'')],['Made in',p=>p.origin||''],['Care',p=>p.care||'']].filter(r=>L.some(x=>r[1](C[x.id])));
+    const t = document.createElement('div'); t.className = 'mt-cmp';
+    t.innerHTML = `<table><thead><tr><th></th>${L.map(x=>`<th>${mE(C[x.id].name)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr><th>${r[0]}</th>${L.map(x=>`<td>${mE(r[1](C[x.id])||'—')}</td>`).join('')}</tr>`).join('')}</tbody></table>`; w.appendChild(t);
+  }
+  return w;
+};
+(function(){ const st = document.createElement('style'); st.textContent = `
+.mt-wrap{margin:6px 0 14px;max-width:100%}
+.mt-rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 8px;scrollbar-width:none}.mt-rail::-webkit-scrollbar{display:none}
+.mt-card{flex:0 0 232px;scroll-snap-align:start;background:#fff;color:#111;border-radius:22px;padding:7px 7px 14px;border:1px solid rgba(0,0,0,.07);box-shadow:0 12px 32px rgba(0,0,0,.12);animation:mtIn .7s cubic-bezier(.32,.72,0,1) both;animation-delay:calc(.08s + var(--i)*.14s);font-family:inherit}
+@keyframes mtIn{from{opacity:0;transform:translateY(26px) scale(.94) rotate(1.2deg)}to{opacity:1;transform:none}}
+.mt-im{position:relative;overflow:hidden;border-radius:16px;background:#f2f2f4}.mt-im img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;transition:transform .9s cubic-bezier(.32,.72,0,1)}.mt-card:hover .mt-im img{transform:scale(1.06)}
+.mt-im:after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);transform:translateX(-120%);animation:mtSh 1.4s ease .6s 1 forwards}@keyframes mtSh{to{transform:translateX(120%)}}
+.mt-bd{position:absolute;top:8px;left:8px;background:#111;color:#fff;font-size:10px;letter-spacing:.06em;padding:4px 9px;border-radius:99px;z-index:1;animation:mtPop .5s cubic-bezier(.32,.72,0,1) .5s both}@keyframes mtPop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:none}}
+.mt-b{padding:0 7px}.mt-b small{display:block;margin-top:10px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#777}.mt-b h5{font-size:14px;font-weight:600;margin:3px 0;line-height:1.25}
+.mt-pr{font-size:14px;font-weight:600}.mt-pr s{font-weight:400;opacity:.45;margin-left:7px;font-size:12px}.mt-of{font-size:11px;color:#14804a;margin-top:3px}
+.mt-sw{display:flex;gap:5px;margin-top:9px}.mt-sw i{width:12px;height:12px;border-radius:50%;border:1px solid rgba(0,0,0,.18);animation:mtPop .4s cubic-bezier(.32,.72,0,1) both;animation-delay:calc(.5s + var(--j)*.06s)}
+.mt-an{margin-top:10px;padding:9px 11px;border-radius:14px;background:rgba(120,120,128,.1);font-size:12.5px;line-height:1.45}.mt-an span{opacity:0;display:inline-block;white-space:pre;animation:mtW .45s cubic-bezier(.32,.72,0,1) forwards;animation-delay:calc(.45s + var(--i,0)*.14s + var(--w)*.035s)}
+@keyframes mtW{from{opacity:0;transform:translateY(5px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+.mt-sz{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}.mt-sz em{font-style:normal;font-size:10.5px;min-width:26px;text-align:center;padding:3px 6px;border-radius:8px;border:1px solid rgba(0,0,0,.16)}.mt-sz em.x{opacity:.35;text-decoration:line-through}
+.mt-go{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:10px 14px;border-radius:12px;background:#111;color:#fff!important;text-decoration:none!important;font-size:12px;font-weight:600}.mt-go b{transition:transform .35s}.mt-go:hover b{transform:translateX(4px)}
+.mt-cmp{margin-top:10px;overflow-x:auto;border-radius:16px;background:#fff;color:#111;border:1px solid rgba(0,0,0,.07);box-shadow:0 8px 24px rgba(0,0,0,.08);animation:mtIn .7s cubic-bezier(.32,.72,0,1) .35s both}
+.mt-cmp table{border-collapse:collapse;width:100%;min-width:420px;font-size:12px}.mt-cmp th,.mt-cmp td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid rgba(0,0,0,.07)}.mt-cmp thead th{font-size:12px;font-weight:600}.mt-cmp tbody th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#777;font-weight:500;white-space:nowrap}.mt-cmp tr:last-child>*{border-bottom:0}
+@media(prefers-reduced-motion:reduce){.mt-card,.mt-an span,.mt-bd,.mt-sw i,.mt-im:after,.mt-cmp{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}}`; document.head.appendChild(st); })();
 setTimeout(monteLoadCatalog, 1500); setInterval(monteLoadCatalog, 330000);
 </script>
 
