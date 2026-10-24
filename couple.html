@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kashish AI Couples Portal</title><meta name="robots" content="noindex, nofollow"><meta name="theme-color" content="#FFF6FB">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"><link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"><link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<style>
+:root{--body:'Manrope',system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:#FFF6FB;font-family:var(--body);-webkit-font-smoothing:antialiased}
+html[data-theme="dark"],html[data-theme="dark"] body{background:#1A0B14}
+button{border:0;background:none;cursor:pointer;color:inherit;font-family:inherit}
+.sx-body{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 40px)}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 28px);transform:translate(-50%,20px);background:#5E1040;color:#fff;font:600 14px var(--body);padding:11px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:9300;max-width:90%;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#gate .g{max-width:380px;margin:0 auto;padding-top:9vh;text-align:center}
+#gate .mark{width:64px;height:64px;border-radius:22px;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;background:linear-gradient(150deg,#FF9FD8,#F0368F);box-shadow:0 18px 34px -16px rgba(240,54,143,.8)}
+#gate h1{font-size:28px;letter-spacing:-.03em;margin-bottom:8px}#gate p{font-size:14.5px;line-height:1.5;color:var(--soft);margin-bottom:22px}
+#gate .sx-field{text-align:left;margin-bottom:10px}
+
+.sx{--bg:#FFF6FB;--card:#fff;--ink:#5E1040;--soft:#9A4B79;--acc:#F0368F;--acc2:#FF4FA0;--tint:rgba(240,54,143,.09);--line:rgba(94,16,64,.10);--ok:#1F9D63;--warn:#D9830B;--bad:#D6314B;
+  position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font-family:var(--body,system-ui,-apple-system,sans-serif);-webkit-font-smoothing:antialiased}
+html[data-theme="dark"] .sx{--bg:#1A0B14;--card:#2A1322;--ink:#FFE3F2;--soft:#E7A9CB;--tint:rgba(255,79,160,.14);--line:rgba(255,227,242,.12);--ok:#4BD08B;--warn:#F2A33A;--bad:#FF6B81}
+.sx.hidden,.sx .hidden{display:none!important}
+.sx *{box-sizing:border-box}
+.sx::before{content:"";position:absolute;width:320px;height:320px;left:-110px;top:-120px;border-radius:50%;background:radial-gradient(circle,rgba(255,159,216,.5),rgba(255,159,216,0) 70%);pointer-events:none}
+.sx-bar{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 8px}
+.sx-title{font-size:16px;font-weight:700;letter-spacing:-.01em;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sx-ib{width:38px;height:38px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink)}
+.sx-ib:active,.sx-pill:active,.sx-btn:active,.sx-row:active{opacity:.6}
+.sx-body{position:relative;z-index:1;flex:1;overflow-y:auto;padding:6px 18px 40px;max-width:640px;width:100%;margin:0 auto;-webkit-overflow-scrolling:touch}
+.sx-hero h1{font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-.035em;margin:10px 0 8px}
+.sx-hero p{font-size:14.5px;line-height:1.5;color:var(--soft);margin-bottom:18px;max-width:46ch}
+.sx-composer,.sx-search{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:14px;box-shadow:0 18px 40px -26px rgba(240,54,143,.55);transition:border-color .2s,box-shadow .2s}
+.sx-composer:focus-within,.sx-search:focus-within{border-color:var(--acc);box-shadow:0 0 0 4px var(--tint)}
+.sx textarea,.sx input[type=text],.sx input:not([type]){width:100%;border:0;background:none;outline:0;color:var(--ink);font:inherit;font-size:16px}
+.sx textarea{min-height:92px;resize:none;line-height:1.5}
+.sx ::placeholder{color:var(--soft);opacity:.7}
+.sx-row2{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+.sx-pill{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border-radius:999px;background:var(--tint);color:var(--ink);font-size:13px;font-weight:700;max-width:75%;overflow:hidden;white-space:nowrap}
+.sx-go{width:42px;height:42px;border-radius:50%;background:linear-gradient(150deg,#FF9FD8,#F0368F);color:#fff;font-size:19px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -10px rgba(240,54,143,.8);flex:0 0 auto}
+.sx-go:active{transform:scale(.94)}
+.sx-chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;scrollbar-width:none}
+.sx-chip{flex:0 0 auto;padding:8px 13px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--ink)}
+.sx-chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.sx-h{font-size:13px;font-weight:700;color:var(--soft);margin:26px 2px 10px}
+.sx-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sx-site{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;text-align:left;display:block;width:100%}
+.sx-site:active{transform:scale(.98)}
+.sx-thumb{height:112px;overflow:hidden;position:relative;background:var(--tint);pointer-events:none}
+.sx-thumb iframe{border:0;width:1000px;height:640px;transform-origin:0 0;background:#fff}
+.sx-site b{display:block;font-size:14px;padding:10px 12px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sx-site span{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--soft);padding:0 12px 11px}
+.sx-dot{width:7px;height:7px;border-radius:50%;background:var(--soft);flex:0 0 auto}
+.sx-card{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.sx-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);width:100%;text-align:left;color:var(--ink)}
+.sx-row:last-child{border-bottom:0}
+.sx-row>i:first-child{font-size:19px;color:var(--acc);width:22px;text-align:center}
+.sx-row .m{flex:1;min-width:0}.sx-row .t{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sx-row .s{font-size:12.5px;color:var(--soft);margin-top:2px}
+.sx-row .go{color:var(--soft);font-size:14px}
+.sx-seg{display:flex;background:var(--tint);border-radius:14px;padding:3px;gap:2px;margin:6px 0 4px}
+.sx-seg button{flex:1;padding:9px 6px;border-radius:11px;font-size:13px;font-weight:700;color:var(--soft)}
+.sx-seg button.on{background:var(--card);color:var(--acc);box-shadow:0 2px 8px -3px rgba(94,16,64,.3)}
+.sx-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:16px;background:linear-gradient(150deg,#FF6FB5,#F0368F);color:#fff;font-size:15px;font-weight:700;margin-top:12px}
+.sx-btn.alt{background:var(--tint);color:var(--ink)}
+.sx-btn.red{background:none;color:var(--bad);border:1px solid var(--line)}
+.sx-btn.sm{width:auto;padding:9px 14px;font-size:13px;border-radius:12px;margin:0}
+.sx-frame{position:relative;background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;margin-top:10px}
+.sx-frame.ph{max-width:390px;margin:10px auto 0;border-radius:30px;border-width:5px;border-color:var(--ink)}
+.sx-frame iframe{border:0;background:#fff;display:block}
+.sx-dock{position:relative;z-index:3;padding:10px 14px calc(env(safe-area-inset-bottom,0px) + 12px);background:linear-gradient(0deg,var(--bg) 70%,transparent)}
+.sx-dock .in{max-width:640px;margin:0 auto}
+.sx-edit{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 16px;margin-top:8px}
+.sx-edit:focus-within{border-color:var(--acc);box-shadow:0 0 0 4px var(--tint)}
+.sx-edit .sx-go{width:36px;height:36px;font-size:16px}
+.sx-acts{display:flex;gap:8px;margin-top:12px}.sx-acts button{flex:1}.sx-acts .sx-btn{margin:0;padding:12px 6px;font-size:14px}
+.sx-sw{position:relative;width:46px;height:28px;flex:0 0 auto}.sx-sw input{opacity:0;position:absolute;inset:0;margin:0}
+.sx-sw i{position:absolute;inset:0;border-radius:28px;background:var(--line);transition:background .2s}
+.sx-sw i::after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .2s}
+.sx-sw input:checked+i{background:var(--acc)}.sx-sw input:checked+i::after{transform:translateX(18px)}
+.sx-sw-i{pointer-events:none}
+.sx-sw input{cursor:pointer}
+.sx-sty{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:6px 0 16px}
+.sx-sty button{text-align:center;font-size:11px;font-weight:700;color:var(--soft)}
+.sx-sty button i{display:block;height:46px;border-radius:14px;border:2px solid transparent;box-shadow:inset 0 0 0 1px var(--line);margin-bottom:5px}
+.sx-sty button.on{color:var(--acc)}.sx-sty button.on i{border-color:var(--acc)}
+.sx-lbl{display:block;font-size:12.5px;font-weight:700;color:var(--soft);margin:14px 2px 6px}
+.sx-field{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px}
+.sx-field:focus-within{border-color:var(--acc)}
+.sx select{width:100%;border:0;background:none;color:var(--ink);font:inherit;font-size:16px;outline:0}
+.sx-empty{text-align:center;padding:34px 16px;color:var(--soft);font-size:14px;line-height:1.5}
+.sx-empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:6px}
+.sx-empty i{font-size:34px;color:var(--acc);display:block;margin-bottom:8px}
+.sx-search{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 16px;border-radius:999px}
+.sx-search>i{color:var(--acc);font-size:19px}
+.sx-search .sx-btn{margin:0;width:auto;padding:11px 18px;border-radius:999px}
+.sx-st{font-size:12.5px;font-weight:600}
+.sx-heart{font-size:19px;color:var(--soft);padding:6px}.sx-heart.on{color:var(--acc)}
+.sx-dns{background:var(--tint);border-radius:14px;padding:11px 13px;margin-top:8px;font-size:13px;word-break:break-all}
+.sx-dns small{display:block;color:var(--soft);font-size:11.5px;font-weight:700;margin-top:4px}
+.sx-note{font-size:12.5px;line-height:1.5;color:var(--soft);padding:12px 14px;background:var(--tint);border-radius:14px;margin-top:12px}
+.sx-sheet-bd{position:fixed;inset:0;z-index:9100;background:rgba(40,8,26,.45);opacity:0;pointer-events:none;transition:opacity .25s}
+.sx-sheet-bd.show{opacity:1;pointer-events:auto}
+.sx-sheet{position:fixed;left:0;right:0;bottom:0;z-index:9101;max-width:640px;margin:0 auto;max-height:88vh;overflow:auto;border-radius:28px 28px 0 0;padding:10px 18px calc(env(safe-area-inset-bottom,0px) + 20px);background:#FFF6FB;color:#5E1040;transform:translateY(105%);transition:transform .32s cubic-bezier(.32,.72,0,1);font-family:var(--body,system-ui,sans-serif)}
+html[data-theme="dark"] .sx-sheet{background:#22101B;color:#FFE3F2}
+.sx-sheet.show{transform:none}
+.sx-sheet .sx::before{display:none}
+.sx-sheet .sx{position:static;display:block;background:none;inset:auto}
+.sx-sheet::before{content:"";display:block;width:38px;height:5px;border-radius:3px;background:rgba(154,75,121,.35);margin:2px auto 14px}
+.sx-sheet h2{font-size:21px;letter-spacing:-.02em;margin-bottom:6px}
+.sx-sheet p{font-size:14px;line-height:1.5;color:var(--soft,#9A4B79);margin-bottom:6px}
+.sx-spin{width:38px;height:38px;border-radius:50%;border:4px solid rgba(240,54,143,.18);border-top-color:#F0368F;animation:sxspin 1s linear infinite;margin:22px auto 12px}
+@keyframes sxspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.sx-spin{animation-duration:3s}.sx-sheet{transition:none}}
+
+
+#cp .cp-pair{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 14px}
+#cp .cp-who{flex:1;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px;text-align:center;min-width:0}
+#cp .cp-av{width:44px;height:44px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background:linear-gradient(150deg,#FF9FD8,#F0368F)}
+#cp .cp-who b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cp .cp-who small{font-size:12px;font-weight:600;color:var(--soft)}
+#cp .cp-who.ok small{color:var(--ok)}
+#cp .cp-heart{color:var(--acc);font-size:22px}
+#cp .cp-paper{background:#fff;color:#2a1020;border-radius:18px;padding:22px 18px;font:14px/1.62 Georgia,'Times New Roman',serif;box-shadow:0 20px 40px -28px rgba(240,54,143,.6);border:1px solid rgba(94,16,64,.08)}
+#cp .cp-paper h2{font-size:17px;line-height:1.3;text-align:center;margin-bottom:16px;letter-spacing:.01em}
+#cp .cp-paper h3{font-size:13px;margin:16px 0 4px;letter-spacing:.02em}
+#cp .cp-paper p{margin:0 0 6px;text-align:justify;hyphens:auto}
+#cp .cp-sig{border-top:1px dashed rgba(94,16,64,.25);margin-top:16px;padding-top:12px}
+#cp .cp-sigbox{height:74px;display:flex;align-items:center;justify-content:center;border-bottom:1.5px solid #2a1020;margin:6px 0 4px}
+#cp .cp-sigbox img{max-height:70px;max-width:100%}
+#cp .cp-sigbox button{font:700 13px var(--body,sans-serif);color:#fff;background:linear-gradient(150deg,#FF6FB5,#F0368F);padding:10px 18px;border-radius:999px}
+#cp .cp-sigbox span{font:13px var(--body,sans-serif);color:#9A4B79}
+#cp .cp-lock{text-align:center;padding:26px 14px}
+#cp .cp-lock i.big{font-size:42px;color:var(--acc);display:block;margin-bottom:8px}
+.cp-code{font:700 20px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-align:center;background:rgba(240,54,143,.1);border-radius:16px;padding:16px 8px;margin:12px 0;word-break:break-all;user-select:all}
+.cp-fonts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.cp-fonts button{border:2px solid transparent;background:var(--card,#fff);border-radius:14px;padding:6px 8px;font-size:26px;line-height:1.3;color:inherit;overflow:hidden;white-space:nowrap;box-shadow:inset 0 0 0 1px rgba(94,16,64,.12)}
+.cp-fonts button.on{border-color:#F0368F}
+.cp-prev{background:#fff;color:#14213d;border-radius:16px;min-height:96px;display:flex;align-items:center;justify-content:center;font-size:48px;padding:6px 10px;margin:8px 0;overflow:hidden;white-space:nowrap}
+
+body.cp-blur #cp,body.cp-blur .sx-sheet{filter:blur(22px)}
+</style></head>
+<body>
+<div class="sx" id="gate"><div class="sx-body"><div class="g" id="gate-in"></div></div></div>
+<div class="sx hidden" id="cp">
+  <div class="sx-bar"><button class="sx-ib" onclick="cpClose()" aria-label="Sign out"><i class="ph-bold ph-sign-out"></i></button><div class="sx-title">Couples Portal</div><button class="sx-ib" onclick="cpInfo()" aria-label="How it works"><i class="ph-bold ph-shield-check"></i></button></div>
+  <div class="sx-body" id="cp-b"></div>
+</div>
+<div class="sx-sheet-bd" id="sx-bd" onclick="sxClose()"></div>
+<div class="sx-sheet" id="sx-sh"><div class="sx" id="sx-shb"></div></div>
+<div id="toast"></div>
+<script>
+if(matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.dataset.theme='dark';
+const firebaseConfig={apiKey:"AIzaSyC30TcmMVhP_8HdFYS1WufRiZwSDYNMTF0",authDomain:"pulse2-92372.firebaseapp.com",databaseURL:"https://pulse2-92372-default-rtdb.firebaseio.com",projectId:"pulse2-92372",storageBucket:"pulse2-92372.firebasestorage.app",messagingSenderId:"276235725177",appId:"1:276235725177:web:0f4e0789fae80a435927a8"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(), db=firebase.database();
+window.sxClose=function(){ document.getElementById('sx-bd').classList.remove('show'); document.getElementById('sx-sh').classList.remove('show'); };
+let _t; window.showKashishToast=function(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(_t); _t=setTimeout(()=>t.classList.remove('on'),2600); };
+</script>
+<script>
+(function(){
+const uid=()=>auth.currentUser?auth.currentUser.uid:'x';
+const b64u=u=>btoa(String.fromCharCode.apply(null,u)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const unb=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+const rnd=n=>crypto.getRandomValues(new Uint8Array(n)), TE=new TextEncoder(), TD=new TextDecoder();
+const PRFS=TE.encode('kashish-couples-prf-v1');
+const CK=()=>'cp_cred_'+uid(), WK=()=>'cp_wrap_'+uid(), FK=()=>'cp_fail_'+uid();
+const J=(k,d)=>{ try{ return JSON.parse(localStorage.getItem(k))||d; }catch(e){ return d; } };
+const ext=x=>x.getClientExtensionResults?x.getClientExtensionResults():{};
+window.SEC={
+  REQUIRE:true,   /* set to false to allow devices without Face ID / fingerprint (less secure) */
+  last:0,
+  async supported(){ try{ return !!(window.PublicKeyCredential&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); }catch(e){ return false; } },
+  enrolled(){ return !!J(CK(),null); }, hasWrap(){ return !!localStorage.getItem(WK()); }, prf(){ const c=J(CK(),null); return !!(c&&c.prf); },
+  async enroll(){ const u=auth.currentUser;
+    const c=await navigator.credentials.create({publicKey:{rp:{name:'Kashish AI Couples Portal',id:location.hostname},user:{id:TE.encode(u.uid).slice(0,64),name:u.email,displayName:u.email},challenge:rnd(32),pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'preferred'},timeout:60000,attestation:'none',extensions:{prf:{}}}});
+    const e=ext(c); localStorage.setItem(CK(),JSON.stringify({id:b64u(new Uint8Array(c.rawId)),prf:!!(e.prf&&e.prf.enabled)})); this.last=Date.now(); },
+  async verify(){ const c=J(CK(),null); if(!c) throw new Error('not enrolled');
+    const o={challenge:rnd(32),allowCredentials:[{type:'public-key',id:unb(c.id)}],userVerification:'required',timeout:60000}; if(c.prf) o.extensions={prf:{eval:{first:PRFS}}};
+    const a=await navigator.credentials.get({publicKey:o}), ad=new Uint8Array(a.response.authenticatorData);
+    if(!(ad[32]&4)) throw new Error('user not verified');           /* UV flag must be set */
+    this.last=Date.now(); const e=ext(a), f=e.prf&&e.prf.results&&e.prf.results.first; return {prf:f?new Uint8Array(f):null}; },
+  async stepUp(){ if(!this.REQUIRE||Date.now()-this.last<60000) return true; try{ await this.verify(); return true; }catch(e){ showKashishToast('Face ID / fingerprint check needed to continue'); return false; } },
+  async remember(code){ const r=await this.verify(); if(!r.prf) throw new Error('prf'); const k=await crypto.subtle.importKey('raw',r.prf,'AES-GCM',false,['encrypt']), iv=rnd(12);
+    localStorage.setItem(WK(),JSON.stringify({iv:b64u(iv),ct:b64u(new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,TE.encode(code))))})); },
+  async recall(){ const r=await this.verify(); if(!r.prf) throw new Error('prf'); const w=J(WK(),null), k=await crypto.subtle.importKey('raw',r.prf,'AES-GCM',false,['decrypt']);
+    return TD.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb(w.iv)},k,unb(w.ct))); },
+  reset(){ localStorage.removeItem(CK()); localStorage.removeItem(WK()); this.last=0; },
+  lockLeft(){ return Math.max(0,(J(FK(),{}).until||0)-Date.now()); },
+  fail(){ const o=J(FK(),{}); o.n=(o.n||0)+1; if(o.n%5===0) o.until=Date.now()+Math.min(864e5,9e5*Math.pow(2,o.n/5-1)); localStorage.setItem(FK(),JSON.stringify(o)); },
+  ok(){ localStorage.removeItem(FK()); },
+  device(){ const u=navigator.userAgent, os=/iPhone|iPad/.test(u)?'iOS':/Android/.test(u)?'Android':/Windows/.test(u)?'Windows':/Mac/.test(u)?'Mac':'Other', br=/Edg\//.test(u)?'Edge':/Chrome\//.test(u)?'Chrome':/Safari\//.test(u)?'Safari':/Firefox\//.test(u)?'Firefox':'Browser'; return os+' '+br; }
+};
+})();
+</script>
+<script>
+
+(function(){
+const A_MAIL='sgursharn076@gmail.com', B_MAIL='kashishtyagii0999@gmail.com';
+const PEOPLE={A:{name:'Gursharan Singh',dob:'2006-02-02',dobT:'02 February 2006',st:'Punjab',mail:A_MAIL},B:{name:'Kashish Tyagi',dob:'2008-10-24',dobT:'24 October 2008',st:'Haryana',mail:B_MAIL}};
+const FONTS=['Great Vibes','Dancing Script','Allura','Sacramento','Satisfy','Caveat','Homemade Apple','Kristi','Yellowtail','Parisienne','Alex Brush','Zeyada'];
+const DOC=[
+['1. TITLE AND DOCUMENT STATUS',['This document is a private Joint Declaration of Relationship and Voluntary Partnership (“Declaration”). It is strictly a private statement of mutual intent and relationship status. This document is NOT a marriage certificate, nor does it create, confer, or imply any government-issued or legally binding marriage status. This Declaration does not itself constitute a marriage, nor does it replace, substitute, or circumvent any legally required marriage registration under applicable Indian laws.']],
+['2. IDENTIFICATION OF THE PARTIES',['This Declaration is made between:','PARTNER A — Full Legal Name: Gursharan Singh · Date of Birth: 02 February 2006 · State of Residence: Punjab','AND','PARTNER B — Full Legal Name: Kashish Tyagi · Date of Birth: 24 October 2008 · State of Residence: Haryana','(Hereinafter collectively referred to as the “Parties” and individually as a “Party”).']],
+['3. ADULT STATUS AND LEGAL CAPACITY',['By affixing their signatures below, both Parties solemnly affirm and declare that on the exact date of execution of this document, they have attained the legal age of majority and possess the legal capacity and competence to enter into a contract under the Indian Contract Act, 1872, and all other applicable laws in India. This document is drafted for execution only after both Parties are legally competent adults.']],
+['4. VOLUNTARY AND INFORMED CONSENT',['The Parties declare that they are entering into this Declaration voluntarily, with full knowledge and understanding of its contents. Both Parties confirm that they sign this document entirely free from any force, coercion, threat, fraud, undue influence, or external pressure.']],
+['5. RELATIONSHIP DECLARATION',['The Parties hereby declare that they are in a committed, consensual, and exclusive relationship based on mutual love, trust, and respect.']],
+['6. MUTUAL RECOGNITION AS LIFE PARTNERS',['The Parties mutually recognize each other as life partners and intend to provide emotional support, companionship, and care for one another, subject to the terms of this Declaration.']],
+['7. FUTURE MARRIAGE INTENTION',['The Parties hereby record their mutual intention to lawfully marry each other in the future, subject to their continued mutual consent and the fulfillment of all legal requirements (including legal age and capacity) under the applicable matrimonial laws of India. The Parties’ intended target date for marriage is 12 August 2027. The Parties reiterate that an intention to marry does not constitute an existing marriage, and they are not legally married as of the date of executing this document.']],
+['8. FINANCIAL RESPONSIBILITIES',['While the Parties intend to support one another, they agree that unless explicitly stated in a separate legally binding agreement, neither Party shall be held legally responsible for the pre-existing debts, liabilities, or unilateral financial obligations of the other Party.']],
+['9. SEPARATE PROPERTY',['Both Parties shall retain their independent legal identity. All property (real, personal, or intellectual) owned by either Party prior to the execution of this Declaration, or acquired in their individual name thereafter, shall remain their absolute and separate property. This Declaration does not transfer any property rights.']],
+['10. JOINTLY ACQUIRED PROPERTY',['Any future financial and property arrangements, including jointly acquired assets, shall be governed by applicable Indian laws. The ownership, rights, and obligations pertaining to any joint property shall be determined by separate, valid legal documents (such as joint deeds or written contracts) as required by law.']],
+['11. PERSONAL AUTONOMY AND PRIVACY',['The Parties agree to respect the personal autonomy, individual privacy, and career choices of one another. Each Party retains the absolute right to make their own independent medical, legal, and professional decisions.']],
+['12. VOLUNTARY EXECUTION',['This agreement is executed freely and voluntarily. Each Party acknowledges that they have had the opportunity to seek independent legal counsel before executing this Declaration, should they have chosen to do so.']],
+['13. ELECTRONIC EXECUTION / eSIGN',['This Declaration may be executed in physical form or by legally recognized electronic signatures (eSign). If executed electronically, such electronic signatures shall be deemed to have the same legal validity, enforceability, and effect as original handwritten signatures, subject to the Information Technology Act, 2000.']],
+['14. NO REPRESENTATION OF EXISTING MARRIAGE',['The Parties expressly agree that they shall not represent themselves to any third party, government authority, or institution as being legally married on the basis of this Declaration.']],
+['15. DISPUTE / INTERPRETATION CLAUSE',['This Declaration shall be interpreted in accordance with the laws of India. Any disputes arising out of the interpretation of this Declaration shall be resolved amicably through mutual discussion.']],
+['16. AMENDMENT AND TERMINATION',['This Declaration may be amended only by a written instrument signed by both Parties. This Declaration may be terminated unilaterally by either Party at any time by providing written notice to the other Party, or it shall automatically terminate upon the lawful marriage of the Parties to each other.']]];
+const TAIL=[
+['19. OPTIONAL IDENTITY-VERIFICATION RECORD',['(To be completed by a witness or notary, if applicable, without recording sensitive numerical identifiers)','Identity Document Verified for Partner A (Type of ID only): ___________________________','Identity Document Verified for Partner B (Type of ID only): ___________________________']],
+['20. LEGAL DISCLAIMER',['This is a private declaration. Depending on the exact jurisdiction within India, the execution of this document may attract applicable stamp duty. For this document to carry evidentiary value as an agreement or affidavit, it must be printed on Non-Judicial Stamp Paper of appropriate value as per the respective State Stamp Act, duly notarized, and/or registered if required by local laws, and attested by competent witnesses. Parties must independently verify local formalities and legal requirements prior to execution.']]];
+const TITLE='JOINT DECLARATION OF RELATIONSHIP AND VOLUNTARY PARTNERSHIP';
+const $=id=>document.getElementById(id), E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TS=()=>firebase.database.ServerValue.TIMESTAMP;
+const fmt=t=>new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kolkata'});
+
+/*H1*/
+const te=new TextEncoder(), td=new TextDecoder();
+const b64=u=>{ let s=''; for(let i=0;i<u.length;i+=8192) s+=String.fromCharCode.apply(null,u.subarray(i,i+8192)); return btoa(s); };
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const norm=c=>String(c).toUpperCase().replace(/[^A-Z0-9]/g,'');
+async function kdf(code,salt,it){ const m=await crypto.subtle.importKey('raw',te.encode(norm(code)),'PBKDF2',false,['deriveKey']); return crypto.subtle.deriveKey({name:'PBKDF2',salt:unb64(salt),iterations:it||200000,hash:'SHA-256'},m,{name:'AES-GCM',length:256},false,['encrypt','decrypt']); }
+async function enc(k,str){ const iv=crypto.getRandomValues(new Uint8Array(12)); return {iv:b64(iv),ct:b64(new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,te.encode(str))))}; }
+async function dec(k,o){ return td.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(o.iv)},k,unb64(o.ct))); }
+function genCode(){ const al='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let s=''; while(s.length<20){ const b=crypto.getRandomValues(new Uint8Array(32)); for(const x of b){ if(x<248&&s.length<20) s+=al[x%31]; } } return s.match(/.{4}/g).join('-'); }
+const newSalt=()=>b64(crypto.getRandomValues(new Uint8Array(16)));
+/*H2*/
+
+const S={role:null,D:{},ref:null,k:null,busy:false,view:null,sess:null,shownReq:0,font:FONTS[0],lock:null};
+let R=null, offRef=null, autoLock=null;
+const role=()=>{ const u=auth&&auth.currentUser, m=u&&String(u.email||'').toLowerCase(); return m===A_MAIL?'A':m===B_MAIL?'B':null; };
+function sheet(h){ $('sx-shb').innerHTML=h; $('sx-bd').classList.add('show'); $('sx-sh').classList.add('show'); }
+const toast=m=>{ try{ showKashishToast(m); }catch(e){ alert(m); } };
+function adult(dob){ const n=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'})), d=new Date(dob+'T00:00:00'); let a=n.getFullYear()-d.getFullYear(); if(n.getMonth()<d.getMonth()||(n.getMonth()===d.getMonth()&&n.getDate()<d.getDate())) a--; return a>=18; }
+
+/* ---------- menu visibility: only the two partners ---------- */
+
+
+window.cpOpen=function(){
+  S.role=role(); if(!S.role){ return; }
+  if(!$('cp-fonts')){ const l=document.createElement('link'); l.id='cp-fonts'; l.rel='stylesheet'; l.href='https://fonts.googleapis.com/css2?'+FONTS.map(f=>'family='+f.replace(/ /g,'+')).join('&')+'&display=swap'; document.head.appendChild(l); }
+  $('cp').classList.remove('hidden'); R=db.ref('couples/main'); logEv('open');
+  if(offRef) R.off('value',offRef);
+  offRef=R.on('value',s=>{ S.D=s.val()||{}; draw(); watch(); steps(); },e=>{ $('cp-b').innerHTML='<div class="sx-empty"><i class="ph-bold ph-lock-key"></i><b>No access</b>This portal is only for the two registered partner accounts.</div>'; });
+  draw(); };
+window.cpClose=function(){ if(R&&offRef) R.off('value',offRef); offRef=null; lockNow(true); $('cp').classList.add('hidden'); S.k=null; auth.signOut(); };
+function lockNow(q){ S.view=null; clearTimeout(autoLock); if(!q) draw(); }
+
+/* ---------- document html ---------- */
+function paper(sig,withStatus){
+  const body=DOC.concat(TAIL.slice(0,0));
+  const sec=([h,ps])=>`<h3>${E(h)}</h3>${ps.map(p=>`<p>${E(p)}</p>`).join('')}`;
+  const blk=r=>{ const P=PEOPLE[r], s=sig&&sig[r], mine=S.role===r;
+    return `<div class="cp-sig"><b style="font-size:12px">PARTNER ${r}</b><br>Name: ${E(P.name)}<div class="cp-sigbox">${s?`<img src="${E(s.img)}" alt="Signature of ${E(P.name)}">`:(mine&&withStatus?`<button onclick="cpSign()">Sign here</button>`:`<span>${withStatus?'Waiting for '+E(P.name.split(' ')[0])+' to sign':'Not signed'}</span>`)}</div>Execution Date: <b>${s&&s.ts?fmt(s.ts):'—  (fills in automatically when signed)'}</b></div>`; };
+  return `<div class="cp-paper"><h2>${TITLE}</h2>${DOC.map(sec).join('')}<h3>SIGNATURES / e-SIGNATURES</h3><p style="font-size:12px;font-style:italic">(Note: To be signed only on or after both parties are legally competent to contract.)</p>${blk('A')}${blk('B')}${TAIL.map(sec).join('')}</div>`;
+}
+function sigs(){ const D=S.D, o={}; ['A','B'].forEach(r=>{ if(D.sig&&D.sig[r]&&D.art&&D.art[r]) o[r]={name:D.sig[r].name,img:D.art[r].img,font:D.art[r].font,ts:D.sig[r].ts}; }); return o; }
+const sealed=()=>S.D.meta&&S.D.meta.status==='sealed';
+
+function draw(){
+  const b=$('cp-b'); if(!b||$('cp').classList.contains('hidden')) return;
+  const D=S.D, r=S.role, o=r==='A'?'B':'A', both=D.sig&&D.sig.A&&D.sig.B, sg=D.sig||{};
+  const chip=x=>`<div class="cp-who ${sg[x]?'ok':''}"><div class="cp-av">${PEOPLE[x].name[0]}</div><b>${E(PEOPLE[x].name.split(' ')[0])}${x===r?' (you)':''}</b><small>${sg[x]?'Signed '+(sg[x].ts?fmt(sg[x].ts):''):'Not signed yet'}</small></div>`;
+  let h=`<div class="cp-pair">${chip('A')}<i class="ph-fill ph-heart cp-heart"></i>${chip('B')}</div>`;
+  if(S.view){
+    h+=`<div class="sx-card"><div class="sx-row" style="cursor:default"><i class="ph-bold ph-lock-open"></i><span class="m"><div class="t">Unlocked on this device</div><div class="s">Locks itself after 3 minutes</div></span></div></div>
+    <div class="sx-acts"><button class="sx-btn" onclick="cpPdf()"><i class="ph-bold ph-download-simple"></i>Download PDF</button><button class="sx-btn alt" onclick="cpLock()"><i class="ph-bold ph-lock"></i>Lock</button></div><div style="height:14px"></div>${paper({A:S.view.A,B:S.view.B},false)}`;
+  } else if(sealed()){
+    h+=`<div class="sx-card cp-lock"><i class="ph-fill ph-lock-key big"></i><b style="font-size:18px">Signed and sealed</b><p style="color:var(--soft);font-size:14px;line-height:1.5;margin:8px 0 14px">Signed by both on ${sg.A&&sg.A.ts?fmt(sg.A.ts):''}${sg.B&&sg.B.ts&&(!sg.A||fmt(sg.A.ts)!==fmt(sg.B.ts))?' and '+fmt(sg.B.ts):''}. To open or download it, each of you must approve with your own half password, on your own device.</p><button class="sx-btn" onclick="cpAsk()"><i class="ph-bold ph-key"></i>Open file</button></div>`;
+  } else if(both){
+    const done=D.lock&&D.lock['by'+r]&&D.inner&&D.inner[r];
+    h+=`<div class="sx-card cp-lock"><i class="ph-bold ph-seal-check big"></i><b style="font-size:18px">Both signed — sealing the file</b><p style="color:var(--soft);font-size:14px;line-height:1.5;margin:8px 0 ${S.k||done?0:14}px">${done?'Your part is done. Waiting for '+E(PEOPLE[o].name.split(' ')[0])+' to finish on their device.':S.k?'Sealing with your half password…':'Enter your half password to lock the file on this device.'}</p>${S.k||done?'':`<button class="sx-btn" onclick="cpEnter()"><i class="ph-bold ph-key"></i>Enter my half password</button>`}</div>${paper(sigs(),false)}`;
+  } else {
+    const gate=['A','B'].filter(x=>!adult(PEOPLE[x].dob));
+    h+=`${gate.length?`<div class="sx-note" style="margin:0 0 12px"><b>Signing is locked.</b> ${gate.map(x=>E(PEOPLE[x].name.split(' ')[0])).join(' and ')} must be 18 on the day of signing (section 3).</div>`:''}<div class="sx-note" style="margin:0 0 12px">${sg[r]?`You signed. Waiting for ${E(PEOPLE[o].name.split(' ')[0])} — you’ll see their signature appear here live.`:`Read the declaration, then tap <b>Sign here</b> in your block. The date fills in automatically.`}</div>${paper(sigs(),true)}`;
+  }
+  const y=b.scrollTop; b.innerHTML=h; b.scrollTop=y;
+}
+window.cpLock=()=>lockNow();
+
+/* ---------- signing ---------- */
+window.cpSign=async function(){ if(!await SEC.stepUp()) return;
+  const r=S.role; if(!adult(PEOPLE.A.dob)||!adult(PEOPLE.B.dob)){ toast('Signing opens only when both partners are 18 on the signing date.'); return; }
+  S.font=FONTS[0];
+  sheet(`<h2>Your signature</h2><p>Type your name and choose a style.</p><div class="sx-field"><input id="cp-name" type="text" value="${E(PEOPLE[r].name)}" oninput="cpPrev()" autocapitalize="words"></div>
+   <div class="cp-prev" id="cp-prev" style="font-family:'${FONTS[0]}'">${E(PEOPLE[r].name)}</div>
+   <div class="cp-fonts">${FONTS.map((f,i)=>`<button class="${i?'':'on'}" style="font-family:'${f}'" onclick="cpFont(${i})">${E(PEOPLE[r].name.split(' ')[0])}</button>`).join('')}</div>
+   <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45;margin:12px 0 4px"><input type="checkbox" id="cp-ok" style="margin-top:3px"> I am 18 or older today. I have read this Declaration and I sign it voluntarily (sections 3 and 4).</label>
+   <button class="sx-btn" onclick="cpDoSign()"><i class="ph-bold ph-pen-nib"></i>Sign now</button>`); };
+window.cpFont=function(i){ S.font=FONTS[i]; document.querySelectorAll('.cp-fonts button').forEach((b,j)=>b.classList.toggle('on',i===j)); cpPrev(); };
+window.cpPrev=function(){ const p=$('cp-prev'); p.style.fontFamily=`'${S.font}'`; p.textContent=$('cp-name').value||' '; };
+async function sigImg(text,font){ try{ await document.fonts.load(`64px "${font}"`,text); }catch(e){}
+  const c=document.createElement('canvas'); c.width=520; c.height=150; const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,520,150); x.fillStyle='#14213d'; x.textBaseline='middle'; x.textAlign='center';
+  let s=76; do{ x.font=`${s}px "${font}"`; s-=4; }while(x.measureText(text).width>480&&s>20); x.fillText(text,260,78); return c.toDataURL('image/png'); }
+window.cpDoSign=async function(){
+  const r=S.role, name=$('cp-name').value.trim(); if(name.length<2){ toast('Type your name'); return; } if(!$('cp-ok').checked){ toast('Please tick the confirmation'); return; }
+  if(S.D.sig&&S.D.sig[r]){ toast('Already signed'); return; }
+  sheet('<h2>Signing…</h2><div class="sx-spin"></div><p style="text-align:center">Creating your half password</p>');
+  try{ const code=genCode(), salt=newSalt(), k=await kdf(code,salt,600000), img=await sigImg(name,S.font), chk=await enc(k,'KCP1');
+    await R.child('art/'+r).set({font:S.font,img});
+    await R.child('sig/'+r).set({name,salt,chk,it:600000,ts:TS()}); logEv('sign'); S.k=k;
+    sheet(`<h2>Your half password</h2><p>This is shown <b>only once</b>. Save it somewhere safe (password manager or paper). The file opens only when <b>both</b> half passwords are used, each on its own device. Nobody — not even Kashish AI — can recover it.</p><div class="cp-code" id="cp-code">${code}</div>
+     <button class="sx-btn alt" onclick="navigator.clipboard&&navigator.clipboard.writeText('${code}').then(()=>showKashishToast('Copied'))"><i class="ph-bold ph-copy"></i>Copy</button>
+     ${SEC.prf()?`<button class="sx-btn alt" onclick="cpRemember('${code}')"><i class="ph-bold ph-fingerprint"></i>Unlock with Face ID / fingerprint next time</button>`:''}<label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45;margin:14px 0 4px"><input type="checkbox" id="cp-saved" style="margin-top:3px"> I have saved my half password.</label>
+     <button class="sx-btn" onclick="if(!document.getElementById('cp-saved').checked){showKashishToast('Tick once you have saved it');return;}sxClose()">Continue</button>`);
+  }catch(e){ sheet('<h2>Couldn’t sign</h2><p>Check your connection and try again.</p><button class="sx-btn" onclick="sxClose()">Close</button>'); }
+};
+
+/* ---------- sealing: each device only ever uses its OWN half password ---------- */
+const Pstr=()=>{ const g=sigs(); return JSON.stringify({v:1,A:g.A,B:g.B}); };
+window.cpEnter=function(){ sheet(`<h2>Your half password</h2><p>Enter the half password you saved when you signed.</p><div class="sx-field"><input id="cp-in" type="text" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX" autocapitalize="characters" autocorrect="off"></div>${bioBtn()}<button class="sx-btn" onclick="cpEnterGo()">Continue</button>`); };
+async function check(code){ if(SEC.lockLeft()) throw 'locked'; const r=S.role, s=S.D.sig&&S.D.sig[r]; if(!s) throw 0; try{ const k=await kdf(code,s.salt,s.it); if(await dec(k,s.chk)!=='KCP1') throw 0; SEC.ok(); return k; }catch(e){ SEC.fail(); logEv('wrong'); throw e; } }
+window.cpEnterGo=async function(){ try{ S.k=await check($('cp-in').value); sxClose(); steps(); draw(); }catch(e){ badCode(); } };
+async function steps(){
+  if(S.busy) return; const D=S.D, r=S.role; if(!r||!D.sig||!D.sig.A||!D.sig.B||sealed()) return; const o=r==='A'?'B':'A', L=D.lock||{}, I=D.inner||{};
+  if(L.byA&&L.byB){ try{ await R.update({'meta/status':'sealed','meta/sealedAt':TS(),art:null,inner:null}); S.k=null; }catch(e){} return; }
+  if(!D.art||!D.art.A||!D.art.B||!S.k) return;
+  S.busy=true; let moved=false;
+  try{ if(!I[r]){ await R.child('inner/'+r).set(await enc(S.k,Pstr())); moved=true; }
+       else if(I[o]&&!L['by'+r]){ await R.child('lock/by'+r).set(await enc(S.k,JSON.stringify(I[o]))); moved=true; } }catch(e){}
+  S.busy=false; if(moved) setTimeout(steps,50);
+}
+
+/* ---------- opening: partner approves on THEIR device ---------- */
+window.cpAsk=async function(){ if(!await SEC.stepUp()) return; sheet(`<h2>Open the file</h2><p>Enter your half password. Then ${E(PEOPLE[S.role==='A'?'B':'A'].name.split(' ')[0])} must approve on their own device.</p><div class="sx-field"><input id="cp-in" type="text" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX" autocapitalize="characters" autocorrect="off"></div>${bioBtn()}<button class="sx-btn" onclick="cpAskGo()"><i class="ph-bold ph-paper-plane-tilt"></i>Send request</button>`); };
+window.cpAskGo=async function(){ let k; try{ k=await check($('cp-in').value); }catch(e){ badCode(); return; }
+  S.sess=k; await R.child('session').set({by:S.role,state:'req',ts:TS()}); logEv('request');
+  sheet(`<h2>Waiting for approval</h2><div class="sx-spin"></div><p style="text-align:center">Ask ${E(PEOPLE[S.role==='A'?'B':'A'].name.split(' ')[0])} to open the Couples Portal and approve.</p><button class="sx-btn alt" onclick="cpCancel()">Cancel</button>`); };
+window.cpCancel=function(){ S.sess=null; R.child('session').remove(); sxClose(); };
+async function watch(){
+  const D=S.D, s=D.session, r=S.role; if(!s) return;
+  if(S.sess&&s.by===r){
+    if(s.state==='deny'){ S.sess=null; R.child('session').remove(); sxClose(); toast('Request declined'); return; }
+    if(s.state==='ok'&&s.inner){ const k=S.sess; S.sess=null; try{ S.view=JSON.parse(await dec(k,s.inner)); }catch(e){ toast('Could not open the file'); R.child('session').remove(); sxClose(); return; }
+      R.child('session').remove(); sxClose(); clearTimeout(autoLock); autoLock=setTimeout(()=>lockNow(),180000); draw(); }
+    return; }
+  if(s.by!==r&&s.state==='req'&&S.shownReq!==s.ts&&Date.now()-s.ts<120000&&sealed()){ S.shownReq=s.ts; const n=PEOPLE[s.by].name.split(' ')[0];
+    sheet(`<h2>${E(n)} wants to open the file</h2><p>Only approve if this is really ${E(n)}. Enter <b>your</b> half password to approve.</p><div class="sx-field"><input id="cp-in" type="text" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX" autocapitalize="characters" autocorrect="off"></div>${bioBtn()}<button class="sx-btn" onclick="cpApprove()"><i class="ph-bold ph-check"></i>Approve</button><button class="sx-btn red" onclick="cpDeny()">Decline</button>`); }
+}
+window.cpApprove=async function(){ if(!await SEC.stepUp()) return; try{ const k=await check($('cp-in').value), inner=JSON.parse(await dec(k,S.D.lock['by'+S.role])); await R.child('session').update({state:'ok',inner}); logEv('approve'); sxClose(); toast('Approved'); }catch(e){ badCode(); } };
+window.cpDeny=function(){ logEv('deny'); R.child('session').update({state:'deny'}); sxClose(); };
+
+/* ---------- PDF ---------- */
+window.cpPdf=async function(){
+  if(!await SEC.stepUp()) return; const v=S.view; if(!v||!window.jspdf){ toast('PDF tools are still loading — try again'); return; }
+  const d=new window.jspdf.jsPDF({unit:'mm',format:'a4'}), M=18, W=174; let y=M;
+  const ascii=t=>String(t).replace(/[“”]/g,'"').replace(/[’‘]/g,"'").replace(/[—–]/g,'-').replace(/·/g,'|');
+  const need=h=>{ if(y+h>282){ d.addPage(); y=M; } };
+  const para=(t,bold,sz)=>{ d.setFont('helvetica',bold?'bold':'normal'); d.setFontSize(sz||10); d.splitTextToSize(ascii(t),W).forEach(l=>{ need(5); d.text(l,M,y); y+=4.8; }); };
+  d.setFont('helvetica','bold'); d.setFontSize(13); d.splitTextToSize(TITLE,W).forEach(l=>{ d.text(l,105,y,{align:'center'}); y+=6; }); y+=4;
+  const sec=([h,ps])=>{ need(14); y+=2; para(h,true,10.5); ps.forEach(p=>para(p)); y+=1; };
+  DOC.forEach(sec); need(12); y+=2; para('SIGNATURES / e-SIGNATURES',true,10.5); para('(Note: To be signed only on or after both parties are legally competent to contract.)');
+  ['A','B'].forEach(r=>{ const s=v[r]; need(46); y+=4; para('PARTNER '+r,true); para('Name: '+PEOPLE[r].name); if(s&&s.img){ d.addImage(s.img,'PNG',M,y,60,17.3); } y+=19; d.line(M,y,M+70,y); y+=5; para('Execution Date: '+(s&&s.ts?fmt(s.ts):'')); });
+  TAIL.forEach(sec); need(10); y+=4; d.setFontSize(8); d.setTextColor(120); d.text('Signed electronically and sealed in the Kashish AI Couples Portal.',M,y);
+  logEv('download'); d.save('Joint-Declaration-signed.pdf'); };
+
+function logEv(t){ try{ if(R&&S.role) R.child('log').push({r:S.role,t,ts:TS(),d:SEC.device()}); }catch(e){} }
+function badCode(){ const m=Math.ceil(SEC.lockLeft()/60000); toast(m?`Too many wrong tries. This device is locked for ${m} min.`:'That half password is not right'); }
+function bioBtn(){ return SEC.hasWrap()?'<button class="sx-btn alt" onclick="cpBioFill()"><i class="ph-bold ph-fingerprint"></i>Use Face ID / fingerprint</button>':''; }
+window.cpBioFill=async function(){ try{ $('cp-in').value=await SEC.recall(); }catch(e){ toast('Could not unlock the saved half password'); } };
+window.cpRemember=async function(code){ try{ await SEC.remember(code); toast('Saved on this device, protected by biometrics'); }catch(e){ toast('This browser can’t protect it with biometrics'); } };
+window.cpWipe=function(){ S.view=null; S.sess=null; S.k=null; clearTimeout(autoLock); if(R&&offRef) R.off('value',offRef); offRef=null; };
+window.cpResetBio=function(){ if(!confirm('Remove Face ID / fingerprint from this device? You will set it up again next time.')) return; SEC.reset(); cpClose(); };
+window.cpInfo=function(){
+  const L=Object.values(S.D.log||{}).sort((a,b)=>b.ts-a.ts).slice(0,12), lab={open:'Opened the portal',sign:'Signed',request:'Asked to open the file',approve:'Approved opening',deny:'Declined opening',download:'Downloaded the PDF',wrong:'Wrong half password'};
+  const li=(t,s,ok)=>`<div class="sx-row" style="cursor:default"><i class="ph-bold ${ok?'ph-check-circle':'ph-warning-circle'}" style="color:${ok?'var(--ok)':'var(--warn)'}"></i><span class="m"><div class="t">${t}</div><div class="s">${s}</div></span></div>`;
+  sheet(`<h2>Security</h2><div class="sx-card">
+   ${li('Verified account','Only the two partner e-mails get in.',true)}
+   ${li('Face ID / fingerprint',SEC.enrolled()?'Needed to enter, sign, open and download.':'Not set up on this device.',SEC.enrolled())}
+   ${li('Biometric-protected half password',SEC.hasWrap()?'Saved here; opens only with your biometrics.':(SEC.prf()?'Optional — offered when you sign.':'Not supported by this browser.'),SEC.hasWrap())}
+   ${li('Half passwords','Yours never leaves your device. Both are needed.',true)}
+   ${li('Auto-lock','After 2 minutes idle or 30 seconds in the background.',true)}
+   ${li('Attempt limit','5 wrong half passwords lock this device for 15 minutes or more.',true)}</div>
+   <label class="sx-lbl">Recent activity (both of you can see this)</label>
+   <div class="sx-card">${L.length?L.map(x=>`<div class="sx-row" style="cursor:default"><span class="m"><div class="t">${E(PEOPLE[x.r]?PEOPLE[x.r].name.split(' ')[0]:'Someone')} · ${E(lab[x.t]||x.t)}</div><div class="s">${x.ts?new Date(x.ts).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'}):''} · ${E(x.d||'')}</div></span></div>`).join(''):'<div class="sx-row" style="cursor:default"><span class="m"><div class="s">No activity yet.</div></span></div>'}</div>
+   <button class="sx-btn red" onclick="cpResetBio()">Remove biometrics from this device</button>
+   <div class="sx-note">This is a private declaration, not a marriage certificate. Stamp paper, notary and witnesses are described in section 20.</div>`); };
+})();
+
+</script>
+<script>
+(function(){
+const OK=['sgursharn076@gmail.com','kashishtyagii0999@gmail.com'], g=document.getElementById('gate'), gi=document.getElementById('gate-in');
+const mark='<div class="mark"><i class="ph-fill ph-heart"></i></div>';
+function login(msg){ gi.innerHTML=mark+`<h1>Couples Portal</h1><p>${msg||'A private space for two. Sign in with your partner account.'}</p>
+ <button class="sx-btn alt" onclick="gGoogle()" style="margin:0 0 14px"><i class="ph-bold ph-google-logo"></i>Continue with Google</button>
+ <div class="sx-field"><input id="g-em" type="text" placeholder="Email" autocapitalize="off" autocorrect="off" inputmode="email"></div>
+ <div class="sx-field"><input id="g-pw" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')gEmail()"></div>
+ <button class="sx-btn" onclick="gEmail()">Sign in</button><button class="sx-btn alt" style="background:none;font-size:13px" onclick="gReset()">Forgot password?</button>`; }
+window.gGoogle=async function(){ const p=new firebase.auth.GoogleAuthProvider(); try{ await auth.signInWithPopup(p); }catch(e){ if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment')) auth.signInWithRedirect(p); else if(e&&e.code==='auth/unauthorized-domain') showKashishToast('Add this website address in Firebase → Authentication → Authorized domains'); else if(e&&e.code!=='auth/popup-closed-by-user') showKashishToast('Google sign-in failed'); } };
+window.gEmail=async function(){ try{ await auth.signInWithEmailAndPassword(document.getElementById('g-em').value.trim(),document.getElementById('g-pw').value); }catch(e){ showKashishToast('Wrong email or password'); } };
+window.gReset=async function(){ const m=document.getElementById('g-em').value.trim(); if(!m){ showKashishToast('Type your email first'); return; } try{ await auth.sendPasswordResetEmail(m); showKashishToast('Reset link sent'); }catch(e){ showKashishToast('Could not send reset link'); } };
+function openP(){ g.classList.add('hidden'); cpOpen(); bump(); }
+const out='<button class="sx-btn alt" style="background:none;font-size:13px" onclick="auth.signOut()">Sign out</button>';
+async function enterPortal(){
+  g.classList.remove('hidden'); const sup=await SEC.supported();
+  if(!SEC.REQUIRE){ openP(); return; }
+  if(!sup){ gi.innerHTML=mark+`<h1>Biometrics needed</h1><p>This portal needs Face ID, Touch ID, Windows Hello or a fingerprint. Open it on a phone or laptop that has one.</p>`+out; return; }
+  if(!SEC.enrolled()){ gi.innerHTML=mark+`<h1>Set up your biometric lock</h1><p>Use Face ID or your fingerprint to lock this portal on this device. Your face or fingerprint never leaves your device.</p><button class="sx-btn" onclick="bioSetup()"><i class="ph-bold ph-fingerprint"></i>Set up now</button>`+out; return; }
+  gi.innerHTML=mark+`<h1>Locked</h1><p>Confirm it’s you to continue.</p><button class="sx-btn" onclick="bioGo()"><i class="ph-bold ph-fingerprint"></i>Unlock with Face ID / fingerprint</button>`+out;
+}
+window.bioSetup=async function(){ try{ await SEC.enroll(); openP(); }catch(e){ showKashishToast('Biometric setup was cancelled'); } };
+window.bioGo=async function(){ try{ await SEC.verify(); openP(); }catch(e){ showKashishToast('Could not verify — try again'); } };
+const shown=()=>!document.getElementById('cp').classList.contains('hidden');
+function relock(){ if(!shown()) return; cpWipe(); document.getElementById('cp').classList.add('hidden'); sxClose(); SEC.last=0; enterPortal(); }
+let hid=0, idle; function bump(){ clearTimeout(idle); if(SEC.REQUIRE&&shown()) idle=setTimeout(relock,120000); }
+['pointerdown','keydown','scroll','touchstart'].forEach(e=>addEventListener(e,bump,{passive:true}));
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ hid=Date.now(); document.body.classList.add('cp-blur'); } else { document.body.classList.remove('cp-blur'); if(SEC.REQUIRE&&shown()&&hid&&Date.now()-hid>30000) relock(); } });
+auth.onAuthStateChanged(u=>{
+  document.getElementById('cp').classList.add('hidden'); g.classList.remove('hidden');
+  if(!u){ login(); return; }
+  const m=String(u.email||'').toLowerCase();
+  if(!OK.includes(m)){ gi.innerHTML=mark+`<h1>Private portal</h1><p>This portal is only for the two registered partners. You are signed in as ${m||'another account'}.</p><button class="sx-btn alt" onclick="auth.signOut()">Sign out</button>`; return; }
+  if(!u.emailVerified){ gi.innerHTML=mark+`<h1>Verify your email</h1><p>Confirm ${m} to continue. Google sign-in is verified automatically.</p><button class="sx-btn" onclick="auth.currentUser.sendEmailVerification().then(()=>showKashishToast('Verification email sent'))">Send verification email</button><button class="sx-btn alt" onclick="auth.currentUser.reload().then(()=>auth.currentUser.getIdToken(true)).then(()=>location.reload())">I’ve verified</button><button class="sx-btn alt" style="background:none;font-size:13px" onclick="auth.signOut()">Sign out</button>`; return; }
+  enterPortal();
+});
+})();
+</script>
+</body></html>
