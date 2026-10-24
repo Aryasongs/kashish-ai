@@ -24720,5 +24720,100 @@ if(document.readyState === 'loading') document.addEventListener('DOMContentLoade
 setTimeout(addButtons, 1500);
 })();
 </script>
+<!--
+  KASHISH AI — Website Health Bot panel
+  Paste this block before </body> in index.html.
+  Set WHB_API below to your deployed Worker URL.
+-->
+<div id="whb-overlay" class="hidden" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:16px;max-width:480px;width:100%;max-height:85vh;overflow:auto;padding:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <strong>Website Health Bot</strong>
+      <button onclick="whbClose()" style="border:none;background:none;font-size:20px;cursor:pointer">&times;</button>
+    </div>
+    <div id="whb-body"></div>
+  </div>
+</div>
+
+<script>
+const WHB_API = "https://kashish-health-bot.sgursharn076.workers.dev";
+
+const WHB = { step: "domain", domain: "", site: null, scanId: null, poll: null };
+
+function whbEsc(s){ return String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function whbEl(){ return document.getElementById("whb-overlay"); }
+window.whbOpen = function(){ whbEl().classList.remove("hidden"); whbRender(); };
+window.whbClose = function(){ whbEl().classList.add("hidden"); if(WHB.poll) clearInterval(WHB.poll); };
+
+function whbRender(){
+  const b = document.getElementById("whb-body");
+  if (WHB.step === "domain") {
+    b.innerHTML = `
+      <p style="font-size:14px;color:#555">Scan your own website for missing security headers, exposed files, outdated libraries and broken links. You must verify you own the domain first.</p>
+      <input id="whb-domain" placeholder="yourdomain.com" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;margin:10px 0">
+      <button onclick="whbRegister()" style="width:100%;padding:10px;border-radius:8px;background:#1975CE;color:#fff;border:none;cursor:pointer">Continue</button>`;
+  } else if (WHB.step === "verify") {
+    b.innerHTML = `
+      <p style="font-size:14px">Prove you control <b>${whbEsc(WHB.site.domain)}</b>:</p>
+      <div style="background:#f5f5f5;border-radius:8px;padding:10px;font-size:13px;word-break:break-all">${whbEsc(WHB.site.instructions)}</div>
+      <p style="font-size:12px;color:#888;margin-top:8px">DNS changes can take a few minutes to propagate.</p>
+      <button onclick="whbCheckVerify()" style="width:100%;padding:10px;border-radius:8px;background:#1975CE;color:#fff;border:none;cursor:pointer;margin-top:10px">I've added it — check now</button>`;
+  } else if (WHB.step === "start") {
+    b.innerHTML = `
+      <p style="font-size:14px">✅ Verified. Ready to scan <b>${whbEsc(WHB.site.domain)}</b>.</p>
+      <button onclick="whbStartScan()" style="width:100%;padding:10px;border-radius:8px;background:#1975CE;color:#fff;border:none;cursor:pointer">Start scan</button>`;
+  } else if (WHB.step === "running") {
+    b.innerHTML = `<p style="font-size:14px">🔎 Scan running — this can take a while for larger sites; it keeps working in the background.</p><div id="whb-progress" style="font-size:13px;color:#555"></div>`;
+  } else if (WHB.step === "results") {
+    const f = WHB.findings || [];
+    const rows = f.map(x => `
+      <div style="border-bottom:1px solid #eee;padding:8px 0">
+        <div style="font-size:12px;text-transform:uppercase;color:${x.severity==='high'?'#c0392b':x.severity==='medium'?'#d68910':'#888'}">${whbEsc(x.severity)} · ${whbEsc(x.type)}</div>
+        <div style="font-size:14px">${whbEsc(x.title)}</div>
+        <div style="font-size:12px;color:#888;word-break:break-all">${whbEsc(x.url)}</div>
+      </div>`).join("") || "<p style='font-size:14px;color:#555'>No issues found 🎉</p>";
+    b.innerHTML = `<p style="font-size:14px">Scan complete — ${f.length} finding(s).</p>${rows}`;
+  }
+}
+
+async function whbRegister(){
+  WHB.domain = document.getElementById("whb-domain").value.trim();
+  if (!WHB.domain) return;
+  const res = await fetch(`${WHB_API}/api/sites`, { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ domain: WHB.domain, verify_method: "dns" }) });
+  WHB.site = await res.json();
+  WHB.step = WHB.site.verified ? "start" : "verify";
+  whbRender();
+}
+
+async function whbCheckVerify(){
+  const res = await fetch(`${WHB_API}/api/sites/${WHB.site.site_id}/verify`, { method:"POST" });
+  const data = await res.json();
+  if (data.verified) { WHB.step = "start"; whbRender(); }
+  else alert("Not verified yet — double check the DNS TXT record / file and try again in a few minutes.");
+}
+
+async function whbStartScan(){
+  const res = await fetch(`${WHB_API}/api/scans`, { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ site_id: WHB.site.site_id }) });
+  const data = await res.json();
+  WHB.scanId = data.scan_id;
+  WHB.step = "running"; whbRender();
+  WHB.poll = setInterval(whbPoll, 5000);
+  whbPoll();
+}
+
+async function whbPoll(){
+  const res = await fetch(`${WHB_API}/api/scans/${WHB.scanId}`);
+  const data = await res.json();
+  if (data.scan.status === "completed" || data.scan.status === "failed") {
+    clearInterval(WHB.poll);
+    WHB.findings = data.findings;
+    WHB.step = "results"; whbRender();
+  } else {
+    const p = document.getElementById("whb-progress");
+    if (p) p.textContent = `Pages checked: ${data.scan.pages_done} / up to ${data.scan.max_pages}`;
+  }
+}
+</script>
+
 </body>
 </html>
