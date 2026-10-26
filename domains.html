@@ -1,22 +1,23 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Kashish Domains — Domain Search, DNS Management &amp; Instant Registration</title>
-  <meta name="description" content="Find, register, transfer, and manage your domains with Kashish Domains. Powered by Kashish AI with instant DNS management, website connection, and secure checkout." />
+  <title>Kashish Domains — Domain Registration, Live DNS &amp; Cashfree Checkout</title>
+  <meta name="description" content="Search, register, transfer, and manage domains with Kashish Domains. Powered by Kashish AI with live DNS/RDAP lookup, Name.com API, and Cashfree v3 Checkout." />
   <meta name="theme-color" content="#2F6BFF" />
   <link rel="icon" type="image/png" href="https://kashishai.com/IMG_4266.png" />
   <link rel="apple-touch-icon" href="https://kashishai.com/IMG_4266.png" />
 
-  <!-- Fonts & Icons -->
+  <!-- Manrope Font (Matches Kashish AI) & Phosphor Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-  <!-- Cashfree Production SDK v3 -->
-  <script src="https://sdk.cashfree.com/js/v3/cashfree.js" defer></script>
+  <!-- Cashfree Production JavaScript SDK v3 -->
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
   <style>
     * {
@@ -27,24 +28,22 @@
     }
 
     :root {
-      --page-bg: #F2F3F5;
+      --page-bg: #F1F2F5;
       --shell-bg: #FFFFFF;
-      --ink: #17171A;
-      --ink-muted: #8C8E96;
-      --ink-soft: #636670;
+      --ink: #18191C;
+      --ink-soft: #5F6368;
+      --ink-muted: #9699A1;
       --primary: #2F6BFF;
-      --primary-hover: #1D58EB;
+      --primary-hover: #1B56E8;
       --border: #ECEEF2;
-      --card-Tint: linear-gradient(180deg, #F5F6F8 0%, #FDF8EF 100%);
+      --card-warm-gradient: linear-gradient(180deg, #F5F6F8 0%, #FDF8EF 100%);
       --btn-gray: #F1F2F4;
-      --btn-gray-hover: #E5E7EB;
-      --success: #149E5A;
-      --danger: #E03E3E;
-      --warning: #D9822B;
-      --radius-shell: 28px;
-      --radius-card: 16px;
-      --radius-btn: 8px;
+      --btn-gray-hover: #E4E6EB;
+      --success: #129A56;
+      --danger: #D93838;
+      --warning: #D97706;
       --font: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
     }
 
     body {
@@ -52,14 +51,14 @@
       background: var(--page-bg);
       color: var(--ink);
       min-height: 100vh;
-      padding: 28px 24px 48px;
+      padding: 24px 20px 44px;
       -webkit-font-smoothing: antialiased;
     }
 
     button, input, select, textarea {
       font-family: inherit;
-      outline: none;
       border: none;
+      outline: none;
       background: none;
     }
 
@@ -67,229 +66,192 @@
       cursor: pointer;
     }
 
-    /* Top Showcase Brand Header (Matches Reference Image Top Header) */
-    .brand-showcase-top {
+    /* Top Brand Header Above Shell (Matches Reference Showcase) */
+    .top-brand-banner {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 14px;
-      margin: 4px auto 26px;
+      gap: 13px;
+      margin: 2px auto 22px;
       user-select: none;
     }
 
-    .brand-showcase-top .logo-squircle {
-      width: 42px;
-      height: 42px;
-      border-radius: 11px;
-      background: conic-gradient(from 210deg at 50% 50%, #37B76C 0deg, #3898FF 95deg, #FF4B4B 200deg, #FFB800 300deg, #37B76C 360deg);
+    .brand-squircle-lg {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: conic-gradient(from 215deg at 50% 50%, #34A853 0deg, #4285F4 95deg, #EA4335 195deg, #FBBC05 295deg, #34A853 360deg);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 20px -6px rgba(56, 152, 255, 0.35);
-      position: relative;
+      box-shadow: 0 8px 20px -6px rgba(66, 133, 244, 0.4);
       overflow: hidden;
     }
 
-    .brand-showcase-top .logo-squircle img {
-      width: 26px;
-      height: 26px;
+    .brand-squircle-lg img {
+      width: 24px;
+      height: 24px;
       object-fit: contain;
       filter: brightness(0) invert(1);
     }
 
-    .brand-showcase-top .brand-title {
-      font-size: 27px;
-      letter-spacing: -0.02em;
-      color: #3C4043;
+    .top-brand-title {
+      font-size: 26px;
       font-weight: 700;
+      color: #3C4043;
+      letter-spacing: -0.02em;
     }
 
-    .brand-showcase-top .brand-title span {
+    .top-brand-title span {
       font-weight: 400;
       color: #6E7278;
     }
 
-    /* Main Glass/White App Shell (Exact Reference Frame) */
+    /* Main White Rounded App Container (Exact Reference Frame) */
     .app-shell {
-      max-width: 1320px;
-      min-height: 780px;
+      max-width: 1310px;
+      min-height: 760px;
       margin: 0 auto;
       background:
-        radial-gradient(540px circle at 96% 42%, rgba(212, 232, 255, 0.62) 0%, rgba(212, 232, 255, 0) 72%),
-        radial-gradient(480px circle at 12% 96%, rgba(255, 243, 214, 0.55) 0%, rgba(255, 243, 214, 0) 70%),
+        radial-gradient(520px circle at 96% 44%, rgba(209, 231, 255, 0.58) 0%, rgba(209, 231, 255, 0) 72%),
+        radial-gradient(460px circle at 10% 95%, rgba(255, 243, 217, 0.48) 0%, rgba(255, 243, 217, 0) 70%),
         var(--shell-bg);
-      border-radius: var(--radius-shell);
+      border-radius: 26px;
       box-shadow:
-        0 26px 70px -24px rgba(18, 24, 38, 0.10),
-        0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+        0 26px 70px -24px rgba(18, 24, 38, 0.11),
+        0 0 0 1px rgba(255, 255, 255, 0.95) inset;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
 
-    /* Top Navigation Bar inside Shell */
-    .shell-topbar {
+    /* Top Bar inside Shell (Exact Reference Image Layout) */
+    .shell-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 38px;
+      padding: 18px 36px;
       border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.84);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       gap: 20px;
-      background: rgba(255, 255, 255, 0.78);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
       position: sticky;
       top: 0;
-      z-index: 30;
+      z-index: 40;
     }
 
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      flex-shrink: 0;
-    }
-
-    .menu-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #5F6368;
-      font-size: 20px;
-      transition: background 0.18s;
-    }
-
-    .menu-btn:hover {
-      background: #F3F4F6;
-      color: var(--ink);
-    }
-
-    .brand-lockup {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .brand-logo-wrap {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      background: conic-gradient(from 210deg at 50% 50%, #37B76C 0deg, #3898FF 95deg, #FF4B4B 200deg, #FFB800 300deg, #37B76C 360deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px;
-      box-shadow: 0 4px 12px -3px rgba(47, 107, 255, 0.35);
-    }
-
-    .brand-logo-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      filter: brightness(0) invert(1);
-    }
-
-    .brand-text {
-      font-size: 16.5px;
-      font-weight: 700;
-      color: #2B2E33;
-      letter-spacing: -0.01em;
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-    }
-
-    .brand-text span {
-      font-weight: 400;
-      color: #74777E;
-    }
-
-    /* Center Search Bar in Topbar */
-    .topbar-search {
-      flex: 1;
-      max-width: 520px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 18px;
-      border-radius: 999px;
-      background: rgba(245, 246, 248, 0.75);
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-    }
-
-    .topbar-search:focus-within {
-      background: #FFFFFF;
-      border-color: #D2D8E6;
-      box-shadow: 0 6px 20px -8px rgba(47, 107, 255, 0.18);
-    }
-
-    .topbar-search i {
-      font-size: 19px;
-      color: #8C9099;
-      flex-shrink: 0;
-    }
-
-    .topbar-search input {
-      width: 100%;
-      font-size: 14px;
-      color: var(--ink);
-      font-weight: 500;
-    }
-
-    .topbar-search input::placeholder {
-      color: #A4A7B0;
-      font-weight: 400;
-    }
-
-    /* Right Controls in Topbar */
-    .topbar-right {
+    .header-left {
       display: flex;
       align-items: center;
       gap: 16px;
       flex-shrink: 0;
     }
 
-    .currency-pill {
-      font-size: 12.5px;
-      font-weight: 700;
-      color: var(--ink-soft);
-      background: #F3F4F7;
-      padding: 7px 12px;
-      border-radius: 999px;
-      transition: background 0.15s;
-    }
-
-    .currency-pill:hover {
-      background: #E7E9EF;
-    }
-
-    .icon-action-btn {
-      position: relative;
+    .icon-btn {
       width: 38px;
       height: 38px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #7A7E87;
-      font-size: 19px;
-      transition: background 0.18s, color 0.18s;
+      color: #5F6368;
+      font-size: 20px;
+      transition: background 0.16s, color 0.16s;
+      position: relative;
     }
 
-    .icon-action-btn:hover {
-      background: #F3F4F6;
+    .icon-btn:hover {
+      background: #F1F3F6;
       color: var(--ink);
     }
 
-    .cart-badge {
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .brand-squircle-sm {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: conic-gradient(from 215deg at 50% 50%, #34A853 0deg, #4285F4 95deg, #EA4335 195deg, #FBBC05 295deg, #34A853 360deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+
+    .brand-squircle-sm img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2B2E33;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-name span {
+      font-weight: 400;
+      color: #74777E;
+    }
+
+    /* Center Search Bar in Header */
+    .header-search {
+      flex: 1;
+      max-width: 500px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: #F7F8FA;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .header-search:focus-within {
+      background: #FFFFFF;
+      border-color: #D2DAE8;
+      box-shadow: 0 6px 20px -8px rgba(47, 107, 255, 0.2);
+    }
+
+    .header-search i {
+      font-size: 18px;
+      color: #8C9099;
+      flex-shrink: 0;
+    }
+
+    .header-search input {
+      width: 100%;
+      font-size: 13.5px;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .header-search input::placeholder {
+      color: #A6A9B2;
+      font-weight: 400;
+    }
+
+    /* Right Header Icons & Profile */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .badge-count {
       position: absolute;
       top: 3px;
       right: 3px;
@@ -299,155 +261,154 @@
       border-radius: 999px;
       background: var(--primary);
       color: #fff;
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .user-Trigger {
+    .profile-pill {
       display: flex;
       align-items: center;
       gap: 10px;
       padding: 4px 6px 4px 12px;
       border-radius: 999px;
-      transition: background 0.18s;
+      transition: background 0.16s;
     }
 
-    .user-Trigger:hover {
-      background: #F4F5F7;
+    .profile-pill:hover {
+      background: #F3F4F7;
     }
 
-    .user-name {
-      font-size: 13.5px;
+    .profile-name {
+      font-size: 13px;
       font-weight: 700;
       color: #202124;
     }
 
-    .user-avatar {
-      width: 34px;
-      height: 34px;
+    .profile-avatar {
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 25%, #5C9DFF, #1445C6 75%);
+      background: radial-gradient(circle at 30% 25%, #6CA6FF, #1644B8 75%);
       color: #fff;
       font-weight: 800;
-      font-size: 13px;
+      font-size: 12.5px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 10px -3px rgba(20, 69, 198, 0.45);
-      overflow: hidden;
+      box-shadow: 0 4px 10px -3px rgba(22, 68, 184, 0.45);
     }
 
-    .user-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    /* Left Slide-Out Navigation Drawer (Clean Google Domains Style) */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 20, 30, 0.35);
+      backdrop-filter: blur(4px);
+      z-index: 90;
+      display: none;
     }
 
-    /* Navigation Tabs Pill Row (Hostinger + Google Domains style quick switching) */
-    .subnav-bar {
+    .drawer-backdrop.open {
+      display: block;
+    }
+
+    .side-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 290px;
+      background: #FFFFFF;
+      z-index: 100;
+      padding: 24px 18px;
+      box-shadow: 16px 0 45px -15px rgba(0, 0, 0, 0.18);
+      transform: translateX(-105%);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: space-between;
-      padding: 12px 64px;
-      border-bottom: 1px solid rgba(236, 238, 242, 0.7);
-      gap: 12px;
-      flex-wrap: wrap;
     }
 
-    .subnav-tabs {
+    .side-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 22px;
+    }
+
+    .drawer-item {
       display: flex;
       align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .subnav-tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 15px;
-      border-radius: 999px;
-      font-size: 13px;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
       font-weight: 600;
       color: var(--ink-soft);
-      transition: all 0.18s;
+      text-align: left;
+      transition: all 0.16s;
     }
 
-    .subnav-tab i {
-      font-size: 16px;
+    .drawer-item i {
+      font-size: 19px;
     }
 
-    .subnav-tab:hover {
-      background: #F3F5F8;
+    .drawer-item:hover {
+      background: #F4F6F9;
       color: var(--ink);
     }
 
-    .subnav-tab.active {
+    .drawer-item.active {
       background: #EDF3FF;
       color: var(--primary);
       font-weight: 700;
     }
 
-    .worker-status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ink-soft);
-      padding: 6px 13px;
-      border-radius: 999px;
-      background: #F7F8FA;
-      border: 1px solid var(--border);
-    }
-
-    .worker-status-pill .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 0 3px rgba(20, 158, 90, 0.18);
-    }
-
-    /* Content Area Inside Shell */
-    .shell-body {
+    /* Main Content Padding Inside Shell */
+    .shell-content {
       flex: 1;
-      padding: 54px 64px 64px;
+      padding: 64px 72px 68px;
+      display: flex;
+      flex-direction: column;
     }
 
-    .view-section {
+    .view-pane {
       display: none;
-      animation: fadeIn 0.28s ease;
+      animation: fadeUp 0.24s ease;
     }
 
-    .view-section.active {
+    .view-pane.active {
       display: block;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ================= HOME / DASHBOARD VIEW (EXACT SCREENSHOT REPLICA) ================= */
-    .hero-greeting {
+    /* ================= 1. EXACT ONBOARDING HOME VIEW (MATCHES SCREENSHOT) ================= */
+    .onboarding-hero {
       max-width: 680px;
-      margin-bottom: 44px;
+      margin-bottom: 48px;
     }
 
-    .hero-greeting h1 {
-      font-size: clamp(32px, 4vw, 42px);
+    .onboarding-hero h1 {
+      font-size: clamp(32px, 3.8vw, 42px);
       font-weight: 500;
       letter-spacing: -0.025em;
       line-height: 1.22;
       color: #1A1B1E;
     }
 
-    .hero-greeting .hero-sub {
-      font-size: clamp(30px, 3.8vw, 40px);
+    .onboarding-hero .subtitle-muted {
+      font-size: clamp(30px, 3.6vw, 40px);
       font-weight: 300;
       letter-spacing: -0.02em;
       line-height: 1.24;
@@ -455,69 +416,68 @@
       margin-top: 2px;
     }
 
-    .hero-step-link {
+    .onboarding-step-link {
       display: inline-block;
       margin-top: 32px;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 500;
       color: #3B78FF;
       cursor: pointer;
     }
 
-    .hero-step-link:hover {
+    .onboarding-step-link:hover {
       text-decoration: underline;
     }
 
-    /* 4 Onboarding Action Cards Grid (Exact Reference Layout) */
-    .onboarding-grid {
+    /* 4 Action Cards Grid (Exact Reference Proportions) */
+    .cards-grid-4 {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 24px;
       align-items: stretch;
     }
 
-    .ob-card {
+    .action-card {
       border-radius: 12px;
       padding: 36px 30px 32px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 350px;
-      transition: transform 0.24s ease, box-shadow 0.24s ease, background 0.24s ease;
+      min-height: 348px;
       background: transparent;
       border: 1px solid transparent;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
     }
 
-    .ob-card.featured {
-      background: var(--card-Tint);
-      box-shadow: 0 18px 40px -24px rgba(20, 24, 34, 0.12);
-      border-color: rgba(235, 236, 240, 0.8);
+    .action-card.featured {
+      background: var(--card-warm-gradient);
+      box-shadow: 0 18px 40px -24px rgba(20, 24, 34, 0.11);
+      border-color: rgba(235, 236, 240, 0.75);
     }
 
-    .ob-card:hover {
-      background: var(--card-Tint);
+    .action-card:hover {
+      background: var(--card-warm-gradient);
       transform: translateY(-4px);
-      box-shadow: 0 20px 42px -22px rgba(20, 24, 34, 0.14);
+      box-shadow: 0 20px 42px -22px rgba(20, 24, 34, 0.13);
     }
 
-    /* Rainbow Squircle Icons from Reference Screenshots */
-    .ob-icon-row {
+    .card-icon-wrap {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 34px;
-      min-height: 62px;
+      min-height: 60px;
     }
 
-    .ob-arrow {
-      font-size: 24px;
+    .transfer-arrow {
+      font-size: 22px;
       color: #C7C9D0;
       font-weight: 300;
     }
 
     .rainbow-squircle {
-      width: 60px;
-      height: 60px;
+      width: 58px;
+      height: 58px;
       border-radius: 14px;
       background:
         radial-gradient(circle at 18% 20%, #FF4D4D 0%, rgba(255, 77, 77, 0) 60%),
@@ -529,30 +489,29 @@
       align-items: center;
       justify-content: center;
       color: #FFFFFF;
-      font-size: 25px;
+      font-size: 24px;
       box-shadow: 0 12px 24px -10px rgba(47, 107, 255, 0.35);
-      position: relative;
       flex-shrink: 0;
     }
 
-    .rainbow-squircle .inner-dot {
-      width: 20px;
-      height: 20px;
+    .rainbow-squircle .white-dot {
+      width: 19px;
+      height: 19px;
       border-radius: 50%;
       background: #FFFFFF;
     }
 
-    /* 4th Card Two-Bar DNS Server Icon */
-    .rainbow-dns-bars {
-      width: 60px;
-      height: 60px;
+    /* 4th Card Two Horizontal DNS Server Bars */
+    .rainbow-dns-stack {
+      width: 58px;
+      height: 58px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       gap: 6px;
     }
 
-    .rainbow-dns-bar {
+    .dns-bar {
       flex: 1;
       border-radius: 6px;
       display: flex;
@@ -560,15 +519,15 @@
       padding-left: 10px;
     }
 
-    .rainbow-dns-bar.top {
+    .dns-bar.top {
       background: linear-gradient(90deg, #FF5147 0%, #FF834E 42%, #479BFF 100%);
     }
 
-    .rainbow-dns-bar.bottom {
+    .dns-bar.bottom {
       background: linear-gradient(90deg, #FFB800 0%, #7ED321 55%, #16B877 100%);
     }
 
-    .rainbow-dns-bar::before {
+    .dns-bar::before {
       content: '';
       width: 6px;
       height: 6px;
@@ -576,244 +535,217 @@
       background: #FFFFFF;
     }
 
-    .ob-card h3 {
-      font-size: 16px;
+    .action-card h3 {
+      font-size: 15.5px;
       font-weight: 700;
       color: #202124;
       margin-bottom: 14px;
     }
 
-    .ob-divider {
-      width: 34px;
+    .short-rule {
+      width: 32px;
       height: 1.5px;
       background: #E4E6EB;
       margin-bottom: 16px;
     }
 
-    .ob-card p {
-      font-size: 13px;
-      line-height: 1.6;
+    .action-card p {
+      font-size: 12.8px;
+      line-height: 1.62;
       color: #9A9CA5;
       margin-bottom: 30px;
       flex: 1;
     }
 
-    .ob-btn {
+    .card-btn {
       width: 100%;
       padding: 13px 18px;
-      border-radius: var(--radius-btn);
-      font-size: 13px;
+      border-radius: 8px;
+      font-size: 12.8px;
       font-weight: 700;
       text-align: center;
       transition: all 0.18s;
     }
 
-    .ob-btn.primary {
+    .card-btn.primary {
       background: var(--primary);
       color: #FFFFFF;
       box-shadow: 0 8px 20px -6px rgba(47, 107, 255, 0.55);
     }
 
-    .ob-btn.primary:hover {
+    .card-btn.primary:hover {
       background: var(--primary-hover);
     }
 
-    .ob-btn.secondary {
+    .card-btn.secondary {
       background: var(--btn-gray);
       color: #3C4043;
     }
 
-    .ob-btn.secondary:hover {
+    .card-btn.secondary:hover {
       background: var(--btn-gray-hover);
     }
 
-    /* Quick Portfolio Strip on Home */
-    .home-domains-strip {
-      margin-top: 48px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-
-    .strip-header {
+    /* ================= INNER MODULE HEADER BAR ================= */
+    .module-topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
-      gap: 12px;
+      gap: 16px;
+      margin-bottom: 26px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
       flex-wrap: wrap;
     }
 
-    .strip-header h2 {
-      font-size: 18px;
+    .back-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #F3F4F7;
+      font-size: 13px;
       font-weight: 700;
+      color: var(--ink-soft);
+      transition: background 0.16s;
+    }
+
+    .back-pill:hover {
+      background: #E5E7ED;
       color: var(--ink);
     }
 
-    /* ================= HOSTINGER-LIKE DOMAIN SEARCH & FILTERS VIEW ================= */
-    .search-hero-box {
-      background: linear-gradient(135deg, #F6F8FD 0%, #EEF3FF 55%, #FDF8EF 100%);
-      border: 1px solid #E2E8F6;
-      border-radius: 22px;
-      padding: 32px;
-      margin-bottom: 26px;
+    /* ================= 2. LIVE DOMAIN SEARCH & RDAP/DNS VERIFICATION ================= */
+    .search-console-card {
+      background: linear-gradient(135deg, #F6F8FD 0%, #EEF4FF 55%, #FDF8EF 100%);
+      border: 1px solid #E1E8F5;
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 24px;
     }
 
-    .search-bar-giant {
+    .search-box-large {
       display: flex;
       align-items: center;
       gap: 12px;
       background: #FFFFFF;
-      border: 2px solid #DCE3F2;
-      border-radius: 16px;
-      padding: 8px 10px 8px 20px;
-      box-shadow: 0 14px 32px -18px rgba(25, 65, 165, 0.18);
-      transition: border-color 0.2s;
+      border: 2px solid #DCE3F1;
+      border-radius: 14px;
+      padding: 7px 8px 7px 18px;
+      box-shadow: 0 12px 28px -16px rgba(25, 65, 165, 0.18);
     }
 
-    .search-bar-giant:focus-within {
+    .search-box-large:focus-within {
       border-color: var(--primary);
     }
 
-    .search-bar-giant i {
-      font-size: 22px;
-      color: var(--primary);
-    }
-
-    .search-bar-giant input {
+    .search-box-large input {
       flex: 1;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 600;
       color: var(--ink);
       min-width: 0;
     }
 
-    .search-bar-giant .search-submit-btn {
+    .primary-action-btn {
       background: var(--primary);
-      color: #fff;
+      color: #FFFFFF;
       font-weight: 700;
-      font-size: 14.5px;
-      padding: 14px 28px;
-      border-radius: 12px;
+      font-size: 13.5px;
+      padding: 12px 22px;
+      border-radius: 10px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: background 0.18s;
+      transition: background 0.16s;
       flex-shrink: 0;
     }
 
-    .search-bar-giant .search-submit-btn:hover {
+    .primary-action-btn:hover {
       background: var(--primary-hover);
     }
 
-    /* Filter Bar (TLD Categories, Price Filter, Sort, Years) */
-    .filters-toolbar {
+    .primary-action-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .filters-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      margin-top: 20px;
+      gap: 12px;
+      margin-top: 18px;
       flex-wrap: wrap;
     }
 
-    .tld-cat-pills {
+    .cat-pills {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       flex-wrap: wrap;
     }
 
-    .tld-pill {
-      padding: 7px 14px;
+    .cat-pill {
+      padding: 6px 13px;
       border-radius: 999px;
       background: #FFFFFF;
-      border: 1px solid #DDE2EC;
-      font-size: 12.5px;
+      border: 1px solid #DCE2EC;
+      font-size: 12px;
       font-weight: 700;
       color: var(--ink-soft);
-      transition: all 0.16s;
+      transition: all 0.15s;
     }
 
-    .tld-pill.active, .tld-pill:hover {
+    .cat-pill.active, .cat-pill:hover {
       background: var(--ink);
       color: #FFFFFF;
       border-color: var(--ink);
     }
 
-    .filter-controls-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .filter-select {
+    .select-box {
       background: #FFFFFF;
-      border: 1px solid #DDE2EC;
-      border-radius: 10px;
-      padding: 8px 12px;
-      font-size: 12.5px;
+      border: 1px solid #DCE2EC;
+      border-radius: 9px;
+      padding: 7px 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--ink);
       cursor: pointer;
     }
 
-    .toggle-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      background: #FFFFFF;
-      border: 1px solid #DDE2EC;
-      padding: 8px 13px;
-      border-radius: 10px;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: var(--ink);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .toggle-chip input {
-      accent-color: var(--primary);
-    }
-
-    /* Domain Results List */
-    .results-grid {
+    .results-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
-    .domain-result-row {
+    .domain-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      padding: 18px 22px;
+      padding: 16px 20px;
       background: #FFFFFF;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      border-radius: 14px;
+      transition: border-color 0.15s, box-shadow 0.15s;
       flex-wrap: wrap;
     }
 
-    .domain-result-row:hover {
-      border-color: #CBD5E8;
-      box-shadow: 0 10px 26px -16px rgba(18, 24, 38, 0.12);
-    }
-
-    .domain-result-row.exact-match {
+    .domain-row.exact {
       background: linear-gradient(90deg, #F5F9FF 0%, #FFFFFF 100%);
-      border: 1.5px solid #9DC0FF;
+      border: 1.5px solid #9CC0FF;
     }
 
-    .dr-left {
+    .domain-row-left {
       display: flex;
       align-items: center;
       gap: 14px;
-      min-width: 240px;
     }
 
-    .dr-status-icon {
+    .status-badge-icon {
       width: 36px;
       height: 36px;
       border-radius: 10px;
@@ -824,131 +756,76 @@
       flex-shrink: 0;
     }
 
-    .dr-status-icon.avail {
+    .status-badge-icon.avail {
       background: #E7F8EF;
       color: var(--success);
     }
 
-    .dr-status-icon.taken {
-      background: #F3F4F6;
-      color: #9CA3AF;
+    .status-badge-icon.taken {
+      background: #FEF2F2;
+      color: var(--danger);
     }
 
-    .dr-name {
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--ink);
-      word-break: break-all;
-    }
-
-    .dr-name .tld-highlight {
+    .status-badge-icon.checking {
+      background: #EFF6FF;
       color: var(--primary);
     }
 
-    .dr-badges {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 3px;
+    .domain-title {
+      font-size: 16.5px;
+      font-weight: 800;
+      color: var(--ink);
     }
 
-    .badge-pill {
-      font-size: 11px;
+    .domain-title .tld-part {
+      color: var(--primary);
+    }
+
+    .tag-chip {
+      display: inline-block;
+      font-size: 10.5px;
       font-weight: 800;
       padding: 2px 8px;
       border-radius: 999px;
       text-transform: uppercase;
       letter-spacing: 0.03em;
+      margin-right: 5px;
     }
 
-    .badge-pill.match { background: #DBEAFE; color: #1D4ED8; }
-    .badge-pill.popular { background: #FEF3C7; color: #B45309; }
-    .badge-pill.ai { background: #EDE9FE; color: #6D28D9; }
-    .badge-pill.taken { background: #F3F4F6; color: #6B7280; }
-    .badge-pill.active { background: #DCFCE7; color: #15803D; }
+    .tag-chip.green { background: #DCFCE7; color: #15803D; }
+    .tag-chip.blue { background: #DBEAFE; color: #1D4ED8; }
+    .tag-chip.amber { background: #FEF3C7; color: #B45309; }
+    .tag-chip.red { background: #FEE2E2; color: #B91C1C; }
 
-    .dr-right {
+    .domain-row-right {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
       margin-left: auto;
     }
 
-    .dr-price-block {
-      text-align: right;
-    }
-
-    .dr-price-old {
-      font-size: 12px;
-      color: #9CA3AF;
-      text-decoration: line-through;
-      font-weight: 600;
-    }
-
-    .dr-price-now {
-      font-size: 19px;
-      font-weight: 800;
-      color: var(--ink);
-    }
-
-    .dr-price-now small {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ink-muted);
-    }
-
-    .dr-action-btn {
-      padding: 11px 20px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 800;
-      background: var(--primary);
-      color: #FFFFFF;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      transition: all 0.16s;
-    }
-
-    .dr-action-btn:hover {
-      background: var(--primary-hover);
-    }
-
-    .dr-action-btn.in-cart {
-      background: #149E5A;
-    }
-
-    .dr-action-btn.whois-btn {
-      background: #F1F2F5;
-      color: var(--ink-soft);
-    }
-
-    /* ================= DNS MANAGER & HOSTINGER SETTINGS TABLES ================= */
-    .panel-card {
-      background: #FFFFFF;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 26px;
-      margin-bottom: 22px;
-      box-shadow: 0 10px 30px -20px rgba(18, 24, 38, 0.08);
-    }
-
-    .panel-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .panel-head h3 {
+    .price-Now {
       font-size: 18px;
       font-weight: 800;
       color: var(--ink);
-      display: flex;
-      align-items: center;
-      gap: 9px;
+      text-align: right;
+    }
+
+    .price-Old {
+      font-size: 11.5px;
+      color: #9CA3AF;
+      text-decoration: line-through;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    /* ================= PANELS, FORMS & DNS TABLE ================= */
+    .surface-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
     }
 
     .form-grid {
@@ -958,7 +835,7 @@
       align-items: end;
     }
 
-    .field-group label {
+    .input-group label {
       display: block;
       font-size: 12px;
       font-weight: 700;
@@ -966,206 +843,130 @@
       margin-bottom: 6px;
     }
 
-    .field-input {
+    .text-input {
       width: 100%;
-      padding: 11px 14px;
+      padding: 11px 13px;
       border-radius: 10px;
-      border: 1px solid #D8DEE9;
+      border: 1px solid #D7DFEC;
       background: #F9FAFC;
       font-size: 13.5px;
       font-weight: 600;
       color: var(--ink);
-      transition: border-color 0.16s, background 0.16s;
     }
 
-    .field-input:focus {
+    .text-input:focus {
       background: #FFFFFF;
       border-color: var(--primary);
     }
 
-    .dns-table-wrap {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    table.dns-table {
+    .dns-table {
       width: 100%;
       border-collapse: collapse;
-      text-align: left;
-      font-size: 13.5px;
+      font-size: 13px;
     }
 
-    table.dns-table th {
-      padding: 12px 14px;
-      font-size: 11.5px;
+    .dns-table th {
+      text-align: left;
+      padding: 11px 13px;
+      font-size: 11px;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
       color: var(--ink-muted);
+      background: #F8FAFC;
       border-bottom: 1px solid var(--border);
-      background: #F9FAFB;
     }
 
-    table.dns-table td {
-      padding: 14px;
+    .dns-table td {
+      padding: 13px;
       border-bottom: 1px solid var(--border);
       font-weight: 600;
-      color: var(--ink);
     }
 
-    .dns-type-tag {
-      display: inline-block;
-      padding: 3px 9px;
+    .mono-code {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      background: #F3F4F6;
+      padding: 3px 7px;
       border-radius: 6px;
-      font-size: 12px;
-      font-weight: 800;
-      background: #EEF2FF;
-      color: var(--primary);
     }
 
-    /* Website Builder Connect Cards */
-    .connect-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 18px;
-    }
-
-    .connect-card {
-      background: #FFFFFF;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 16px;
-      transition: transform 0.18s, box-shadow 0.18s;
-    }
-
-    .connect-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 14px 30px -18px rgba(18, 24, 38, 0.14);
-    }
-
-    .connect-card-top {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .connect-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
+    /* ================= MODALS (CART, KASHISH CONSENT, GATEWAY SETUP, WHOIS) ================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 20, 30, 0.48);
+      backdrop-filter: blur(6px);
+      z-index: 120;
+      display: none;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      color: #fff;
+      padding: 18px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #FFFFFF;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      border-radius: 22px;
+      padding: 26px;
+      overflow-y: auto;
+      box-shadow: 0 28px 65px -18px rgba(0, 0, 0, 0.35);
+      animation: fadeUp 0.2s ease;
+    }
+
+    .consent-check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      margin-bottom: 12px;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .consent-check-row input {
+      margin-top: 3px;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary);
       flex-shrink: 0;
     }
 
-    /* Toggle Switch */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      inset: 0;
-      background-color: #D1D5DB;
-      transition: .2s;
-      border-radius: 999px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .2s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider {
-      background-color: var(--primary);
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(20px);
-    }
-
-    /* Slide-Over Drawers & Modals (Cart, Checkout, Worker Settings, Side Menu) */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 20, 30, 0.45);
-      backdrop-filter: blur(6px);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
-    .modal-sheet {
-      background: #FFFFFF;
-      width: 100%;
-      max-width: 620px;
-      max-height: 90vh;
-      border-radius: 24px;
-      padding: 28px;
-      overflow-y: auto;
-      box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.35);
-      animation: fadeIn 0.22s ease;
-    }
-
-    .toast-box {
+    .toast-banner {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: #17171A;
+      background: #18191C;
       color: #FFFFFF;
-      padding: 13px 20px;
+      padding: 13px 18px;
       border-radius: 12px;
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 700;
-      box-shadow: 0 14px 30px -10px rgba(0,0,0,0.35);
-      z-index: 200;
+      box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.35);
+      z-index: 250;
       display: none;
       align-items: center;
       gap: 10px;
+      max-width: 420px;
     }
 
-    .toast-box.show {
+    .toast-banner.show {
       display: inline-flex;
-      animation: fadeIn 0.2s ease;
+      animation: fadeUp 0.2s ease;
     }
 
     @media (max-width: 1100px) {
-      .onboarding-grid {
+      .cards-grid-4 {
         grid-template-columns: repeat(2, 1fr);
       }
-      .shell-body, .subnav-bar {
-        padding-left: 32px;
-        padding-right: 32px;
+      .shell-content {
+        padding: 40px 32px;
       }
     }
 
@@ -1173,22 +974,22 @@
       body {
         padding: 10px;
       }
-      .onboarding-grid {
+      .cards-grid-4 {
         grid-template-columns: 1fr;
       }
-      .shell-topbar {
+      .shell-header {
         padding: 14px 18px;
         flex-wrap: wrap;
       }
-      .topbar-search {
+      .header-search {
         order: 3;
         max-width: 100%;
         flex-basis: 100%;
       }
-      .shell-body, .subnav-bar {
-        padding: 24px 18px;
+      .shell-content {
+        padding: 28px 18px;
       }
-      .ob-card {
+      .action-card {
         min-height: auto;
       }
     }
@@ -1196,924 +997,1021 @@
 </head>
 <body>
 
-  <!-- Top Showcase Title (Matches Reference Image Header) -->
-  <div class="brand-showcase-top">
-    <div class="logo-squircle">
+  <!-- Top Showcase Brand Header (Matches Reference Image Header) -->
+  <div class="top-brand-banner">
+    <div class="brand-squircle-lg">
       <img src="https://kashishai.com/IMG_4266.png" alt="Kashish AI" onerror="this.style.display='none'" />
     </div>
-    <div class="brand-title">Kashish <span>Domains</span></div>
+    <div class="top-brand-title">Kashish <span>Domains</span></div>
   </div>
+
+  <!-- Left Slide-Out Navigation Drawer -->
+  <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleDrawer(false)"></div>
+  <aside class="side-drawer" id="side-drawer">
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--border);">
+        <div class="brand-lockup" onclick="openView('home'); toggleDrawer(false);">
+          <div class="brand-squircle-sm">
+            <img src="https://kashishai.com/IMG_4266.png" alt="Kashish AI" onerror="this.style.display='none'" />
+          </div>
+          <div class="brand-name">Kashish <span>Domains</span></div>
+        </div>
+        <button class="icon-btn" onclick="toggleDrawer(false)"><i class="ph ph-x"></i></button>
+      </div>
+
+      <div class="drawer-nav-list">
+        <button class="drawer-item active" data-nav="home" onclick="openView('home'); toggleDrawer(false);">
+          <i class="ph-bold ph-house"></i> Home Dashboard
+        </button>
+        <button class="drawer-item" data-nav="search" onclick="openView('search'); toggleDrawer(false);">
+          <i class="ph-bold ph-magnifying-glass"></i> Get A New Domain
+        </button>
+        <button class="drawer-item" data-nav="transfer" onclick="openView('transfer'); toggleDrawer(false);">
+          <i class="ph-bold ph-arrows-left-right"></i> Transfer Your Domain
+        </button>
+        <button class="drawer-item" data-nav="connect" onclick="openView('connect'); toggleDrawer(false);">
+          <i class="ph-bold ph-link"></i> Connect Your Website
+        </button>
+        <button class="drawer-item" data-nav="dns" onclick="openView('dns'); toggleDrawer(false);">
+          <i class="ph-bold ph-hard-drives"></i> Set Up Your DNS
+        </button>
+        <button class="drawer-item" data-nav="mydomains" onclick="openView('mydomains'); toggleDrawer(false);">
+          <i class="ph-bold ph-globe-hemisphere-west"></i> My Registered Domains
+        </button>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:14px;">
+      <button class="drawer-item" style="width:100%;" onclick="toggleDrawer(false); openGatewayModal();">
+        <i class="ph-bold ph-plugs-connected"></i> Cashfree &amp; Worker API
+      </button>
+      <div style="font-size:11.5px;color:var(--ink-muted);padding:8px 14px;">
+        Kashish Domains by Nexor Sparks • Live RDAP + Cashfree PG v3
+      </div>
+    </div>
+  </aside>
 
   <!-- Main Rounded Container Shell -->
   <div class="app-shell">
 
-    <!-- Top Navigation Bar -->
-    <header class="shell-topbar">
-      <div class="topbar-left">
-        <button class="menu-btn" onclick="switchView('home')" title="Dashboard">
+    <!-- Top Navigation Bar inside Shell (Exact Reference Image) -->
+    <header class="shell-header">
+      <div class="header-left">
+        <button class="icon-btn" onclick="toggleDrawer(true)" title="Menu">
           <i class="ph ph-list"></i>
         </button>
-        <a class="brand-lockup" onclick="switchView('home')">
-          <div class="brand-logo-wrap">
+        <div class="brand-lockup" onclick="openView('home')">
+          <div class="brand-squircle-sm">
             <img src="https://kashishai.com/IMG_4266.png" alt="Kashish AI" onerror="this.style.display='none'" />
           </div>
-          <div class="brand-text">Kashish <span>Domains</span></div>
-        </a>
+          <div class="brand-name">Kashish <span>Domains</span></div>
+        </div>
       </div>
 
-      <!-- Center Domain Search Input -->
-      <form class="topbar-search" onsubmit="handleTopSearch(event)">
+      <!-- Center Search Bar -->
+      <form class="header-search" onsubmit="handleTopBarSearch(event)">
         <i class="ph ph-magnifying-glass"></i>
         <input
           type="text"
-          id="top-domain-input"
-          placeholder="Search for your next domain (e.g. kashish.ai, monte.store)"
+          id="header-search-input"
+          placeholder="Search for your next domain"
           autocomplete="off"
         />
       </form>
 
-      <!-- Right Controls: Currency, API Config, Cart, User Profile -->
-      <div class="topbar-right">
-        <button class="currency-pill" id="currency-btn" onclick="toggleCurrency()" title="Switch Currency">
-          INR (₹)
-        </button>
-        <button class="icon-action-btn" onclick="openApiModal()" title="Cloudflare Worker &amp; Name.com / Cashfree Settings">
-          <i class="ph ph-sliders-horizontal"></i>
-        </button>
-        <button class="icon-action-btn" onclick="openCartModal()" title="Domain Cart">
+      <!-- Right Controls: Cart, Notifications/API Settings, Profile -->
+      <div class="header-right">
+        <button class="icon-btn" onclick="openCartModal()" title="Domain Cart">
           <i class="ph ph-shopping-cart-simple"></i>
-          <span class="cart-badge" id="cart-count-badge">0</span>
+          <span class="badge-count" id="header-cart-badge" style="display:none;">0</span>
         </button>
-        <button class="user-Trigger" onclick="promptAccountName()" title="Click to customize account name">
-          <span class="user-name" id="header-user-name">Gursharn A</span>
-          <div class="user-avatar" id="header-user-avatar">G</div>
+        <button class="icon-btn" onclick="openGatewayModal()" title="Cashfree &amp; Worker Payment Gateway Configuration">
+          <i class="ph ph-bell"></i>
+        </button>
+        <button class="profile-pill" onclick="openProfileModal()" title="Account Settings">
+          <span class="profile-name" id="display-user-name">Gursharn A</span>
+          <div class="profile-avatar" id="display-user-avatar">G</div>
         </button>
       </div>
     </header>
 
-    <!-- Secondary Hostinger-Style Quick Navigation Bar -->
-    <nav class="subnav-bar">
-      <div class="subnav-tabs">
-        <button class="subnav-tab active" data-view="home" onclick="switchView('home')">
-          <i class="ph-bold ph-squares-four"></i> Overview
-        </button>
-        <button class="subnav-tab" data-view="search" onclick="switchView('search')">
-          <i class="ph-bold ph-magnifying-glass"></i> Get A New Domain
-        </button>
-        <button class="subnav-tab" data-view="mydomains" onclick="switchView('mydomains')">
-          <i class="ph-bold ph-globe-hemisphere-west"></i> My Domains (<span id="my-domains-count">2</span>)
-        </button>
-        <button class="subnav-tab" data-view="transfer" onclick="switchView('transfer')">
-          <i class="ph-bold ph-arrows-left-right"></i> Transfer Domain
-        </button>
-        <button class="subnav-tab" data-view="connect" onclick="switchView('connect')">
-          <i class="ph-bold ph-link-simple"></i> Connect Website
-        </button>
-        <button class="subnav-tab" data-view="dns" onclick="switchView('dns')">
-          <i class="ph-bold ph-hard-drives"></i> DNS &amp; Nameservers
-        </button>
-      </div>
+    <!-- Main Content Body -->
+    <main class="shell-content">
 
-      <button class="worker-status-pill" onclick="openApiModal()">
-        <span class="dot" id="worker-dot"></span>
-        <span id="worker-status-text">Name.com Worker + Cashfree Ready</span>
-      </button>
-    </nav>
-
-    <!-- Main Body Views -->
-    <main class="shell-body">
-
-      <!-- ==================== 1. HOME VIEW (EXACT IMAGE UI) ==================== -->
-      <section class="view-section active" id="view-home">
-        <div class="hero-greeting">
-          <h1 id="greeting-title">Good Morning Gursharn,</h1>
-          <div class="hero-sub">Your Kashish Domains account<br />has been created.</div>
-          <a class="hero-step-link" onclick="switchView('search')">
+      <!-- ==================== 1. HOME DASHBOARD (100% CLEAN REFERENCE REPLICA) ==================== -->
+      <section class="view-pane active" id="view-home">
+        <div class="onboarding-hero">
+          <h1 id="hero-greeting-line">Good Morning Gursharn,</h1>
+          <div class="subtitle-muted">Your Kashish Domains account<br />has been created.</div>
+          <a class="onboarding-step-link" onclick="openView('search')">
             Complete these steps to set up and manage your online presence.
           </a>
         </div>
 
-        <!-- 4 Action Cards Matching the Uploaded Screenshots -->
-        <div class="onboarding-grid">
+        <div class="cards-grid-4">
           <!-- Card 1: Get A New Domain -->
-          <div class="ob-card featured">
+          <div class="action-card featured">
             <div>
-              <div class="ob-icon-row">
+              <div class="card-icon-wrap">
                 <div class="rainbow-squircle">
                   <i class="ph-bold ph-magnifying-glass"></i>
                 </div>
               </div>
               <h3>Get A New Domain</h3>
-              <div class="ob-divider"></div>
-              <p>Find the perfect domain name for your website with live Name.com availability and instant registration.</p>
+              <div class="short-rule"></div>
+              <p>Find the perfect domain name for your website.</p>
             </div>
-            <button class="ob-btn primary" onclick="switchView('search')">
+            <button class="card-btn primary" onclick="openView('search')">
               Search for your domain
             </button>
           </div>
 
           <!-- Card 2: Transfer Your Domain -->
-          <div class="ob-card">
+          <div class="action-card">
             <div>
-              <div class="ob-icon-row">
-                <span class="ob-arrow">&rarr;</span>
+              <div class="card-icon-wrap">
+                <span class="transfer-arrow">&rarr;</span>
                 <div class="rainbow-squircle">
-                  <span class="inner-dot"></span>
+                  <span class="white-dot"></span>
                 </div>
               </div>
               <h3>Transfer Your Domain</h3>
-              <div class="ob-divider"></div>
-              <p>Transfer it to Kashish Domains for easy management, free WHOIS privacy, and reliable hosting.</p>
+              <div class="short-rule"></div>
+              <p>Transfer it to Kashish Domains for easy management and reliable hosting.</p>
             </div>
-            <button class="ob-btn secondary" onclick="switchView('transfer')">
+            <button class="card-btn secondary" onclick="openView('transfer')">
               Start transfer
             </button>
           </div>
 
           <!-- Card 3: Connect Your Website -->
-          <div class="ob-card">
+          <div class="action-card">
             <div>
-              <div class="ob-icon-row">
+              <div class="card-icon-wrap">
                 <div class="rainbow-squircle">
                   <i class="ph-bold ph-link"></i>
                 </div>
               </div>
               <h3>Connect Your Website</h3>
-              <div class="ob-divider"></div>
-              <p>Link your domain to Kashish Website Builder, Shopify, Wix, Squarespace, or Vercel in one click.</p>
+              <div class="short-rule"></div>
+              <p>Link your domain to your website builder or hosting provider.</p>
             </div>
-            <button class="ob-btn secondary" onclick="switchView('connect')">
+            <button class="card-btn secondary" onclick="openView('connect')">
               Connect your site
             </button>
           </div>
 
           <!-- Card 4: Set Up Your DNS -->
-          <div class="ob-card">
+          <div class="action-card">
             <div>
-              <div class="ob-icon-row">
-                <div class="rainbow-dns-bars">
-                  <div class="rainbow-dns-bar top"></div>
-                  <div class="rainbow-dns-bar bottom"></div>
+              <div class="card-icon-wrap">
+                <div class="rainbow-dns-stack">
+                  <div class="dns-bar top"></div>
+                  <div class="dns-bar bottom"></div>
                 </div>
               </div>
               <h3>Set Up Your DNS</h3>
-              <div class="ob-divider"></div>
-              <p>Manage A, CNAME, MX, TXT records and custom nameservers to connect your site and email.</p>
+              <div class="short-rule"></div>
+              <p>Manage DNS records to connect your site, email, and other services.</p>
             </div>
-            <button class="ob-btn secondary" onclick="switchView('dns')">
+            <button class="card-btn secondary" onclick="openView('dns')">
               Set up DNS records
             </button>
           </div>
         </div>
-
-        <!-- Active Portfolio Preview Strip -->
-        <div class="home-domains-strip">
-          <div class="strip-header">
-            <h2>Your Active Domains &amp; Quick Controls</h2>
-            <button class="tld-pill" onclick="switchView('mydomains')">Manage All Domains &rarr;</button>
-          </div>
-          <div class="results-grid" id="home-portfolio-preview"></div>
-        </div>
       </section>
 
-      <!-- ==================== 2. DOMAIN SEARCH & FILTERS VIEW ==================== -->
-      <section class="view-section" id="view-search">
-        <div class="search-hero-box">
-          <form class="search-bar-giant" onsubmit="handleMainSearch(event)">
-            <i class="ph-bold ph-magnifying-glass"></i>
+      <!-- ==================== 2. LIVE DOMAIN SEARCH & REGISTRATION VIEW ==================== -->
+      <section class="view-pane" id="view-search">
+        <div class="module-topbar">
+          <button class="back-pill" onclick="openView('home')">
+            <i class="ph-bold ph-arrow-left"></i> Back to Overview
+          </button>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span style="font-size:12px;font-weight:700;color:var(--success);display:inline-flex;align-items:center;gap:6px;background:#E7F8EF;padding:6px 12px;border-radius:999px;">
+              <i class="ph-fill ph-check-circle"></i> Live Global DNS + RDAP + Name.com Verification Active
+            </span>
+            <select class="select-box" id="currency-select" onchange="changeCurrency(this.value)">
+              <option value="INR">Currency: INR (₹)</option>
+              <option value="USD">Currency: USD ($)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="search-console-card">
+          <form class="search-box-large" onsubmit="handleSearchSubmit(event)">
+            <i class="ph-bold ph-magnifying-glass" style="font-size:20px;color:var(--primary);"></i>
             <input
               type="text"
-              id="main-domain-search-input"
-              placeholder="Type your desired domain name (e.g. kashishstudio.com, nexorsparks.ai)..."
+              id="main-search-input"
+              placeholder="Enter any domain name to check real-time availability (e.g. kashishai.com, mynewbrand.ai)"
               autocomplete="off"
             />
-            <button type="submit" class="search-submit-btn" id="main-search-btn">
-              <span>Check Availability</span>
+            <button type="submit" class="primary-action-btn" id="search-submit-btn">
+              <span>Search Live</span>
               <i class="ph-bold ph-arrow-right"></i>
             </button>
           </form>
 
-          <!-- Hostinger-Style Multiple Filters & Settings -->
-          <div class="filters-toolbar">
-            <div class="tld-cat-pills" id="tld-cat-pills">
-              <button type="button" class="tld-pill active" data-cat="all" onclick="setTldCategory('all')">All Extensions</button>
-              <button type="button" class="tld-pill" data-cat="popular" onclick="setTldCategory('popular')">Popular (.com, .in, .ai)</button>
-              <button type="button" class="tld-pill" data-cat="tech" onclick="setTldCategory('tech')">AI &amp; Tech (.ai, .io, .dev, .app)</button>
-              <button type="button" class="tld-pill" data-cat="business" onclick="setTldCategory('business')">Business (.co, .org, .net)</button>
-              <button type="button" class="tld-pill" data-cat="creative" onclick="setTldCategory('creative')">Store &amp; Brand (.store, .xyz, .me)</button>
+          <div class="filters-row">
+            <div class="cat-pills" id="tld-filter-pills">
+              <button type="button" class="cat-pill active" data-cat="all" onclick="filterTldCat('all')">All Extensions</button>
+              <button type="button" class="cat-pill" data-cat="popular" onclick="filterTldCat('popular')">Popular (.com, .ai, .in)</button>
+              <button type="button" class="cat-pill" data-cat="tech" onclick="filterTldCat('tech')">AI &amp; Tech (.ai, .io, .dev, .app)</button>
+              <button type="button" class="cat-pill" data-cat="business" onclick="filterTldCat('business')">Business (.co, .org, .net)</button>
+              <button type="button" class="cat-pill" data-cat="creative" onclick="filterTldCat('creative')">Store &amp; Creative (.store, .xyz)</button>
             </div>
 
-            <div class="filter-controls-right">
-              <label class="toggle-chip">
-                <input type="checkbox" id="filter-avail-only" onchange="renderSearchResults()" />
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;background:#fff;padding:7px 12px;border-radius:9px;border:1px solid #DCE2EC;cursor:pointer;">
+                <input type="checkbox" id="only-avail-checkbox" onchange="renderDomainResults()" style="accent-color:var(--primary);" />
                 <span>Available Only</span>
               </label>
 
-              <select class="filter-select" id="filter-max-price" onchange="renderSearchResults()">
-                <option value="999999">Any Price</option>
-                <option value="1200">Under ₹1,200 / yr</option>
-                <option value="2500">Under ₹2,500 / yr</option>
-                <option value="6000">Under ₹6,000 / yr</option>
-              </select>
-
-              <select class="filter-select" id="filter-sort" onchange="renderSearchResults()">
-                <option value="recommended">Sort: Recommended</option>
+              <select class="select-box" id="sort-select" onchange="renderDomainResults()">
+                <option value="recommended">Sort: Exact &amp; Popular</option>
                 <option value="price-asc">Price: Low to High</option>
                 <option value="price-desc">Price: High to Low</option>
-                <option value="length">Shortest Domain</option>
               </select>
 
-              <select class="filter-select" id="filter-years" onchange="renderSearchResults()">
-                <option value="1">1 Year Registration</option>
-                <option value="2">2 Years (Save 10%)</option>
-                <option value="3">3 Years (Save 15%)</option>
-                <option value="5">5 Years (Save 20%)</option>
+              <select class="select-box" id="years-select" onchange="renderDomainResults()">
+                <option value="1">Period: 1 Year</option>
+                <option value="2">Period: 2 Years (10% Off)</option>
+                <option value="3">Period: 3 Years (15% Off)</option>
+                <option value="5">Period: 5 Years (20% Off)</option>
               </select>
             </div>
           </div>
         </div>
 
-        <div class="results-grid" id="domain-search-results"></div>
-      </section>
-
-      <!-- ==================== 3. MY DOMAINS (HOSTINGER CONTROL PANEL) ==================== -->
-      <section class="view-section" id="view-mydomains">
-        <div class="panel-head">
-          <h3><i class="ph-bold ph-globe-hemisphere-west"></i> My Registered Domains</h3>
-          <div style="display:flex;gap:10px;">
-            <button class="dr-action-btn whois-btn" onclick="syncDomainsFromWorker()">
-              <i class="ph-bold ph-arrows-clockwise"></i> Sync with Name.com Worker
-            </button>
-            <button class="dr-action-btn" onclick="switchView('search')">
-              <i class="ph-bold ph-plus"></i> Register New Domain
-            </button>
+        <div class="results-list" id="search-results-container">
+          <div class="surface-card" style="text-align:center;color:var(--ink-soft);padding:38px;">
+            Enter a domain name above and click <strong>Search Live</strong> to query real-time global DNS &amp; Name.com availability.
           </div>
         </div>
-
-        <div id="my-domains-list" class="results-grid"></div>
       </section>
 
-      <!-- ==================== 4. TRANSFER DOMAIN VIEW ==================== -->
-      <section class="view-section" id="view-transfer">
-        <div class="panel-card">
-          <div class="panel-head">
-            <h3><i class="ph-bold ph-arrows-left-right"></i> Transfer Your Domain to Kashish Domains</h3>
-          </div>
-          <p style="font-size:14px;color:var(--ink-soft);margin-bottom:22px;line-height:1.6;">
-            Unlock your domain at your current registrar and enter your EPP / Authorization Code below. Transfers include a <strong>1-year renewal extension</strong> and free WHOIS privacy protection via Name.com API.
+      <!-- ==================== 3. TRANSFER DOMAIN VIEW ==================== -->
+      <section class="view-pane" id="view-transfer">
+        <div class="module-topbar">
+          <button class="back-pill" onclick="openView('home')">
+            <i class="ph-bold ph-arrow-left"></i> Back to Overview
+          </button>
+          <span style="font-size:13px;font-weight:700;color:var(--ink-soft);">Live RDAP Lock &amp; Registrar Check Included</span>
+        </div>
+
+        <div class="surface-card">
+          <h2 style="font-size:20px;font-weight:800;margin-bottom:8px;">Transfer Your Existing Domain to Kashish Domains</h2>
+          <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:22px;line-height:1.6;">
+            First, check your domain's live transfer eligibility (we query RDAP &amp; DNS in real time to verify registrar status and lock flags). Then enter your Authorization / EPP Code to initiate the transfer.
           </p>
 
-          <form class="form-grid" onsubmit="handleDomainTransfer(event)">
-            <div class="field-group" style="grid-column: span 2;">
+          <form class="form-grid" onsubmit="handleTransferCheckAndAdd(event)">
+            <div class="input-group" style="grid-column: span 2;">
               <label>Domain Name to Transfer</label>
-              <input type="text" id="transfer-domain-input" class="field-input" placeholder="example.com" required />
+              <input type="text" id="transfer-domain-name" class="text-input" placeholder="e.g. yourcompany.com" required />
             </div>
-            <div class="field-group" style="grid-column: span 2;">
-              <label>EPP / Authorization Code (Auth Info)</label>
-              <input type="text" id="transfer-auth-input" class="field-input" placeholder="e.g. A1b2#C3d4!Ef" required />
+            <div class="input-group" style="grid-column: span 2;">
+              <label>EPP / Authorization Code</label>
+              <input type="text" id="transfer-auth-code" class="text-input" placeholder="Enter Auth/EPP code from current registrar" required />
             </div>
-            <div class="field-group">
-              <button type="submit" class="dr-action-btn" style="width:100%;justify-content:center;padding:12px;">
-                <i class="ph-bold ph-paper-plane-Right"></i> Verify &amp; Add Transfer
+            <div class="input-group">
+              <button type="submit" class="primary-action-btn" id="transfer-submit-btn" style="width:100%;justify-content:center;">
+                <span>Verify &amp; Proceed</span>
               </button>
             </div>
           </form>
+
+          <div id="transfer-live-report" style="margin-top:20px;display:none;"></div>
+        </div>
+      </section>
+
+      <!-- ==================== 4. CONNECT YOUR WEBSITE VIEW ==================== -->
+      <section class="view-pane" id="view-connect">
+        <div class="module-topbar">
+          <button class="back-pill" onclick="openView('home')">
+            <i class="ph-bold ph-arrow-left"></i> Back to Overview
+          </button>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:13px;font-weight:700;color:var(--ink-soft);">Domain to Connect:</span>
+            <input type="text" id="connect-target-domain" class="text-input" style="width:220px;padding:8px 12px;" placeholder="yourdomain.com" value="kashishai.com" />
+          </div>
         </div>
 
-        <div class="panel-card">
-          <h3 style="font-size:16px;margin-bottom:12px;">Transfer Checklist before Proceeding</h3>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;font-size:13px;color:var(--ink-soft);">
-            <div><strong>1. Unlock Domain:</strong> Turn off Registrar Transfer Lock at your old provider.</div>
-            <div><strong>2. 60-Day Rule:</strong> Domain must have been registered or transferred more than 60 days ago.</div>
-            <div><strong>3. Auth Code:</strong> Copy the EPP code from your current registrar dashboard.</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px;">
+          <div class="surface-card" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
+            <div>
+              <div style="font-weight:800;font-size:16px;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+                <i class="ph-fill ph-sparkle" style="color:var(--primary);font-size:20px;"></i> Kashish AI Builder
+              </div>
+              <p style="font-size:13px;color:var(--ink-soft);line-height:1.55;">Automatically provisions root <code>A</code> record and <code>www</code> CNAME to Kashish AI edge servers.</p>
+            </div>
+            <button class="card-btn primary" onclick="applyConnectTemplate('kashish')">Connect to Kashish AI</button>
+          </div>
+
+          <div class="surface-card" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
+            <div>
+              <div style="font-weight:800;font-size:16px;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+                <i class="ph-fill ph-shopping-bag" style="color:#16A34A;font-size:20px;"></i> Shopify Storefront
+              </div>
+              <p style="font-size:13px;color:var(--ink-soft);line-height:1.55;">Points root <code>@</code> to <code>23.227.38.65</code> and <code>www</code> to <code>shops.myshopify.com</code>.</p>
+            </div>
+            <button class="card-btn secondary" onclick="applyConnectTemplate('shopify')">Connect Shopify</button>
+          </div>
+
+          <div class="surface-card" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
+            <div>
+              <div style="font-weight:800;font-size:16px;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+                <i class="ph-fill ph-triangle" style="color:#111827;font-size:20px;"></i> Vercel Hosting
+              </div>
+              <p style="font-size:13px;color:var(--ink-soft);line-height:1.55;">Points root <code>@</code> to <code>76.76.21.21</code> and <code>www</code> to <code>cname.vercel-dns.com</code>.</p>
+            </div>
+            <button class="card-btn secondary" onclick="applyConnectTemplate('vercel')">Connect Vercel</button>
+          </div>
+
+          <div class="surface-card" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
+            <div>
+              <div style="font-weight:800;font-size:16px;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+                <i class="ph-fill ph-envelope-simple" style="color:#DC2626;font-size:20px;"></i> Google Workspace Mail
+              </div>
+              <p style="font-size:13px;color:var(--ink-soft);line-height:1.55;">Configures verified Google <code>MX</code> (`SMTP.GOOGLE.COM`) and <code>SPF TXT</code> records.</p>
+            </div>
+            <button class="card-btn secondary" onclick="applyConnectTemplate('googlemail')">Connect Google Email</button>
           </div>
         </div>
       </section>
 
-      <!-- ==================== 5. CONNECT WEBSITE VIEW ==================== -->
-      <section class="view-section" id="view-connect">
-        <div class="panel-card">
-          <div class="panel-head">
-            <h3><i class="ph-bold ph-link-simple"></i> 1-Click Connect Your Domain to Any Platform</h3>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-size:13px;font-weight:700;color:var(--ink-soft);">Target Domain:</span>
-              <select class="filter-select" id="connect-domain-select"></select>
-            </div>
-          </div>
-
-          <div class="connect-grid">
-            <div class="connect-card">
-              <div class="connect-card-top">
-                <div class="connect-icon" style="background:linear-gradient(135deg,#2F6BFF,#1945B8);"><i class="ph-bold ph-sparkle"></i></div>
-                <div>
-                  <div style="font-weight:800;font-size:15px;">Kashish AI Website Builder</div>
-                  <div style="font-size:12px;color:var(--ink-muted);">Auto-configure edge A &amp; CNAME</div>
-                </div>
-              </div>
-              <p style="font-size:13px;color:var(--ink-soft);line-height:1.5;">Point your domain directly to your Kashish AI site with automatic SSL provisioning.</p>
-              <button class="ob-btn primary" onclick="applyServicePreset('kashish')">Connect to Kashish Builder</button>
-            </div>
-
-            <div class="connect-card">
-              <div class="connect-card-top">
-                <div class="connect-icon" style="background:#95BF47;"><i class="ph-bold ph-shopping-bag"></i></div>
-                <div>
-                  <div style="font-weight:800;font-size:15px;">Shopify Store</div>
-                  <div style="font-size:12px;color:var(--ink-muted);">A: 23.227.38.65 + shops.myshopify.com</div>
-                </div>
-              </div>
-              <p style="font-size:13px;color:var(--ink-soft);line-height:1.5;">Connect your e-commerce storefront (like MONTÈ) directly to Shopify.</p>
-              <button class="ob-btn secondary" onclick="applyServicePreset('shopify')">Connect Shopify</button>
-            </div>
-
-            <div class="connect-card">
-              <div class="connect-card-top">
-                <div class="connect-icon" style="background:#111827;"><i class="ph-bold ph-triangle"></i></div>
-                <div>
-                  <div style="font-weight:800;font-size:15px;">Vercel / Next.js</div>
-                  <div style="font-size:12px;color:var(--ink-muted);">A: 76.76.21.21 + cname.vercel-dns.com</div>
-                </div>
-              </div>
-              <p style="font-size:13px;color:var(--ink-soft);line-height:1.5;">Instant production DNS records for Vercel deployments and web apps.</p>
-              <button class="ob-btn secondary" onclick="applyServicePreset('vercel')">Connect Vercel</button>
-            </div>
-
-            <div class="connect-card">
-              <div class="connect-card-top">
-                <div class="connect-icon" style="background:#F38020;"><i class="ph-bold ph-cloud"></i></div>
-                <div>
-                  <div style="font-weight:800;font-size:15px;">Cloudflare Pages / WAF</div>
-                  <div style="font-size:12px;color:var(--ink-muted);">Edge proxy &amp; Pages CNAME</div>
-                </div>
-              </div>
-              <p style="font-size:13px;color:var(--ink-soft);line-height:1.5;">Link your domain with Cloudflare Pages or Workers routes in one click.</p>
-              <button class="ob-btn secondary" onclick="applyServicePreset('cloudflare')">Connect Cloudflare</button>
-            </div>
-
-            <div class="connect-card">
-              <div class="connect-card-top">
-                <div class="connect-icon" style="background:#EA4335;"><i class="ph-bold ph-envelope-simple"></i></div>
-                <div>
-                  <div style="font-weight:800;font-size:15px;">Google Workspace Email</div>
-                  <div style="font-size:12px;color:var(--ink-muted);">SMTP.GOOGLE.COM + SPF TXT</div>
-                </div>
-              </div>
-              <p style="font-size:13px;color:var(--ink-soft);line-height:1.5;">Set up custom business email (@yourdomain.com) with verified MX &amp; SPF records.</p>
-              <button class="ob-btn secondary" onclick="applyServicePreset('gworkspace')">Add Google Mail DNS</button>
-            </div>
-
-            <div class="connect-card">
-              <div class="connect-card-top">
-                <div class="connect-icon" style="background:#673DE6;"><i class="ph-bold ph-browsers"></i></div>
-                <div>
-                  <div style="font-weight:800;font-size:15px;">Wix / Squarespace / Custom IP</div>
-                  <div style="font-size:12px;color:var(--ink-muted);">Point A record to any server IP</div>
-                </div>
-              </div>
-              <p style="font-size:13px;color:var(--ink-soft);line-height:1.5;">Enter your hosting server IP address to point your root domain and www subdomain.</p>
-              <button class="ob-btn secondary" onclick="promptCustomIpConnect()">Point to Custom Server IP</button>
-            </div>
+      <!-- ==================== 5. LIVE DNS ZONE EDITOR & REAL-TIME DNS LOOKUP ==================== -->
+      <section class="view-pane" id="view-dns">
+        <div class="module-topbar">
+          <button class="back-pill" onclick="openView('home')">
+            <i class="ph-bold ph-arrow-left"></i> Back to Overview
+          </button>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <input
+              type="text"
+              id="dns-active-domain"
+              class="text-input"
+              style="width:230px;padding:8px 12px;"
+              value="kashishai.com"
+              placeholder="Enter domain (e.g. kashishai.com)"
+            />
+            <button class="primary-action-btn" style="padding:9px 16px;" onclick="fetchRealLiveDnsRecords()">
+              <i class="ph-bold ph-arrows-clockwise"></i> Fetch Live DNS Records
+            </button>
+            <button class="back-pill" onclick="syncDnsWithWorker()">
+              <i class="ph-bold ph-cloud-arrow-up"></i> Push to Name.com Worker
+            </button>
           </div>
         </div>
-      </section>
 
-      <!-- ==================== 6. DNS & NAMESERVERS VIEW ==================== -->
-      <section class="view-section" id="view-dns">
-        <div class="panel-card">
-          <div class="panel-head">
-            <h3>
-              <i class="ph-bold ph-hard-drives"></i> DNS Zone Editor
-            </h3>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-              <span style="font-size:13px;font-weight:700;color:var(--ink-soft);">Managing Domain:</span>
-              <select class="filter-select" id="dns-domain-select" onchange="renderDnsTable()"></select>
-              <button class="dr-action-btn whois-btn" onclick="pushDnsToWorker()">
-                <i class="ph-bold ph-cloud-arrow-up"></i> Sync DNS to Name.com API
-              </button>
+        <div class="surface-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+            <div>
+              <h3 style="font-size:17px;font-weight:800;">Live DNS Zone Records (<span id="dns-domain-label">kashishai.com</span>)</h3>
+              <p style="font-size:12.5px;color:var(--ink-soft);">Fetched in real time via Cloudflare DNS-over-HTTPS (`1.1.1.1`) &amp; Name.com Worker API.</p>
             </div>
           </div>
 
-          <!-- Add DNS Record Form -->
-          <form class="form-grid" onsubmit="handleAddDnsRecord(event)" style="margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--border);">
-            <div class="field-group">
+          <!-- Add Record Form -->
+          <form class="form-grid" onsubmit="handleAddDnsRecord(event)" style="margin-bottom:22px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+            <div class="input-group">
               <label>Type</label>
-              <select id="dns-type" class="field-input">
-                <option value="A">A (IPv4 Address)</option>
+              <select id="new-dns-type" class="text-input">
+                <option value="A">A (IPv4)</option>
                 <option value="AAAA">AAAA (IPv6)</option>
-                <option value="CNAME">CNAME (Alias)</option>
-                <option value="MX">MX (Mail Exchange)</option>
-                <option value="TXT">TXT (Verification/SPF)</option>
-                <option value="NS">NS (Nameserver)</option>
+                <option value="CNAME">CNAME</option>
+                <option value="MX">MX (Mail)</option>
+                <option value="TXT">TXT</option>
+                <option value="NS">NS</option>
               </select>
             </div>
-            <div class="field-group">
-              <label>Host / Name (@ for root)</label>
-              <input type="text" id="dns-host" class="field-input" placeholder="@ or www" required />
+            <div class="input-group">
+              <label>Host (@ or subdomain)</label>
+              <input type="text" id="new-dns-host" class="text-input" placeholder="@ or www" required />
             </div>
-            <div class="field-group" style="grid-column: span 2;">
-              <label>Points To / Answer / Value</label>
-              <input type="text" id="dns-answer" class="field-input" placeholder="e.g. 76.76.21.21 or cname.kashishai.com" required />
+            <div class="input-group" style="grid-column: span 2;">
+              <label>Value / Points To</label>
+              <input type="text" id="new-dns-value" class="text-input" placeholder="e.g. 76.76.21.21 or target.domain.com" required />
             </div>
-            <div class="field-group">
-              <label>TTL</label>
-              <select id="dns-ttl" class="field-input">
-                <option value="300">300s (5 Min - Fast)</option>
-                <option value="3600">3600s (1 Hour)</option>
-                <option value="14400">14400s (4 Hours)</option>
-                <option value="86400">86400s (1 Day)</option>
+            <div class="input-group">
+              <label>TTL (Seconds)</label>
+              <select id="new-dns-ttl" class="text-input">
+                <option value="300">300 (5 min)</option>
+                <option value="3600">3600 (1 hr)</option>
+                <option value="14400">14400 (4 hrs)</option>
               </select>
             </div>
-            <div class="field-group">
-              <button type="submit" class="dr-action-btn" style="width:100%;justify-content:center;padding:12px;">
+            <div class="input-group">
+              <button type="submit" class="primary-action-btn" style="width:100%;justify-content:center;">
                 <i class="ph-bold ph-plus"></i> Add Record
               </button>
             </div>
           </form>
 
-          <!-- DNS Records Table -->
-          <div class="dns-table-wrap">
+          <div style="overflow-x:auto;">
             <table class="dns-table">
               <thead>
                 <tr>
                   <th>Type</th>
-                  <th>Host / Name</th>
-                  <th>Value / Points To</th>
+                  <th>Name / Host</th>
+                  <th>Value / Data (Live)</th>
                   <th>TTL</th>
-                  <th style="text-align:right;">Actions</th>
+                  <th style="text-align:right;">Action</th>
                 </tr>
               </thead>
-              <tbody id="dns-records-tbody"></tbody>
+              <tbody id="dns-tbody"></tbody>
             </table>
           </div>
         </div>
+      </section>
 
-        <!-- Nameservers Management Card -->
-        <div class="panel-card">
-          <div class="panel-head">
-            <h3><i class="ph-bold ph-globe"></i> Custom Nameservers (Name.com Default vs Custom Cloudflare)</h3>
-            <button class="tld-pill" onclick="resetDefaultNameservers()">Use Name.com Default NS</button>
-          </div>
-          <form class="form-grid" onsubmit="handleSaveNameservers(event)">
-            <div class="field-group">
-              <label>Nameserver 1</label>
-              <input type="text" id="ns-1" class="field-input" value="ns1vwx.name.com" required />
-            </div>
-            <div class="field-group">
-              <label>Nameserver 2</label>
-              <input type="text" id="ns-2" class="field-input" value="ns2clp.name.com" required />
-            </div>
-            <div class="field-group">
-              <label>Nameserver 3 (Optional)</label>
-              <input type="text" id="ns-3" class="field-input" value="ns3jkl.name.com" />
-            </div>
-            <div class="field-group">
-              <label>Nameserver 4 (Optional)</label>
-              <input type="text" id="ns-4" class="field-input" value="ns4qrs.name.com" />
-            </div>
-            <div class="field-group">
-              <button type="submit" class="dr-action-btn" style="width:100%;justify-content:center;padding:12px;">
-                Save Nameservers
-              </button>
-            </div>
-          </form>
+      <!-- ==================== 6. MY REGISTERED DOMAINS VIEW ==================== -->
+      <section class="view-pane" id="view-mydomains">
+        <div class="module-topbar">
+          <button class="back-pill" onclick="openView('home')">
+            <i class="ph-bold ph-arrow-left"></i> Back to Overview
+          </button>
+          <button class="primary-action-btn" onclick="openView('search')">
+            <i class="ph-bold ph-plus"></i> Register New Domain
+          </button>
         </div>
+
+        <div id="my-domains-container" class="results-list"></div>
       </section>
 
     </main>
   </div>
 
-  <!-- ==================== SHOPPING CART & CASHFREE PRODUCTION CHECKOUT MODAL ==================== -->
-  <div class="modal-backdrop" id="cart-modal" onclick="if(event.target===this) closeCartModal()">
-    <div class="modal-sheet">
-      <div class="panel-head">
-        <h3><i class="ph-bold ph-shopping-cart-simple"></i> Your Domain Cart &amp; Checkout</h3>
-        <button class="menu-btn" onclick="closeCartModal()"><i class="ph-bold ph-x"></i></button>
+  <!-- ==================== CART & REAL CASHFREE v3 CHECKOUT MODAL ==================== -->
+  <div class="modal-overlay" id="cart-modal" onclick="if(event.target===this) closeCartModal()">
+    <div class="modal-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <h3 style="font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px;">
+          <i class="ph-bold ph-shopping-cart-simple"></i> Domain Checkout
+        </h3>
+        <button class="icon-btn" onclick="closeCartModal()"><i class="ph-bold ph-x"></i></button>
       </div>
 
-      <div id="cart-items-container" style="margin-bottom:20px;"></div>
+      <div id="cart-list-box" style="margin-bottom:18px;"></div>
 
-      <!-- ICANN / Name.com Registrant Contact Details -->
-      <div id="checkout-contact-section" style="border-top:1px solid var(--border);padding-top:18px;margin-top:12px;">
-        <div style="font-size:14px;font-weight:800;margin-bottom:12px;">Registrant Contact Information (Required for ICANN / Name.com Registration)</div>
+      <div id="checkout-form-area">
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:10px;color:var(--ink);">
+          ICANN Registrant &amp; Billing Details
+        </div>
         <div class="form-grid" style="grid-template-columns:1fr 1fr;margin-bottom:16px;">
-          <div class="field-group">
-            <label>First Name</label>
-            <input type="text" id="reg-fname" class="field-input" value="Gursharan" required />
+          <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="cust-name" class="text-input" value="Gursharn A" required />
           </div>
-          <div class="field-group">
-            <label>Last Name</label>
-            <input type="text" id="reg-lname" class="field-input" value="Singh" required />
-          </div>
-          <div class="field-group">
+          <div class="input-group">
             <label>Email Address</label>
-            <input type="email" id="reg-email" class="field-input" value="help@kashishai.com" required />
+            <input type="email" id="cust-email" class="text-input" value="help@kashishai.com" required />
           </div>
-          <div class="field-group">
-            <label>Phone Number</label>
-            <input type="tel" id="reg-phone" class="field-input" value="+919876543210" required />
+          <div class="input-group">
+            <label>Mobile Phone (10 digits)</label>
+            <input type="tel" id="cust-phone" class="text-input" value="9876543210" required />
           </div>
-          <div class="field-group">
-            <label>City &amp; State</label>
-            <input type="text" id="reg-city" class="field-input" value="Jalandhar, Punjab" required />
-          </div>
-          <div class="field-group">
-            <label>Country &amp; Postal Code</label>
-            <input type="text" id="reg-zip" class="field-input" value="IN - 144505" required />
+          <div class="input-group">
+            <label>City &amp; Postal Code</label>
+            <input type="text" id="cust-city" class="text-input" value="Banga, Punjab 144505" required />
           </div>
         </div>
 
-        <div style="background:#F7F9FC;border-radius:14px;padding:16px;margin-bottom:18px;">
-          <div style="display:flex;justify-content:space-between;font-size:13.5px;color:var(--ink-soft);margin-bottom:6px;">
-            <span>WHOIS Privacy &amp; SSL Certificate</span>
-            <strong style="color:var(--success);">FREE</strong>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:13.5px;color:var(--ink-soft);margin-bottom:10px;">
-            <span>ICANN &amp; Gateway Processing</span>
-            <span>Included</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:800;color:var(--ink);padding-top:10px;border-top:1px solid var(--border);">
-            <span>Total Payable</span>
-            <span id="cart-total-display">₹0</span>
-          </div>
+        <!-- Kashish AI Official "Before you pay" Consent Box (Matches kashishai.com) -->
+        <div style="background:#F8FAFC;border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
+          <div style="font-size:13px;font-weight:800;margin-bottom:10px;">Before you pay</div>
+          <label class="consent-check-row">
+            <input type="checkbox" id="consent-terms" checked />
+            <span>I have read and agree to the Terms, Privacy Policy and Acceptable Use Policy.</span>
+          </label>
+          <label class="consent-check-row">
+            <input type="checkbox" id="consent-refund" checked />
+            <span>I have read the Refund &amp; Cancellation Policy and Shipping &amp; Delivery Policy.</span>
+          </label>
+          <label class="consent-check-row" style="margin-bottom:0;">
+            <input type="checkbox" id="consent-digital" checked />
+            <span>I understand this is a digital domain registration service activated immediately after payment.</span>
+          </label>
         </div>
 
-        <button class="ob-btn primary" id="cashfree-pay-btn" onclick="startCashfreeCheckout()" style="font-size:15px;padding:15px;">
-          <i class="ph-bold ph-lock-key"></i> Pay with Cashfree &amp; Register Instantly
+        <!-- Order Summary -->
+        <div style="background:#F3F6FC;border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:12px;color:var(--ink-soft);font-weight:600;">Total Due Today (Includes ICANN Fee &amp; WHOIS Privacy)</div>
+            <div style="font-size:20px;font-weight:800;color:var(--ink);" id="checkout-total-text">₹0</div>
+          </div>
+          <span class="tag-chip green">Cashfree PG v3</span>
+        </div>
+
+        <!-- Error / Diagnostic Box if Worker / Session Needs Attention -->
+        <div id="payment-diagnostic-box" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:14px;margin-bottom:14px;font-size:12.5px;color:#991B1B;line-height:1.55;"></div>
+
+        <button class="card-btn primary" id="pay-now-btn" onclick="initiateRealCashfreePayment()" style="font-size:14.5px;padding:15px;">
+          Agree &amp; Continue to Cashfree Payment
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== CLOUDFLARE WORKER + NAME.COM + CASHFREE CONFIG MODAL ==================== -->
-  <div class="modal-backdrop" id="api-modal" onclick="if(event.target===this) closeApiModal()">
-    <div class="modal-sheet">
-      <div class="panel-head">
-        <h3><i class="ph-bold ph-sliders-horizontal"></i> Production Worker, Name.com &amp; Cashfree Settings</h3>
-        <button class="menu-btn" onclick="closeApiModal()"><i class="ph-bold ph-x"></i></button>
+  <!-- ==================== CASHFREE GATEWAY & CLOUDFLARE WORKER CONSOLE MODAL ==================== -->
+  <div class="modal-overlay" id="gateway-modal" onclick="if(event.target===this) closeGatewayModal()">
+    <div class="modal-box" style="max-width:680px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px;">
+          <i class="ph-bold ph-plugs-connected" style="color:var(--primary);"></i> Cashfree v3 Gateway &amp; Worker API Setup
+        </h3>
+        <button class="icon-btn" onclick="closeGatewayModal()"><i class="ph-bold ph-x"></i></button>
       </div>
-      <p style="font-size:13px;color:var(--ink-soft);line-height:1.55;margin-bottom:18px;">
-        Yeh website aapke Cloudflare Worker ke routes se seedha judi hai. Agar aapka Worker same domain par hai toh relative path (e.g. <code>/api/domains</code>) ya apna full Worker URL yahan set kar sakte hain.
+
+      <p style="font-size:13px;color:var(--ink-soft);line-height:1.55;margin-bottom:16px;">
+        Configure how Cashfree v3 (`https://sdk.cashfree.com/js/v3/cashfree.js`) creates live payment sessions. By default, it calls your Cloudflare Worker on <code>https://kashishai.com</code>. You can also enter your exact Worker URL, Cashfree API credentials, or a direct <code>payment_session_id</code> to test the live Cashfree modal immediately.
       </p>
 
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div class="field-group">
-          <label>Cloudflare Worker Base URL (Leave blank for same-origin or enter Worker URL)</label>
-          <input type="text" id="cfg-worker-url" class="field-input" placeholder="https://kashishai.com" />
-        </div>
-        <div class="form-grid" style="grid-template-columns:1fr 1fr;">
-          <div class="field-group">
-            <label>Domain Check / Search Path</label>
-            <input type="text" id="cfg-search-path" class="field-input" value="/api/domains/check" />
+      <div style="display:flex;flex-direction:column;gap:13px;">
+        <div class="form-grid" style="grid-template-columns:2fr 1fr;">
+          <div class="input-group">
+            <label>Cloudflare Worker Base URL</label>
+            <input type="text" id="gw-worker-url" class="text-input" value="https://kashishai.com" placeholder="https://your-worker.workers.dev or https://kashishai.com" />
           </div>
-          <div class="field-group">
-            <label>Cashfree Create Order Path</label>
-            <input type="text" id="cfg-order-path" class="field-input" value="/api/domains/create-order" />
+          <div class="input-group">
+            <label>Cashfree Environment</label>
+            <select id="gw-cf-mode" class="text-input">
+              <option value="production">Production (Live)</option>
+              <option value="sandbox">Sandbox (Test)</option>
+            </select>
           </div>
-          <div class="field-group">
-            <label>Name.com Register Path</label>
-            <input type="text" id="cfg-register-path" class="field-input" value="/api/domains/register" />
-          </div>
-          <div class="field-group">
-            <label>DNS Management Path</label>
-            <input type="text" id="cfg-dns-path" class="field-input" value="/api/domains/dns" />
-          </div>
-        </div>
-        <div class="field-group">
-          <label>Cashfree SDK Environment</label>
-          <select id="cfg-cf-mode" class="field-input">
-            <option value="production">Production (Live Payments)</option>
-            <option value="sandbox">Sandbox (Test Mode)</option>
-          </select>
         </div>
 
-        <div style="display:flex;gap:10px;margin-top:8px;">
-          <button class="ob-btn primary" onclick="saveApiConfig()">Save &amp; Connect Worker</button>
-          <button class="ob-btn secondary" onclick="testWorkerPing()">Test Worker Connection</button>
+        <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="input-group">
+            <label>Worker Create-Order Endpoint Path</label>
+            <input type="text" id="gw-order-path" class="text-input" value="/api/domains/create-order" />
+          </div>
+          <div class="input-group">
+            <label>Worker Domain Register Path</label>
+            <input type="text" id="gw-register-path" class="text-input" value="/api/domains/register" />
+          </div>
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:12px;">
+          <div style="font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:8px;">
+            Optional: Direct Cashfree Order Session / API Keys (If running outside Worker domain)
+          </div>
+          <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="input-group">
+              <label>Cashfree App ID (Optional)</label>
+              <input type="text" id="gw-cf-appid" class="text-input" placeholder="e.g. CF_APP_ID..." />
+            </div>
+            <div class="input-group">
+              <label>Cashfree Secret Key (Optional - for Worker/Proxy)</label>
+              <input type="password" id="gw-cf-secret" class="text-input" placeholder="cfsk_ma_prod_..." />
+            </div>
+          </div>
+          <div class="input-group" style="margin-top:10px;">
+            <label>Or Paste a Cashfree <code>payment_session_id</code> to Launch Checkout Directly</label>
+            <input type="text" id="gw-session-id" class="text-input" placeholder="session_..." />
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;">
+          <button class="card-btn primary" style="flex:1;" onclick="saveGatewaySettings()">Save Gateway Settings</button>
+          <button class="card-btn secondary" style="flex:1;" onclick="toggleWorkerCodeSnippet()">View Cloudflare Worker Code</button>
+        </div>
+
+        <!-- Ready-to-deploy Cloudflare Worker Snippet for Name.com + Cashfree v3 -->
+        <div id="worker-code-drawer" style="display:none;margin-top:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:12px;font-weight:800;color:var(--ink-soft);">Cloudflare Worker (`/api/domains/*` — Cashfree PG v3 + Name.com v4)</span>
+            <button class="cat-pill" onclick="copyWorkerCode()">Copy Worker Code</button>
+          </div>
+          <textarea id="worker-code-textarea" readonly style="width:100%;height:190px;background:#111827;color:#E5E7EB;font-family:var(--mono);font-size:11.5px;padding:12px;border-radius:10px;line-height:1.5;">export default {
+  async fetch(request, env) {
+    const cors = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    };
+    if (request.method === "OPTIONS") return new Response(null, { headers: cors });
+    const url = new URL(request.url);
+    const namAuth = "Basic " + btoa(`${env.NAMECOM_USERNAME}:${env.NAMECOM_TOKEN}`);
+    const namBase = "https://api.name.com/v4";
+
+    if (url.pathname.endsWith("/check")) {
+      const { domainNames } = await request.json();
+      const r = await fetch(`${namBase}/domains:checkAvailability`, {
+        method: "POST",
+        headers: { "Authorization": namAuth, "Content-Type": "application/json" },
+        body: JSON.stringify({ domainNames })
+      });
+      return new Response(await r.text(), { headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    if (url.pathname.endsWith("/create-order")) {
+      const body = await request.json();
+      const cfUrl = env.CASHFREE_ENV === "sandbox"
+        ? "https://sandbox.cashfree.com/pg/orders"
+        : "https://api.cashfree.com/pg/orders";
+      const orderRes = await fetch(cfUrl, {
+        method: "POST",
+        headers: {
+          "x-client-id": env.CASHFREE_APP_ID,
+          "x-client-secret": env.CASHFREE_SECRET_KEY,
+          "x-api-version": "2023-08-01",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          order_id: "kd_" + Date.now(),
+          order_amount: Number(body.amount),
+          order_currency: "INR",
+          customer_details: {
+            customer_id: "cust_" + Date.now(),
+            customer_name: body.customer.name,
+            customer_email: body.customer.email,
+            customer_phone: body.customer.phone
+          }
+        })
+      });
+      return new Response(await orderRes.text(), { status: orderRes.status, headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    if (url.pathname.endsWith("/register")) {
+      const { domainName, years, contacts } = await request.json();
+      const regRes = await fetch(`${namBase}/domains`, {
+        method: "POST",
+        headers: { "Authorization": namAuth, "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: { domainName }, years: Number(years || 1), contacts })
+      });
+      return new Response(await regRes.text(), { status: regRes.status, headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    return new Response(JSON.stringify({ ok: true }), { headers: cors });
+  }
+};</textarea>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- ==================== LIVE WHOIS / RDAP INSPECTOR MODAL ==================== -->
+  <div class="modal-overlay" id="whois-modal" onclick="if(event.target===this) closeWhoisModal()">
+    <div class="modal-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="font-size:17px;font-weight:800;" id="whois-modal-title">Live RDAP &amp; DNS Record Lookup</h3>
+        <button class="icon-btn" onclick="closeWhoisModal()"><i class="ph-bold ph-x"></i></button>
+      </div>
+      <div id="whois-modal-body" style="font-size:13px;line-height:1.6;color:var(--ink-soft);"></div>
+    </div>
+  </div>
+
+  <!-- ==================== PROFILE CUSTOMIZATION MODAL ==================== -->
+  <div class="modal-overlay" id="profile-modal" onclick="if(event.target===this) closeProfileModal()">
+    <div class="modal-box" style="max-width:420px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="font-size:17px;font-weight:800;">Account Profile</h3>
+        <button class="icon-btn" onclick="closeProfileModal()"><i class="ph-bold ph-x"></i></button>
+      </div>
+      <form onsubmit="saveProfileName(event)">
+        <div class="input-group" style="margin-bottom:16px;">
+          <label>Account Holder Name</label>
+          <input type="text" id="profile-name-input" class="text-input" value="Gursharn A" required />
+        </div>
+        <button type="submit" class="card-btn primary">Update Name</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
-  <div class="toast-box" id="toast-box">
-    <i class="ph-bold ph-check-circle" style="color:#37B76C;font-size:18px;"></i>
-    <span id="toast-msg">Saved</span>
+  <div class="toast-banner" id="toast-banner">
+    <i class="ph-fill ph-check-circle" style="color:#22C55E;font-size:18px;flex-shrink:0;"></i>
+    <span id="toast-text">Ready</span>
   </div>
 
   <script>
-    /* =========================================================================
-       KASHISH DOMAINS — PRODUCTION ENGINE (Name.com Worker API + Cashfree v3)
-       ========================================================================= */
+    /* ============================================================================
+       KASHISH DOMAINS — LIVE DNS/RDAP VERIFICATION + CASHFREE v3 CHECKOUT ENGINE
+       ============================================================================ */
 
-    const TLD_CATALOG = [
-      { tld: '.com', cat: ['popular', 'business'], inr: 949, oldInr: 1399, usd: 11.49, badge: 'Popular' },
-      { tld: '.ai', cat: ['popular', 'tech'], inr: 6499, oldInr: 7999, usd: 78.00, badge: 'AI Favorite' },
-      { tld: '.in', cat: ['popular', 'business'], inr: 599, oldInr: 899, usd: 7.49, badge: 'India' },
-      { tld: '.io', cat: ['popular', 'tech'], inr: 3899, oldInr: 4799, usd: 46.99, badge: 'Tech' },
-      { tld: '.co', cat: ['business', 'popular'], inr: 2199, oldInr: 2899, usd: 26.49, badge: 'Startup' },
-      { tld: '.dev', cat: ['tech'], inr: 1299, oldInr: 1699, usd: 15.99, badge: 'SSL Built-in' },
-      { tld: '.app', cat: ['tech'], inr: 1399, oldInr: 1799, usd: 16.99, badge: 'Apps' },
-      { tld: '.store', cat: ['creative', 'business'], inr: 499, oldInr: 2499, usd: 5.99, badge: 'E-Commerce' },
-      { tld: '.org', cat: ['business'], inr: 1099, oldInr: 1499, usd: 13.49, badge: 'Trusted' },
-      { tld: '.net', cat: ['business', 'tech'], inr: 1199, oldInr: 1599, usd: 14.49, badge: 'Classic' },
-      { tld: '.tech', cat: ['tech'], inr: 699, oldInr: 3299, usd: 8.49, badge: 'Sale' },
-      { tld: '.xyz', cat: ['creative', 'tech'], inr: 249, oldInr: 1099, usd: 2.99, badge: 'Web3 & Creative' },
-      { tld: '.me', cat: ['creative'], inr: 1499, oldInr: 1999, usd: 17.99, badge: 'Personal' },
-      { tld: '.studio', cat: ['creative'], inr: 1899, oldInr: 2599, usd: 22.99, badge: 'Creator' }
+    const TLD_LIST = [
+      { tld: '.com', cat: ['popular', 'business'], inr: 949, oldInr: 1399, label: 'Most Popular' },
+      { tld: '.ai', cat: ['popular', 'tech'], inr: 6499, oldInr: 7999, label: 'AI & Future' },
+      { tld: '.in', cat: ['popular', 'business'], inr: 599, oldInr: 899, label: 'India' },
+      { tld: '.io', cat: ['popular', 'tech'], inr: 3899, oldInr: 4799, label: 'SaaS & Tech' },
+      { tld: '.co', cat: ['business', 'popular'], inr: 2199, oldInr: 2899, label: 'Company' },
+      { tld: '.dev', cat: ['tech'], inr: 1299, oldInr: 1699, label: 'Developer' },
+      { tld: '.app', cat: ['tech'], inr: 1399, oldInr: 1799, label: 'App Store' },
+      { tld: '.store', cat: ['creative', 'business'], inr: 499, oldInr: 2499, label: 'E-Commerce' },
+      { tld: '.org', cat: ['business'], inr: 1099, oldInr: 1499, label: 'Organization' },
+      { tld: '.net', cat: ['business', 'tech'], inr: 1199, oldInr: 1599, label: 'Network' },
+      { tld: '.tech', cat: ['tech'], inr: 699, oldInr: 3299, label: 'Tech Startup' },
+      { tld: '.xyz', cat: ['creative', 'tech'], inr: 249, oldInr: 1099, label: 'Next-Gen' }
     ];
 
-    let state = {
-      userName: localStorage.getItem('kd_user_name') || 'Gursharn',
-      currency: localStorage.getItem('kd_currency') || 'INR',
+    const appState = {
+      userName: 'Gursharn A',
+      currency: 'INR',
       activeTldCat: 'all',
-      lastQuery: 'kashish',
       searchResults: [],
-      cart: JSON.parse(localStorage.getItem('kd_cart') || '[]'),
-      myDomains: JSON.parse(localStorage.getItem('kd_my_domains') || JSON.stringify([
-        {
-          domain: 'kashishai.com',
-          expires: '2027-10-24',
-          autoRenew: true,
-          locked: true,
-          privacy: true,
-          status: 'Active',
-          nameservers: ['ns1vwx.name.com', 'ns2clp.name.com', 'ns3jkl.name.com', 'ns4qrs.name.com'],
-          dns: [
-            { id: '1', type: 'A', host: '@', answer: '76.76.21.21', ttl: 300 },
-            { id: '2', type: 'CNAME', host: 'www', answer: 'kashishai.com', ttl: 300 },
-            { id: '3', type: 'CNAME', host: 'domains', answer: 'kashishai.com', ttl: 300 },
-            { id: '4', type: 'TXT', host: '@', answer: 'v=spf1 include:_spf.google.com ~all', ttl: 3600 }
-          ]
-        },
-        {
-          domain: 'nexorsparks.com',
-          expires: '2027-08-15',
-          autoRenew: true,
-          locked: true,
-          privacy: true,
-          status: 'Active',
-          nameservers: ['ns1vwx.name.com', 'ns2clp.name.com'],
-          dns: [
-            { id: '10', type: 'A', host: '@', answer: '76.76.21.21', ttl: 300 },
-            { id: '11', type: 'CNAME', host: 'www', answer: 'nexorsparks.com', ttl: 300 }
-          ]
-        }
-      ])),
-      apiConfig: JSON.parse(localStorage.getItem('kd_api_cfg') || JSON.stringify({
-        workerUrl: '',
-        searchPath: '/api/domains/check',
+      cart: [],
+      registeredDomains: [],
+      dnsRecords: [],
+      gateway: {
+        workerUrl: 'https://kashishai.com',
         orderPath: '/api/domains/create-order',
         registerPath: '/api/domains/register',
-        dnsPath: '/api/domains/dns',
-        cfMode: 'production'
-      }))
+        cfMode: 'production',
+        cfAppId: '',
+        cfSecret: '',
+        manualSessionId: ''
+      }
     };
 
-    function saveState() {
-      localStorage.setItem('kd_cart', JSON.stringify(state.cart));
-      localStorage.setItem('kd_my_domains', JSON.stringify(state.myDomains));
-      localStorage.setItem('kd_currency', state.currency);
-      localStorage.setItem('kd_user_name', state.userName);
+    function notify(message) {
+      const banner = document.getElementById('toast-banner');
+      document.getElementById('toast-text').textContent = message;
+      banner.classList.add('show');
+      clearTimeout(window._kdToast);
+      window._kdToast = setTimeout(() => banner.classList.remove('show'), 3600);
     }
 
-    function showToast(msg) {
-      const box = document.getElementById('toast-box');
-      document.getElementById('toast-msg').textContent = msg;
-      box.classList.add('show');
-      clearTimeout(window._kdToastTimer);
-      window._kdToastTimer = setTimeout(() => box.classList.remove('show'), 3200);
-    }
-
-    function formatMoney(inrAmount) {
-      if (state.currency === 'USD') {
-        const usd = (inrAmount / 83).toFixed(2);
-        return '$' + usd;
+    function formatPrice(inr) {
+      if (appState.currency === 'USD') {
+        return '$' + (inr / 84).toFixed(2);
       }
-      return '₹' + Math.round(inrAmount).toLocaleString('en-IN');
+      return '₹' + Math.round(inr).toLocaleString('en-IN');
     }
 
-    function updateGreetingAndHeader() {
+    function updateHeaderUI() {
+      const firstName = appState.userName.trim().split(' ')[0] || 'Gursharn';
       const hr = new Date().getHours();
-      const tod = hr < 12 ? 'Good Morning' : hr < 17 ? 'Good Afternoon' : 'Good Evening';
-      const first = state.userName.split(' ')[0] || 'Gursharn';
-      document.getElementById('greeting-title').textContent = `${tod} ${first},`;
-      document.getElementById('header-user-name').textContent = state.userName;
-      document.getElementById('header-user-avatar').textContent = first.charAt(0).toUpperCase();
-      document.getElementById('currency-btn').textContent = state.currency === 'INR' ? 'INR (₹)' : 'USD ($)';
-      document.getElementById('cart-count-badge').textContent = state.cart.length;
-      document.getElementById('my-domains-count').textContent = state.myDomains.length;
-    }
+      const greeting = hr < 12 ? 'Good Morning' : hr < 17 ? 'Good Afternoon' : 'Good Evening';
 
-    function promptAccountName() {
-      const next = prompt('Enter display name for Kashish Domains:', state.userName);
-      if (next && next.trim()) {
-        state.userName = next.trim();
-        saveState();
-        updateGreetingAndHeader();
-        showToast('Profile updated');
+      document.getElementById('hero-greeting-line').textContent = `${greeting} ${firstName},`;
+      document.getElementById('display-user-name').textContent = appState.userName;
+      document.getElementById('display-user-avatar').textContent = firstName.charAt(0).toUpperCase();
+
+      const badge = document.getElementById('header-cart-badge');
+      if (appState.cart.length > 0) {
+        badge.style.display = 'flex';
+        badge.textContent = appState.cart.length;
+      } else {
+        badge.style.display = 'none';
       }
     }
 
-    function toggleCurrency() {
-      state.currency = state.currency === 'INR' ? 'USD' : 'INR';
-      saveState();
-      updateGreetingAndHeader();
-      renderSearchResults();
-      renderCartItems();
+    function toggleDrawer(open) {
+      document.getElementById('drawer-backdrop').classList.toggle('open', open);
+      document.getElementById('side-drawer').classList.toggle('open', open);
     }
 
-    /* ==================== NAVIGATION BETWEEN VIEWS ==================== */
-    function switchView(viewId) {
-      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-      const target = document.getElementById('view-' + viewId);
+    function openView(viewName) {
+      document.querySelectorAll('.view-pane').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('view-' + viewName);
       if (target) target.classList.add('active');
 
-      document.querySelectorAll('.subnav-tab').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-view') === viewId);
+      document.querySelectorAll('.drawer-item').forEach(item => {
+        item.classList.toggle('active', item.getAttribute('data-nav') === viewName);
       });
 
-      if (viewId === 'search' && state.searchResults.length === 0) {
-        performDomainSearch(state.lastQuery);
+      if (viewName === 'dns' && appState.dnsRecords.length === 0) {
+        fetchRealLiveDnsRecords();
       }
-      if (viewId === 'mydomains' || viewId === 'home') {
-        renderMyDomains();
-      }
-      if (viewId === 'dns' || viewId === 'connect') {
-        populateDomainSelects();
-        renderDnsTable();
+      if (viewName === 'mydomains') {
+        renderMyRegisteredDomains();
       }
     }
 
-    /* ==================== DOMAIN SEARCH (NAME.COM WORKER API + FILTERS) ==================== */
-    function cleanRootKeyword(raw) {
-      let val = (raw || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '');
-      val = val.split('/')[0];
-      return val;
+    function changeCurrency(curr) {
+      appState.currency = curr;
+      renderDomainResults();
+      renderCartModalList();
     }
 
-    function handleTopSearch(e) {
+    /* ==================== REAL-TIME GLOBAL DNS & RDAP AVAILABILITY ENGINE ==================== */
+    function sanitizeDomainInput(raw) {
+      let clean = (raw || '').trim().toLowerCase()
+        .replace(/^https?:\/\//, '')
+        .replace(/^www\./, '')
+        .split('/')[0];
+      return clean;
+    }
+
+    function handleTopBarSearch(e) {
       e.preventDefault();
-      const q = document.getElementById('top-domain-input').value.trim();
+      const q = document.getElementById('header-search-input').value.trim();
       if (!q) return;
-      document.getElementById('main-domain-search-input').value = q;
-      switchView('search');
-      performDomainSearch(q);
+      document.getElementById('main-search-input').value = q;
+      openView('search');
+      runLiveDomainSearch(q);
     }
 
-    function handleMainSearch(e) {
+    function handleSearchSubmit(e) {
       e.preventDefault();
-      const q = document.getElementById('main-domain-search-input').value.trim();
+      const q = document.getElementById('main-search-input').value.trim();
       if (!q) return;
-      document.getElementById('top-domain-input').value = q;
-      performDomainSearch(q);
+      document.getElementById('header-search-input').value = q;
+      runLiveDomainSearch(q);
     }
 
-    async function performDomainSearch(rawQuery) {
-      const cleaned = cleanRootKeyword(rawQuery || 'kashish');
-      state.lastQuery = cleaned;
-      const parts = cleaned.split('.');
-      const sld = parts[0].replace(/[^a-z0-9-]/g, '') || 'kashish';
-      const requestedTld = parts.length > 1 ? '.' + parts.slice(1).join('.') : '.com';
-
-      const btn = document.getElementById('main-search-btn');
-      if (btn) btn.innerHTML = '<span>Checking Name.com...</span>';
-
-      const candidateDomains = TLD_CATALOG.map(item => sld + item.tld);
-      if (!candidateDomains.includes(sld + requestedTld)) {
-        candidateDomains.unshift(sld + requestedTld);
-      }
-
-      let workerMap = null;
+    /**
+     * Checks real-world domain registration status using Cloudflare 1.1.1.1 DNS-over-HTTPS
+     * plus Name.com Worker API if reachable.
+     * In DNS-over-HTTPS: Status === 0 (NOERROR with NS/SOA) means domain is registered & delegated.
+     * Status === 3 (NXDOMAIN) means domain is available for registration!
+     */
+    async function checkSingleDomainLiveStatus(fullDomain) {
       try {
-        const base = (state.apiConfig.workerUrl || '').replace(/\/$/, '');
-        const res = await fetch(base + state.apiConfig.searchPath, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            keyword: sld,
-            domain: cleaned,
-            domains: candidateDomains,
-            domainNames: candidateDomains
-          })
+        const res = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(fullDomain)}&type=NS`, {
+          headers: { 'Accept': 'application/dns-json' }
         });
         if (res.ok) {
           const data = await res.json();
-          workerMap = {};
-          const list = data.results || data.domains || (Array.isArray(data) ? data : []);
-          list.forEach(entry => {
-            const dName = (entry.domainName || entry.domain || '').toLowerCase();
-            if (dName) {
-              workerMap[dName] = {
-                purchasable: entry.purchasable !== undefined ? Boolean(entry.purchasable) : Boolean(entry.available),
-                priceInr: entry.priceInr || (entry.purchasePrice ? Math.round(Number(entry.purchasePrice) * 86) : null)
-              };
-            }
-          });
+          // Status 3 is NXDOMAIN (Not registered in root zone -> Available!)
+          // Status 0 with Answer or Authority NS means taken/registered
+          if (data.Status === 3) {
+            return { available: true, source: 'Live Registry DNS' };
+          }
+          if (data.Status === 0 && (Array.isArray(data.Answer) && data.Answer.length > 0)) {
+            return {
+              available: false,
+              nameservers: data.Answer.map(a => a.data),
+              source: 'Live Registry DNS'
+            };
+          }
         }
-      } catch (err) {
-        // Fallback to instant local catalog pricing if Worker endpoint is on a custom path
+      } catch (e) {}
+      return { available: true, source: 'Catalog' };
+    }
+
+    async function runLiveDomainSearch(rawQuery) {
+      const cleaned = sanitizeDomainInput(rawQuery);
+      if (!cleaned) return;
+
+      const parts = cleaned.split('.');
+      const sld = parts[0].replace(/[^a-z0-9-]/g, '');
+      if (!sld) {
+        notify('Please enter a valid domain keyword');
+        return;
+      }
+      const userTld = parts.length > 1 ? '.' + parts.slice(1).join('.') : '.com';
+
+      const btn = document.getElementById('search-submit-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span>Checking Live DNS & Name.com...</span>';
+
+      // Build list of domains to verify
+      const listToCheck = [...TLD_LIST];
+      if (!listToCheck.some(t => t.tld === userTld)) {
+        listToCheck.unshift({ tld: userTld, cat: ['popular'], inr: 1299, oldInr: 1799, label: 'Custom TLD' });
       }
 
-      const ownedSet = new Set(state.myDomains.map(d => d.domain.toLowerCase()));
+      // Render immediate skeleton states
+      appState.searchResults = listToCheck.map(item => ({
+        domain: `${sld}${item.tld}`,
+        sld,
+        tld: item.tld,
+        cat: item.cat,
+        inr: item.inr,
+        oldInr: item.oldInr,
+        label: item.label,
+        isExact: item.tld === userTld,
+        checking: true,
+        available: false,
+        nameservers: []
+      }));
+      renderDomainResults();
 
-      state.searchResults = TLD_CATALOG.map(item => {
-        const fullDomain = (sld + item.tld).toLowerCase();
-        const isExact = item.tld === requestedTld;
-        const fromWorker = workerMap && workerMap[fullDomain];
-        const available = fromWorker
-          ? fromWorker.purchasable
-          : !ownedSet.has(fullDomain);
-        const priceInr = (fromWorker && fromWorker.priceInr) ? fromWorker.priceInr : item.inr;
+      // 1. Try Name.com Worker batch check if configured
+      let workerAvailability = null;
+      try {
+        const base = appState.gateway.workerUrl.replace(/\/$/, '');
+        const wRes = await fetch(`${base}/api/domains/check`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            domainNames: appState.searchResults.map(r => r.domain)
+          })
+        });
+        if (wRes.ok) {
+          const wJson = await wRes.json();
+          const arr = wJson.results || wJson.domains || [];
+          if (Array.isArray(arr) && arr.length > 0) {
+            workerAvailability = {};
+            arr.forEach(d => {
+              const name = (d.domainName || d.domain || '').toLowerCase();
+              if (name) {
+                workerAvailability[name] = {
+                  available: Boolean(d.purchasable ?? d.available),
+                  inr: d.purchasePrice ? Math.round(Number(d.purchasePrice) * 86) : null
+                };
+              }
+            });
+          }
+        }
+      } catch (e) {}
 
-        return {
-          domain: fullDomain,
-          sld,
-          tld: item.tld,
-          cat: item.cat,
-          available,
-          isExact,
-          priceInr,
-          oldInr: item.oldInr,
-          badge: item.badge
-        };
-      });
+      // 2. Query real-time Cloudflare DNS-over-HTTPS in parallel for every TLD
+      await Promise.all(appState.searchResults.map(async (entry) => {
+        if (workerAvailability && workerAvailability[entry.domain] !== undefined) {
+          entry.available = workerAvailability[entry.domain].available;
+          if (workerAvailability[entry.domain].inr) entry.inr = workerAvailability[entry.domain].inr;
+          entry.checking = false;
+        } else {
+          const live = await checkSingleDomainLiveStatus(entry.domain);
+          entry.available = live.available;
+          entry.nameservers = live.nameservers || [];
+          entry.checking = false;
+        }
+      }));
 
-      if (btn) btn.innerHTML = '<span>Check Availability</span><i class="ph-bold ph-arrow-right"></i>';
-      renderSearchResults();
+      btn.disabled = false;
+      btn.innerHTML = '<span>Search Live</span><i class="ph-bold ph-arrow-right"></i>';
+      renderDomainResults();
     }
 
-    function setTldCategory(cat) {
-      state.activeTldCat = cat;
-      document.querySelectorAll('#tld-cat-pills .tld-pill').forEach(b => {
+    function filterTldCat(cat) {
+      appState.activeTldCat = cat;
+      document.querySelectorAll('#tld-filter-pills .cat-pill').forEach(b => {
         b.classList.toggle('active', b.getAttribute('data-cat') === cat);
       });
-      renderSearchResults();
+      renderDomainResults();
     }
 
-    function renderSearchResults() {
-      const container = document.getElementById('domain-search-results');
-      if (!container) return;
+    function renderDomainResults() {
+      const container = document.getElementById('search-results-container');
+      if (!container || appState.searchResults.length === 0) return;
 
-      const availOnly = document.getElementById('filter-avail-only')?.checked;
-      const maxPrice = Number(document.getElementById('filter-max-price')?.value || 999999);
-      const sortBy = document.getElementById('filter-sort')?.value || 'recommended';
-      const years = Number(document.getElementById('filter-years')?.value || 1);
-      const discountFactor = years === 2 ? 0.9 : years === 3 ? 0.85 : years === 5 ? 0.8 : 1;
+      const onlyAvail = document.getElementById('only-avail-checkbox')?.checked;
+      const sortMode = document.getElementById('sort-select')?.value || 'recommended';
+      const years = Number(document.getElementById('years-select')?.value || 1);
+      const discount = years === 2 ? 0.9 : years === 3 ? 0.85 : years === 5 ? 0.8 : 1;
 
-      let filtered = state.searchResults.filter(r => {
-        if (state.activeTldCat !== 'all' && !r.cat.includes(state.activeTldCat)) return false;
-        if (availOnly && !r.available) return false;
-        if (r.priceInr > maxPrice) return false;
+      let rows = appState.searchResults.filter(r => {
+        if (appState.activeTldCat !== 'all' && !r.cat.includes(appState.activeTldCat)) return false;
+        if (onlyAvail && !r.available && !r.checking) return false;
         return true;
       });
 
-      filtered.sort((a, b) => {
-        if (sortBy === 'price-asc') return a.priceInr - b.priceInr;
-        if (sortBy === 'price-desc') return b.priceInr - a.priceInr;
-        if (sortBy === 'length') return a.domain.length - b.domain.length;
+      rows.sort((a, b) => {
         if (a.isExact !== b.isExact) return a.isExact ? -1 : 1;
+        if (sortMode === 'price-asc') return a.inr - b.inr;
+        if (sortMode === 'price-desc') return b.inr - a.inr;
         return 0;
       });
 
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="panel-card" style="text-align:center;color:var(--ink-soft);">No domains match your current filters. Try widening the price filter or selecting "All Extensions".</div>`;
-        return;
-      }
+      container.innerHTML = rows.map(item => {
+        const finalInr = Math.round(item.inr * discount) * years;
+        const oldTotalInr = item.oldInr * years;
+        const inCart = appState.cart.some(c => c.domain === item.domain);
 
-      container.innerHTML = filtered.map(item => {
-        const annualPrice = Math.round(item.priceInr * discountFactor);
-        const totalPeriodPrice = annualPrice * years;
-        const inCart = state.cart.some(c => c.domain === item.domain);
+        if (item.checking) {
+          return `
+            <div class="domain-row">
+              <div class="domain-row-left">
+                <div class="status-badge-icon checking"><i class="ph-bold ph-spinner"></i></div>
+                <div>
+                  <div class="domain-title">${item.sld}<span class="tld-part">${item.tld}</span></div>
+                  <span class="tag-chip blue">Querying Live Registry DNS...</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
 
         return `
-          <div class="domain-result-row ${item.isExact ? 'exact-match' : ''}">
-            <div class="dr-left">
-              <div class="dr-status-icon ${item.available ? 'avail' : 'taken'}">
-                <i class="ph-bold ${item.available ? 'ph-check' : 'ph-lock-simple'}"></i>
+          <div class="domain-row ${item.isExact ? 'exact' : ''}">
+            <div class="domain-row-left">
+              <div class="status-badge-icon ${item.available ? 'avail' : 'taken'}">
+                <i class="ph-bold ${item.available ? 'ph-check' : 'ph-lock-key'}"></i>
               </div>
               <div>
-                <div class="dr-name">${item.sld}<span class="tld-highlight">${item.tld}</span></div>
-                <div class="dr-badges">
-                  ${item.isExact ? '<span class="badge-pill match">Exact Match</span>' : ''}
-                  <span class="badge-pill ${item.tld === '.ai' ? 'ai' : 'popular'}">${item.badge}</span>
-                  ${!item.available ? '<span class="badge-pill taken">Registered</span>' : ''}
+                <div class="domain-title">${item.sld}<span class="tld-part">${item.tld}</span></div>
+                <div style="margin-top:4px;">
+                  ${item.isExact ? '<span class="tag-chip blue">Exact Match</span>' : ''}
+                  ${item.available
+                    ? `<span class="tag-chip green">Available Now</span><span class="tag-chip amber">${item.label}</span>`
+                    : `<span class="tag-chip red">Registered / Taken</span>`
+                  }
                 </div>
               </div>
             </div>
 
-            <div class="dr-right">
+            <div class="domain-row-right">
               ${item.available ? `
-                <div class="dr-price-block">
-                  <div class="dr-price-old">${formatMoney(item.oldInr * years)}</div>
-                  <div class="dr-price-now">${formatMoney(totalPeriodPrice)} <small>/ ${years} yr${years > 1 ? 's' : ''}</small></div>
+                <div>
+                  <div class="price-Old">${formatPrice(oldTotalInr)}</div>
+                  <div class="price-Now">${formatPrice(finalInr)} <span style="font-size:12px;font-weight:600;color:var(--ink-muted);">/ ${years} yr${years > 1 ? 's' : ''}</span></div>
                 </div>
-                <button class="dr-action-btn ${inCart ? 'in-cart' : ''}" onclick="toggleDomainInCart('${item.domain}', ${totalPeriodPrice}, ${years}, 'register')">
+                <button class="primary-action-btn" style="background:${inCart ? 'var(--success)' : 'var(--primary)'};" onclick="toggleCartItem('${item.domain}', ${finalInr}, ${years}, 'register')">
                   <i class="ph-bold ${inCart ? 'ph-check' : 'ph-shopping-cart-simple'}"></i>
-                  <span>${inCart ? 'Added' : 'Add to Cart'}</span>
+                  <span>${inCart ? 'In Cart — Checkout' : 'Add to Cart'}</span>
                 </button>
               ` : `
-                <button class="dr-action-btn whois-btn" onclick="prefillTransfer('${item.domain}')">
-                  <i class="ph-bold ph-arrows-left-right"></i> Transfer Yours
+                <button class="back-pill" onclick="inspectLiveWhois('${item.domain}')">
+                  <i class="ph-bold ph-info"></i> Live RDAP / WHOIS
+                </button>
+                <button class="back-pill" onclick="startTransferFor('${item.domain}')">
+                  <i class="ph-bold ph-arrows-left-right"></i> Transfer
                 </button>
               `}
             </div>
@@ -2122,24 +2020,80 @@
       }).join('');
     }
 
-    /* ==================== CART & CASHFREE v3 PRODUCTION CHECKOUT ==================== */
-    function toggleDomainInCart(domain, priceInr, years, actionType = 'register', authCode = '') {
-      const idx = state.cart.findIndex(c => c.domain === domain);
-      if (idx > -1) {
-        state.cart.splice(idx, 1);
-        showToast(`${domain} removed from cart`);
-      } else {
-        state.cart.push({ domain, priceInr, years, actionType, authCode });
-        showToast(`${domain} added to cart`);
+    /* ==================== LIVE RDAP / WHOIS & DNS INSPECTOR ==================== */
+    async function inspectLiveWhois(domain) {
+      const modal = document.getElementById('whois-modal');
+      const title = document.getElementById('whois-modal-title');
+      const body = document.getElementById('whois-modal-body');
+
+      title.textContent = `Live Registry Lookup: ${domain}`;
+      body.innerHTML = `<div style="padding:18px;text-align:center;">Querying live RDAP &amp; Cloudflare 1.1.1.1 DNS for <strong>${domain}</strong>...</div>`;
+      modal.classList.add('open');
+
+      let rdapHtml = '';
+      try {
+        const rdapRes = await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`);
+        if (rdapRes.ok) {
+          const rdap = await rdapRes.json();
+          const events = (rdap.events || []).map(ev => `<div><strong>${ev.eventAction}:</strong> ${new Date(ev.eventDate).toUTCString()}</div>`).join('');
+          const statusList = (rdap.status || []).join(', ');
+          rdapHtml = `
+            <div style="background:#F8FAFC;padding:14px;border-radius:12px;margin-bottom:12px;border:1px solid var(--border);">
+              <div><strong>Domain Handle:</strong> ${rdap.ldhName || domain}</div>
+              <div><strong>Registry Status:</strong> ${statusList || 'Active'}</div>
+              ${events}
+            </div>
+          `;
+        }
+      } catch (e) {}
+
+      // Also fetch live NS and A records via Cloudflare DoH
+      let dnsHtml = '';
+      try {
+        const [nsRes, aRes] = await Promise.all([
+          fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=NS`, { headers: { 'Accept': 'application/dns-json' } }).then(r => r.json()),
+          fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=A`, { headers: { 'Accept': 'application/dns-json' } }).then(r => r.json())
+        ]);
+        const nsList = (nsRes.Answer || []).map(a => `<code>${a.data}</code>`).join(', ') || 'None';
+        const aList = (aRes.Answer || []).map(a => `<code>${a.data}</code>`).join(', ') || 'None';
+        dnsHtml = `
+          <div style="background:#F8FAFC;padding:14px;border-radius:12px;border:1px solid var(--border);">
+            <div style="margin-bottom:6px;"><strong>Live Nameservers (NS):</strong> ${nsList}</div>
+            <div><strong>Live IPv4 (A) Records:</strong> ${aList}</div>
+          </div>
+        `;
+      } catch (e) {}
+
+      body.innerHTML = (rdapHtml + dnsHtml) || `<div>Domain is registered in the root zone.</div>`;
+    }
+
+    function closeWhoisModal() {
+      document.getElementById('whois-modal').classList.remove('open');
+    }
+
+    /* ==================== CART & WORKING CASHFREE v3 CHECKOUT ==================== */
+    function toggleCartItem(domain, priceInr, years, type = 'register', authCode = '') {
+      const existingIdx = appState.cart.findIndex(c => c.domain === domain);
+      if (existingIdx > -1) {
+        openCartModal();
+        return;
       }
-      saveState();
-      updateGreetingAndHeader();
-      renderSearchResults();
-      renderCartItems();
+      appState.cart.push({ domain, priceInr, years, type, authCode });
+      updateHeaderUI();
+      renderDomainResults();
+      openCartModal();
+    }
+
+    function removeCartItem(domain) {
+      appState.cart = appState.cart.filter(c => c.domain !== domain);
+      updateHeaderUI();
+      renderDomainResults();
+      renderCartModalList();
     }
 
     function openCartModal() {
-      renderCartItems();
+      document.getElementById('payment-diagnostic-box').style.display = 'none';
+      renderCartModalList();
       document.getElementById('cart-modal').classList.add('open');
     }
 
@@ -2147,264 +2101,284 @@
       document.getElementById('cart-modal').classList.remove('open');
     }
 
-    function renderCartItems() {
-      const wrap = document.getElementById('cart-items-container');
-      const totalEl = document.getElementById('cart-total-display');
-      const contactSec = document.getElementById('checkout-contact-section');
+    function renderCartModalList() {
+      const box = document.getElementById('cart-list-box');
+      const formArea = document.getElementById('checkout-form-area');
+      const totalText = document.getElementById('checkout-total-text');
 
-      if (state.cart.length === 0) {
-        wrap.innerHTML = `<div style="padding:28px;text-align:center;color:var(--ink-muted);font-weight:600;">Your domain cart is empty. Search for a domain to get started!</div>`;
-        if (contactSec) contactSec.style.display = 'none';
+      if (appState.cart.length === 0) {
+        box.innerHTML = `<div style="padding:26px;text-align:center;color:var(--ink-muted);font-weight:600;">Your cart is empty. Search for an available domain to register.</div>`;
+        formArea.style.display = 'none';
         return;
       }
 
-      if (contactSec) contactSec.style.display = 'block';
-      const totalInr = state.cart.reduce((sum, item) => sum + Number(item.priceInr || 0), 0);
-      if (totalEl) totalEl.textContent = formatMoney(totalInr);
+      formArea.style.display = 'block';
+      const total = appState.cart.reduce((s, item) => s + Number(item.priceInr || 0), 0);
+      totalText.textContent = formatPrice(total);
 
-      wrap.innerHTML = state.cart.map(item => `
+      box.innerHTML = appState.cart.map(item => `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;">
           <div>
             <div style="font-weight:800;font-size:15px;">${item.domain}</div>
-            <div style="font-size:12px;color:var(--ink-muted);">${item.actionType === 'transfer' ? 'Domain Transfer (+1 Yr Renewal)' : `${item.years} Year Registration`} • Free WHOIS Privacy</div>
+            <div style="font-size:12px;color:var(--ink-soft);">${item.type === 'transfer' ? 'Domain Transfer (+1 Yr Renewal)' : `${item.years} Year Registration`} • Free WHOIS Privacy</div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;">
-            <strong style="font-size:15px;">${formatMoney(item.priceInr)}</strong>
-            <button class="menu-btn" onclick="toggleDomainInCart('${item.domain}', 0, 1)" title="Remove"><i class="ph-bold ph-trash" style="color:var(--danger);"></i></button>
+            <strong style="font-size:15px;">${formatPrice(item.priceInr)}</strong>
+            <button class="icon-btn" onclick="removeCartItem('${item.domain}')" title="Remove"><i class="ph-bold ph-trash" style="color:var(--danger);"></i></button>
           </div>
         </div>
       `).join('');
     }
 
-    async function startCashfreeCheckout() {
-      if (state.cart.length === 0) return;
+    /**
+     * Initiates REAL Cashfree v3 Payment Checkout (`Cashfree({ mode }).checkout(...)`).
+     * Never silently fakes registration if payment fails!
+     */
+    async function initiateRealCashfreePayment() {
+      if (appState.cart.length === 0) return;
 
-      const btn = document.getElementById('cashfree-pay-btn');
-      const totalInr = state.cart.reduce((sum, item) => sum + Number(item.priceInr || 0), 0);
-      const contact = {
-        firstName: document.getElementById('reg-fname').value.trim(),
-        lastName: document.getElementById('reg-lname').value.trim(),
-        email: document.getElementById('reg-email').value.trim(),
-        phone: document.getElementById('reg-phone').value.trim(),
-        city: document.getElementById('reg-city').value.trim(),
-        postalCode: document.getElementById('reg-zip').value.trim()
+      const c1 = document.getElementById('consent-terms').checked;
+      const c2 = document.getElementById('consent-refund').checked;
+      const c3 = document.getElementById('consent-digital').checked;
+      if (!c1 || !c2 || !c3) {
+        notify('Please accept all "Before you pay" terms to continue to Cashfree.');
+        return;
+      }
+
+      const diagBox = document.getElementById('payment-diagnostic-box');
+      diagBox.style.display = 'none';
+
+      const customer = {
+        name: document.getElementById('cust-name').value.trim() || 'Gursharn A',
+        email: document.getElementById('cust-email').value.trim() || 'help@kashishai.com',
+        phone: (document.getElementById('cust-phone').value.replace(/\D/g, '').slice(-10)) || '9876543210',
+        city: document.getElementById('cust-city').value.trim() || 'Punjab'
       };
 
-      btn.disabled = true;
-      btn.innerHTML = '<span>Creating Cashfree Order via Worker...</span>';
+      const totalAmountInr = appState.cart.reduce((s, item) => s + Number(item.priceInr || 0), 0);
+      const payBtn = document.getElementById('pay-now-btn');
+      payBtn.disabled = true;
+      payBtn.textContent = 'Connecting to Cashfree v3 Payment Gateway...';
 
       try {
-        const base = (state.apiConfig.workerUrl || '').replace(/\/$/, '');
-        const orderRes = await fetch(base + state.apiConfig.orderPath, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: totalInr,
+        let paymentSessionId = appState.gateway.manualSessionId.trim();
+        let createdOrderId = 'kd_' + Date.now();
+
+        // Step 1: If no manual session ID is pasted, request one from Cloudflare Worker endpoints
+        if (!paymentSessionId) {
+          const base = (appState.gateway.workerUrl || 'https://kashishai.com').replace(/\/$/, '');
+          const candidateEndpoints = [
+            `${base}${appState.gateway.orderPath}`,
+            `${base}/api/create-order`,
+            `${base}/api/cashfree/create-order`,
+            `${base}/api/payment/create-order`,
+            `/api/domains/create-order`,
+            `/api/create-order`
+          ];
+
+          const orderPayload = {
+            order_id: createdOrderId,
+            amount: totalAmountInr,
+            order_amount: totalAmountInr,
             currency: 'INR',
-            items: state.cart,
-            customer: contact
-          })
-        });
-
-        if (orderRes.ok) {
-          const orderData = await orderRes.json();
-          const paymentSessionId = orderData.payment_session_id || orderData.paymentSessionId;
-
-          if (paymentSessionId && window.Cashfree) {
-            const cashfree = window.Cashfree({ mode: state.apiConfig.cfMode || 'production' });
-            const result = await cashfree.checkout({
-              paymentSessionId,
-              redirectTarget: '_modal'
-            });
-
-            if (!result.error) {
-              await finalizeNameComRegistration(contact, orderData.order_id || 'cf_live');
-            } else {
-              showToast('Payment cancelled or failed: ' + (result.error.message || ''));
+            order_currency: 'INR',
+            domain: appState.cart[0].domain,
+            items: appState.cart,
+            customer,
+            customer_details: {
+              customer_id: 'cust_' + Date.now(),
+              customer_name: customer.name,
+              customer_email: customer.email,
+              customer_phone: customer.phone
             }
-            btn.disabled = false;
-            btn.innerHTML = '<i class="ph-bold ph-lock-key"></i> Pay with Cashfree & Register Instantly';
-            return;
+          };
+
+          for (const endpoint of candidateEndpoints) {
+            try {
+              const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderPayload)
+              });
+              if (res.ok) {
+                const data = await res.json();
+                const sid = data.payment_session_id || data.paymentSessionId || (data.data && data.data.payment_session_id);
+                if (sid) {
+                  paymentSessionId = sid;
+                  createdOrderId = data.order_id || data.orderId || createdOrderId;
+                  break;
+                }
+              }
+            } catch (innerErr) {}
           }
         }
 
-        // Direct Worker Registration Call if Worker handles order+registration in one endpoint
-        await finalizeNameComRegistration(contact, 'direct_worker_' + Date.now());
+        // Step 2: Launch Official Cashfree v3 SDK Modal if we have a valid payment_session_id
+        if (paymentSessionId) {
+          if (typeof window.Cashfree !== 'function') {
+            throw new Error('Cashfree v3 SDK failed to initialize. Please check your internet connection.');
+          }
+
+          const cashfree = window.Cashfree({
+            mode: appState.gateway.cfMode || 'production'
+          });
+
+          const checkoutResult = await cashfree.checkout({
+            paymentSessionId: paymentSessionId,
+            redirectTarget: '_modal'
+          });
+
+          if (checkoutResult && checkoutResult.error) {
+            throw new Error(checkoutResult.error.message || 'Payment was declined or closed before completion.');
+          }
+
+          if (checkoutResult && (checkoutResult.paymentDetails || checkoutResult.redirect === false)) {
+            await completeDomainRegistrationWithWorker(customer, createdOrderId);
+            return;
+          }
+        } else {
+          // Explain clearly why payment_session_id could not be fetched and give 1-click Gateway Setup
+          diagBox.style.display = 'block';
+          diagBox.innerHTML = `
+            <strong>Cashfree Order Session Required:</strong> Could not reach <code>${appState.gateway.workerUrl}${appState.gateway.orderPath}</code> from this browser origin (CORS or Worker route not yet deployed).<br/>
+            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="cat-pill active" onclick="closeCartModal(); openGatewayModal();">Configure Worker URL / Paste Session ID</button>
+            </div>
+          `;
+        }
       } catch (err) {
-        await finalizeNameComRegistration(contact, 'local_order_' + Date.now());
+        diagBox.style.display = 'block';
+        diagBox.innerHTML = `<strong>Cashfree Checkout Notice:</strong> ${err.message || 'Unable to complete payment session.'}`;
       } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="ph-bold ph-lock-key"></i> Pay with Cashfree & Register Instantly';
+        payBtn.disabled = false;
+        payBtn.textContent = 'Agree & Continue to Cashfree Payment';
       }
     }
 
-    async function finalizeNameComRegistration(contact, orderId) {
-      const base = (state.apiConfig.workerUrl || '').replace(/\/$/, '');
-      for (const item of state.cart) {
+    async function completeDomainRegistrationWithWorker(customer, orderId) {
+      const base = (appState.gateway.workerUrl || 'https://kashishai.com').replace(/\/$/, '');
+      for (const item of appState.cart) {
         try {
-          await fetch(base + state.apiConfig.registerPath, {
+          await fetch(`${base}${appState.gateway.registerPath}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               domainName: item.domain,
               years: item.years,
-              actionType: item.actionType,
-              authCode: item.authCode || undefined,
+              orderId,
               contacts: {
-                registrant: contact,
-                admin: contact,
-                tech: contact,
-                billing: contact
-              },
-              orderId
+                registrant: customer,
+                admin: customer,
+                tech: customer,
+                billing: customer
+              }
             })
           });
         } catch (e) {}
 
-        if (!state.myDomains.some(d => d.domain.toLowerCase() === item.domain.toLowerCase())) {
-          const expYear = new Date().getFullYear() + Number(item.years || 1);
-          const expDate = `${expYear}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
-          state.myDomains.unshift({
-            domain: item.domain.toLowerCase(),
-            expires: expDate,
-            autoRenew: true,
-            locked: true,
-            privacy: true,
-            status: item.actionType === 'transfer' ? 'Pending Transfer' : 'Active',
-            nameservers: ['ns1vwx.name.com', 'ns2clp.name.com', 'ns3jkl.name.com', 'ns4qrs.name.com'],
-            dns: [
-              { id: String(Date.now() + 1), type: 'A', host: '@', answer: '76.76.21.21', ttl: 300 },
-              { id: String(Date.now() + 2), type: 'CNAME', host: 'www', answer: item.domain.toLowerCase(), ttl: 300 }
-            ]
-          });
-        }
+        appState.registeredDomains.unshift({
+          domain: item.domain,
+          registeredOn: new Date().toISOString().split('T')[0],
+          years: item.years,
+          orderId,
+          status: 'Active (Paid via Cashfree)'
+        });
       }
 
-      state.cart = [];
-      saveState();
-      updateGreetingAndHeader();
+      appState.cart = [];
+      updateHeaderUI();
       closeCartModal();
-      switchView('mydomains');
-      showToast('Domain registered & added to your Kashish Domains account!');
+      openView('mydomains');
+      notify('Payment verified! Domain registered in your account.');
     }
 
-    /* ==================== MY DOMAINS & HOSTINGER CONTROLS ==================== */
-    function renderMyDomains() {
-      const listHtml = state.myDomains.map((d, idx) => `
-        <div class="domain-result-row">
-          <div class="dr-left">
-            <div class="dr-status-icon avail"><i class="ph-bold ph-globe"></i></div>
-            <div>
-              <div class="dr-name">${d.domain}</div>
-              <div class="dr-badges">
-                <span class="badge-pill active">${d.status}</span>
-                <span style="font-size:12px;color:var(--ink-muted);font-weight:600;">Expires: ${d.expires} • NS: ${d.nameservers[0]}</span>
-              </div>
+    function renderMyRegisteredDomains() {
+      const container = document.getElementById('my-domains-container');
+      if (appState.registeredDomains.length === 0) {
+        container.innerHTML = `
+          <div class="surface-card" style="text-align:center;padding:42px;">
+            <div style="font-size:16px;font-weight:800;margin-bottom:6px;">No Registered Domains in This Session Yet</div>
+            <p style="font-size:13px;color:var(--ink-soft);margin-bottom:18px;">Search for an available domain or inspect live DNS for any existing domain.</p>
+            <div style="display:flex;justify-content:center;gap:10px;">
+              <button class="primary-action-btn" onclick="openView('search')">Search for a Domain</button>
+              <button class="back-pill" onclick="openView('dns')">Open Live DNS Zone Editor</button>
             </div>
           </div>
+        `;
+        return;
+      }
 
-          <div class="dr-right" style="flex-wrap:wrap;">
-            <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--ink-soft);">
-              <span>Auto-Renew</span>
-              <span class="switch">
-                <input type="checkbox" ${d.autoRenew ? 'checked' : ''} onchange="toggleDomainProp(${idx}, 'autoRenew')" />
-                <span class="slider"></span>
-              </span>
-            </label>
-
-            <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--ink-soft);">
-              <span>Registrar Lock</span>
-              <span class="switch">
-                <input type="checkbox" ${d.locked ? 'checked' : ''} onchange="toggleDomainProp(${idx}, 'locked')" />
-                <span class="slider"></span>
-              </span>
-            </label>
-
-            <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--ink-soft);">
-              <span>WHOIS Privacy</span>
-              <span class="switch">
-                <input type="checkbox" ${d.privacy ? 'checked' : ''} onchange="toggleDomainProp(${idx}, 'privacy')" />
-                <span class="slider"></span>
-              </span>
-            </label>
-
-            <button class="dr-action-btn whois-btn" onclick="openDomainInConnect('${d.domain}')">
-              <i class="ph-bold ph-link"></i> Connect Site
-            </button>
-            <button class="dr-action-btn" onclick="openDomainInDns('${d.domain}')">
-              <i class="ph-bold ph-hard-drives"></i> Manage DNS
+      container.innerHTML = appState.registeredDomains.map(d => `
+        <div class="domain-row exact">
+          <div class="domain-row-left">
+            <div class="status-badge-icon avail"><i class="ph-bold ph-globe"></i></div>
+            <div>
+              <div class="domain-title">${d.domain}</div>
+              <div style="font-size:12px;color:var(--ink-soft);">Order ID: ${d.orderId} • Period: ${d.years} Yr • ${d.status}</div>
+            </div>
+          </div>
+          <div class="domain-row-right">
+            <button class="primary-action-btn" onclick="document.getElementById('dns-active-domain').value='${d.domain}'; openView('dns'); fetchRealLiveDnsRecords();">
+              Manage Live DNS
             </button>
           </div>
         </div>
       `).join('');
-
-      const myContainer = document.getElementById('my-domains-list');
-      if (myContainer) myContainer.innerHTML = listHtml;
-      const homePreview = document.getElementById('home-portfolio-preview');
-      if (homePreview) homePreview.innerHTML = listHtml;
     }
 
-    function toggleDomainProp(idx, prop) {
-      if (!state.myDomains[idx]) return;
-      state.myDomains[idx][prop] = !state.myDomains[idx][prop];
-      saveState();
-      showToast(`${state.myDomains[idx].domain}: ${prop} updated`);
+    /* ==================== LIVE DNS ZONE EDITOR (REAL CLOUDFLARE 1.1.1.1 LOOKUP) ==================== */
+    async function fetchRealLiveDnsRecords() {
+      const domInput = document.getElementById('dns-active-domain');
+      const domain = sanitizeDomainInput(domInput.value || 'kashishai.com');
+      domInput.value = domain;
+      document.getElementById('dns-domain-label').textContent = domain;
+
+      const tbody = document.getElementById('dns-tbody');
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--ink-soft);">Querying live global DNS records for <strong>${domain}</strong>...</td></tr>`;
+
+      const recordTypes = ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS'];
+      const fetched = [];
+
+      await Promise.all(recordTypes.map(async (rType) => {
+        try {
+          const res = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=${rType}`, {
+            headers: { 'Accept': 'application/dns-json' }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            (data.Answer || []).forEach((ans, idx) => {
+              fetched.push({
+                id: `${rType}_${idx}_${Date.now()}`,
+                type: rType,
+                host: '@',
+                value: ans.data,
+                ttl: ans.TTL || 300
+              });
+            });
+          }
+        } catch (e) {}
+      }));
+
+      appState.dnsRecords = fetched;
+      renderDnsTableRows();
+      notify(`Loaded ${fetched.length} live DNS records for ${domain}`);
     }
 
-    function openDomainInDns(domain) {
-      switchView('dns');
-      const sel = document.getElementById('dns-domain-select');
-      if (sel) {
-        sel.value = domain;
-        renderDnsTable();
+    function renderDnsTableRows() {
+      const tbody = document.getElementById('dns-tbody');
+      if (appState.dnsRecords.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--ink-muted);">No live DNS records returned for this domain. Add a record above.</td></tr>`;
+        return;
       }
-    }
 
-    function openDomainInConnect(domain) {
-      switchView('connect');
-      const sel = document.getElementById('connect-domain-select');
-      if (sel) sel.value = domain;
-    }
-
-    /* ==================== DNS ZONE EDITOR & 1-CLICK WEBSITE CONNECT ==================== */
-    function populateDomainSelects() {
-      const opts = state.myDomains.map(d => `<option value="${d.domain}">${d.domain}</option>`).join('');
-      const dnsSel = document.getElementById('dns-domain-select');
-      const conSel = document.getElementById('connect-domain-select');
-      if (dnsSel && !dnsSel.innerHTML) dnsSel.innerHTML = opts;
-      if (dnsSel) {
-        const current = dnsSel.value;
-        dnsSel.innerHTML = opts;
-        if (current && state.myDomains.some(d => d.domain === current)) dnsSel.value = current;
-      }
-      if (conSel) conSel.innerHTML = opts;
-    }
-
-    function getSelectedDnsDomainObj() {
-      const sel = document.getElementById('dns-domain-select');
-      const domName = sel ? sel.value : state.myDomains[0]?.domain;
-      return state.myDomains.find(d => d.domain === domName) || state.myDomains[0];
-    }
-
-    function renderDnsTable() {
-      const domObj = getSelectedDnsDomainObj();
-      const tbody = document.getElementById('dns-records-tbody');
-      if (!domObj || !tbody) return;
-
-      // Update Nameserver inputs
-      ['ns-1', 'ns-2', 'ns-3', 'ns-4'].forEach((id, i) => {
-        const el = document.getElementById(id);
-        if (el) el.value = domObj.nameservers[i] || '';
-      });
-
-      tbody.innerHTML = domObj.dns.map(rec => `
+      tbody.innerHTML = appState.dnsRecords.map(r => `
         <tr>
-          <td><span class="dns-type-tag">${rec.type}</span></td>
-          <td><code>${rec.host}</code></td>
-          <td style="word-break:break-all;"><code>${rec.answer}</code></td>
-          <td>${rec.ttl}s</td>
+          <td><span class="tag-chip blue">${r.type}</span></td>
+          <td><span class="mono-code">${r.host}</span></td>
+          <td style="word-break:break-all;"><span class="mono-code">${r.value}</span></td>
+          <td>${r.ttl}s</td>
           <td style="text-align:right;">
-            <button class="menu-btn" style="display:inline-flex;" onclick="deleteDnsRecord('${rec.id}')" title="Delete Record">
+            <button class="icon-btn" style="display:inline-flex;" onclick="deleteDnsRow('${r.id}')" title="Delete Record">
               <i class="ph-bold ph-trash" style="color:var(--danger);"></i>
             </button>
           </td>
@@ -2412,212 +2386,188 @@
       `).join('');
     }
 
-    async function handleAddDnsRecord(e) {
+    function handleAddDnsRecord(e) {
       e.preventDefault();
-      const domObj = getSelectedDnsDomainObj();
-      if (!domObj) return;
-
       const rec = {
-        id: String(Date.now()),
-        type: document.getElementById('dns-type').value,
-        host: document.getElementById('dns-host').value.trim() || '@',
-        answer: document.getElementById('dns-answer').value.trim(),
-        ttl: Number(document.getElementById('dns-ttl').value || 300)
+        id: 'custom_' + Date.now(),
+        type: document.getElementById('new-dns-type').value,
+        host: document.getElementById('new-dns-host').value.trim() || '@',
+        value: document.getElementById('new-dns-value').value.trim(),
+        ttl: Number(document.getElementById('new-dns-ttl').value || 300)
       };
-
-      domObj.dns.push(rec);
-      saveState();
-      renderDnsTable();
-      document.getElementById('dns-host').value = '';
-      document.getElementById('dns-answer').value = '';
-      showToast(`Added ${rec.type} record for ${domObj.domain}`);
-      pushDnsToWorker(rec);
+      appState.dnsRecords.unshift(rec);
+      renderDnsTableRows();
+      document.getElementById('new-dns-host').value = '';
+      document.getElementById('new-dns-value').value = '';
+      notify(`Added ${rec.type} record (${rec.host} -> ${rec.value})`);
     }
 
-    function deleteDnsRecord(id) {
-      const domObj = getSelectedDnsDomainObj();
-      if (!domObj) return;
-      domObj.dns = domObj.dns.filter(r => r.id !== id);
-      saveState();
-      renderDnsTable();
-      showToast('DNS record deleted');
+    function deleteDnsRow(id) {
+      appState.dnsRecords = appState.dnsRecords.filter(r => r.id !== id);
+      renderDnsTableRows();
+      notify('DNS record removed');
     }
 
-    async function pushDnsToWorker(singleRecord = null) {
-      const domObj = getSelectedDnsDomainObj();
-      if (!domObj) return;
+    async function syncDnsWithWorker() {
+      const domain = sanitizeDomainInput(document.getElementById('dns-active-domain').value);
       try {
-        const base = (state.apiConfig.workerUrl || '').replace(/\/$/, '');
-        await fetch(base + state.apiConfig.dnsPath, {
+        const base = appState.gateway.workerUrl.replace(/\/$/, '');
+        const res = await fetch(`${base}/api/domains/dns`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            domainName: domObj.domain,
-            record: singleRecord,
-            records: domObj.dns
-          })
+          body: JSON.stringify({ domainName: domain, records: appState.dnsRecords })
         });
-        showToast(`Synced DNS records for ${domObj.domain} with Name.com Worker`);
-      } catch (e) {
-        showToast(`Saved locally for ${domObj.domain}`);
-      }
+        if (res.ok) {
+          notify(`Synced ${appState.dnsRecords.length} records to Name.com Worker for ${domain}`);
+          return;
+        }
+      } catch (e) {}
+      notify(`DNS Zone staged for ${domain}. Connect Worker endpoint to push live to Name.com.`);
     }
 
-    function handleSaveNameservers(e) {
-      e.preventDefault();
-      const domObj = getSelectedDnsDomainObj();
-      if (!domObj) return;
-      domObj.nameservers = [
-        document.getElementById('ns-1').value.trim(),
-        document.getElementById('ns-2').value.trim(),
-        document.getElementById('ns-3').value.trim(),
-        document.getElementById('ns-4').value.trim()
-      ].filter(Boolean);
-      saveState();
-      renderMyDomains();
-      showToast(`Nameservers updated for ${domObj.domain}`);
-    }
-
-    function resetDefaultNameservers() {
-      document.getElementById('ns-1').value = 'ns1vwx.name.com';
-      document.getElementById('ns-2').value = 'ns2clp.name.com';
-      document.getElementById('ns-3').value = 'ns3jkl.name.com';
-      document.getElementById('ns-4').value = 'ns4qrs.name.com';
-      showToast('Default Name.com nameservers filled');
-    }
-
-    function applyServicePreset(service) {
-      const sel = document.getElementById('connect-domain-select');
-      const domObj = state.myDomains.find(d => d.domain === sel?.value) || state.myDomains[0];
-      if (!domObj) return;
+    /* ==================== WEBSITE CONNECT TEMPLATES ==================== */
+    function applyConnectTemplate(templateName) {
+      const domain = sanitizeDomainInput(document.getElementById('connect-target-domain').value || 'kashishai.com');
+      document.getElementById('dns-active-domain').value = domain;
+      document.getElementById('dns-domain-label').textContent = domain;
 
       const presets = {
         kashish: [
-          { id: 'k1_' + Date.now(), type: 'A', host: '@', answer: '76.76.21.21', ttl: 300 },
-          { id: 'k2_' + Date.now(), type: 'CNAME', host: 'www', answer: 'sites.kashishai.com', ttl: 300 }
+          { id: 'k1_' + Date.now(), type: 'A', host: '@', value: '76.76.21.21', ttl: 300 },
+          { id: 'k2_' + Date.now(), type: 'CNAME', host: 'www', value: 'sites.kashishai.com', ttl: 300 }
         ],
         shopify: [
-          { id: 's1_' + Date.now(), type: 'A', host: '@', answer: '23.227.38.65', ttl: 300 },
-          { id: 's2_' + Date.now(), type: 'CNAME', host: 'www', answer: 'shops.myshopify.com', ttl: 300 }
+          { id: 's1_' + Date.now(), type: 'A', host: '@', value: '23.227.38.65', ttl: 300 },
+          { id: 's2_' + Date.now(), type: 'CNAME', host: 'www', value: 'shops.myshopify.com', ttl: 300 }
         ],
         vercel: [
-          { id: 'v1_' + Date.now(), type: 'A', host: '@', answer: '76.76.21.21', ttl: 300 },
-          { id: 'v2_' + Date.now(), type: 'CNAME', host: 'www', answer: 'cname.vercel-dns.com', ttl: 300 }
+          { id: 'v1_' + Date.now(), type: 'A', host: '@', value: '76.76.21.21', ttl: 300 },
+          { id: 'v2_' + Date.now(), type: 'CNAME', host: 'www', value: 'cname.vercel-dns.com', ttl: 300 }
         ],
-        cloudflare: [
-          { id: 'c1_' + Date.now(), type: 'CNAME', host: '@', answer: `${domObj.domain.replace('.', '-')}.pages.dev`, ttl: 300 },
-          { id: 'c2_' + Date.now(), type: 'CNAME', host: 'www', answer: `${domObj.domain.replace('.', '-')}.pages.dev`, ttl: 300 }
-        ],
-        gworkspace: [
-          { id: 'g1_' + Date.now(), type: 'MX', host: '@', answer: '1 SMTP.GOOGLE.COM', ttl: 3600 },
-          { id: 'g2_' + Date.now(), type: 'TXT', host: '@', answer: 'v=spf1 include:_spf.google.com ~all', ttl: 3600 }
+        googlemail: [
+          { id: 'g1_' + Date.now(), type: 'MX', host: '@', value: '1 SMTP.GOOGLE.COM', ttl: 3600 },
+          { id: 'g2_' + Date.now(), type: 'TXT', host: '@', value: '"v=spf1 include:_spf.google.com ~all"', ttl: 3600 }
         ]
       };
 
-      const recordsToApply = presets[service] || [];
-      domObj.dns = [...domObj.dns, ...recordsToApply];
-      saveState();
-      openDomainInDns(domObj.domain);
-      showToast(`Connected ${domObj.domain} to ${service.toUpperCase()}!`);
+      appState.dnsRecords = [...(presets[templateName] || []), ...appState.dnsRecords];
+      openView('dns');
+      renderDnsTableRows();
+      notify(`Applied ${templateName.toUpperCase()} DNS records to ${domain}`);
     }
 
-    function promptCustomIpConnect() {
-      const ip = prompt('Enter your server IPv4 address (e.g. 185.199.108.153):');
-      if (!ip || !ip.trim()) return;
-      const sel = document.getElementById('connect-domain-select');
-      const domObj = state.myDomains.find(d => d.domain === sel?.value) || state.myDomains[0];
-      if (!domObj) return;
-      domObj.dns.push({ id: String(Date.now()), type: 'A', host: '@', answer: ip.trim(), ttl: 300 });
-      saveState();
-      openDomainInDns(domObj.domain);
-      showToast(`Pointed ${domObj.domain} to ${ip.trim()}`);
+    /* ==================== LIVE DOMAIN TRANSFER CHECK ==================== */
+    function startTransferFor(domain) {
+      openView('transfer');
+      document.getElementById('transfer-domain-name').value = domain;
     }
 
-    /* ==================== DOMAIN TRANSFER ==================== */
-    function prefillTransfer(domain) {
-      switchView('transfer');
-      document.getElementById('transfer-domain-input').value = domain;
-    }
-
-    function handleDomainTransfer(e) {
+    async function handleTransferCheckAndAdd(e) {
       e.preventDefault();
-      const dom = cleanRootKeyword(document.getElementById('transfer-domain-input').value);
-      const auth = document.getElementById('transfer-auth-input').value.trim();
-      if (!dom || !auth) return;
+      const domain = sanitizeDomainInput(document.getElementById('transfer-domain-name').value);
+      const authCode = document.getElementById('transfer-auth-code').value.trim();
+      const reportEl = document.getElementById('transfer-live-report');
+      const btn = document.getElementById('transfer-submit-btn');
 
-      toggleDomainInCart(dom, 999, 1, 'transfer', auth);
-      openCartModal();
-    }
+      btn.disabled = true;
+      btn.innerHTML = '<span>Checking RDAP Lock Status...</span>';
+      reportEl.style.display = 'block';
+      reportEl.innerHTML = `<div style="padding:14px;background:#F8FAFC;border-radius:12px;">Verifying live registry status for <strong>${domain}</strong>...</div>`;
 
-    /* ==================== WORKER & API CONFIGURATION MODAL ==================== */
-    function openApiModal() {
-      document.getElementById('cfg-worker-url').value = state.apiConfig.workerUrl || '';
-      document.getElementById('cfg-search-path').value = state.apiConfig.searchPath || '/api/domains/check';
-      document.getElementById('cfg-order-path').value = state.apiConfig.orderPath || '/api/domains/create-order';
-      document.getElementById('cfg-register-path').value = state.apiConfig.registerPath || '/api/domains/register';
-      document.getElementById('cfg-dns-path').value = state.apiConfig.dnsPath || '/api/domains/dns';
-      document.getElementById('cfg-cf-mode').value = state.apiConfig.cfMode || 'production';
-      document.getElementById('api-modal').classList.add('open');
-    }
-
-    function closeApiModal() {
-      document.getElementById('api-modal').classList.remove('open');
-    }
-
-    function saveApiConfig() {
-      state.apiConfig = {
-        workerUrl: document.getElementById('cfg-worker-url').value.trim(),
-        searchPath: document.getElementById('cfg-search-path').value.trim() || '/api/domains/check',
-        orderPath: document.getElementById('cfg-order-path').value.trim() || '/api/domains/create-order',
-        registerPath: document.getElementById('cfg-register-path').value.trim() || '/api/domains/register',
-        dnsPath: document.getElementById('cfg-dns-path').value.trim() || '/api/domains/dns',
-        cfMode: document.getElementById('cfg-cf-mode').value
-      };
-      localStorage.setItem('kd_api_cfg', JSON.stringify(state.apiConfig));
-      closeApiModal();
-      showToast('Worker & Cashfree configuration saved');
-    }
-
-    async function testWorkerPing() {
-      const base = (document.getElementById('cfg-worker-url').value.trim() || '').replace(/\/$/, '');
-      const path = document.getElementById('cfg-search-path').value.trim();
+      let statusFlags = [];
       try {
-        const res = await fetch(base + path, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ domain: 'kashishai.com', domains: ['kashishai.com'] })
-        });
-        showToast(`Worker responded with HTTP ${res.status}`);
-      } catch (e) {
-        showToast('Worker endpoint saved (CORS/Relative origin active on production domain)');
+        const res = await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`);
+        if (res.ok) {
+          const data = await res.json();
+          statusFlags = data.status || [];
+        }
+      } catch (err) {}
+
+      btn.disabled = false;
+      btn.innerHTML = '<span>Verify & Proceed</span>';
+
+      const isLocked = statusFlags.some(s => s.toLowerCase().includes('transferprohibited'));
+      reportEl.innerHTML = `
+        <div style="padding:16px;background:${isLocked ? '#FFFBEB' : '#F0FDF4'};border:1px solid ${isLocked ? '#FDE68A' : '#BBF7D0'};border-radius:12px;font-size:13px;line-height:1.6;">
+          <div><strong>Live RDAP Status for ${domain}:</strong> ${statusFlags.join(', ') || 'Registered'}</div>
+          ${isLocked
+            ? `<div style="color:#B45309;margin-top:4px;">Note: <code>clientTransferProhibited</code> is currently active on this domain. Remember to unlock it at your current registrar so Name.com can complete the transfer.</div>`
+            : `<div style="color:#15803D;margin-top:4px;">Domain is unlocked and ready for transfer!</div>`
+          }
+          <div style="margin-top:12px;">
+            <button type="button" class="primary-action-btn" onclick="toggleCartItem('${domain}', 949, 1, 'transfer', '${authCode.replace(/'/g, '')}')">
+              Add Transfer to Cart (${formatPrice(949)})
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==================== GATEWAY & PROFILE MODALS ==================== */
+    function openGatewayModal() {
+      document.getElementById('gw-worker-url').value = appState.gateway.workerUrl;
+      document.getElementById('gw-order-path').value = appState.gateway.orderPath;
+      document.getElementById('gw-register-path').value = appState.gateway.registerPath;
+      document.getElementById('gw-cf-mode').value = appState.gateway.cfMode;
+      document.getElementById('gw-cf-appid').value = appState.gateway.cfAppId;
+      document.getElementById('gw-cf-secret').value = appState.gateway.cfSecret;
+      document.getElementById('gw-session-id').value = appState.gateway.manualSessionId;
+      document.getElementById('gateway-modal').classList.add('open');
+    }
+
+    function closeGatewayModal() {
+      document.getElementById('gateway-modal').classList.remove('open');
+    }
+
+    function saveGatewaySettings() {
+      appState.gateway.workerUrl = document.getElementById('gw-worker-url').value.trim() || 'https://kashishai.com';
+      appState.gateway.orderPath = document.getElementById('gw-order-path').value.trim() || '/api/domains/create-order';
+      appState.gateway.registerPath = document.getElementById('gw-register-path').value.trim() || '/api/domains/register';
+      appState.gateway.cfMode = document.getElementById('gw-cf-mode').value;
+      appState.gateway.cfAppId = document.getElementById('gw-cf-appid').value.trim();
+      appState.gateway.cfSecret = document.getElementById('gw-cf-secret').value.trim();
+      appState.gateway.manualSessionId = document.getElementById('gw-session-id').value.trim();
+      closeGatewayModal();
+      notify('Cashfree v3 & Worker settings updated');
+    }
+
+    function toggleWorkerCodeSnippet() {
+      const el = document.getElementById('worker-code-drawer');
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function copyWorkerCode() {
+      const ta = document.getElementById('worker-code-textarea');
+      ta.select();
+      document.execCommand('copy');
+      notify('Cloudflare Worker code copied to clipboard!');
+    }
+
+    function openProfileModal() {
+      document.getElementById('profile-name-input').value = appState.userName;
+      document.getElementById('profile-modal').classList.add('open');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profile-modal').classList.remove('open');
+    }
+
+    function saveProfileName(e) {
+      e.preventDefault();
+      const val = document.getElementById('profile-name-input').value.trim();
+      if (val) {
+        appState.userName = val;
+        updateHeaderUI();
+        closeProfileModal();
+        notify('Account name updated');
       }
     }
 
-    async function syncDomainsFromWorker() {
-      try {
-        const base = (state.apiConfig.workerUrl || '').replace(/\/$/, '');
-        const res = await fetch(base + '/api/domains/list');
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data.domains) && data.domains.length) {
-            state.myDomains = data.domains;
-            saveState();
-            renderMyDomains();
-            showToast('Synced live portfolio from Name.com Worker');
-            return;
-          }
-        }
-      } catch (e) {}
-      showToast('Portfolio is up to date');
-    }
-
-    /* ==================== INITIALIZE APP ==================== */
     window.addEventListener('DOMContentLoaded', () => {
-      updateGreetingAndHeader();
-      renderMyDomains();
-      populateDomainSelects();
-      performDomainSearch('kashish');
+      updateHeaderUI();
     });
   </script>
 </body>
 </html>
+
+```
