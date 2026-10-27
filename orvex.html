@@ -63,6 +63,34 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-l
 .tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}.tags button{background:#ffffff10;padding:9px 14px;border-radius:99px;font-size:12.5px;color:#bbb}
 .ask{display:flex;gap:8px;align-items:center}.ask div{flex:1;display:flex;background:#ffffff12;border-radius:99px;padding:0 16px}.ask input{flex:1;padding:14px 0;font-size:14px}.ask .go{width:50px;height:50px;border-radius:50%;background:var(--g);display:grid;place-items:center}
 .meta{padding:16px 18px}.meta h2{font:600 22px Poppins}.meta p{color:var(--mu);font-size:13px;margin-top:6px}
+/* website layer */
+.nl{display:none}
+#feat .fb{position:relative;border-radius:22px;min-height:300px;margin:6px 0 8px;background:linear-gradient(0deg,#0b0b0e 6%,#0b0b0e00 70%),var(--img) center top/cover;display:flex;align-items:flex-end}
+.fi{padding:20px}.fi small{color:var(--o2);font-weight:600;letter-spacing:.15em;font-size:10px}.fi h1{font:700 28px Poppins;margin:4px 0}.fi p{color:#cfcfd6;font-size:13px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.fr{display:flex;gap:10px;margin-top:14px}.fr .btn{padding:12px 22px;font-size:14px}
+.ft{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;padding:30px 0 10px;color:var(--mu);font-size:12px}.ft a{color:var(--mu);text-decoration:none}.ft a:hover{color:var(--tx)}
+.big{width:96px;height:96px;font-size:36px;margin:30px auto 10px}
+#mec{text-align:center;display:grid;gap:12px;padding:0 0 40px}#mec h2{font:600 24px Poppins}#mec p{color:var(--mu)}
+.info{padding:20px 0 60px;line-height:1.8;color:#d0d0d6;font-size:14px}.info h2{font:600 26px Poppins;margin:10px 0}.info small{color:var(--o2)}
+body[data-v=home] .nav,body[data-v=me] .nav{display:flex}
+@media(min-width:900px){
+html,body{background:var(--bg)}
+.view{max-width:none}.wrap{max-width:1280px;margin:auto;padding:0 40px}
+#splash>div[style*=absolute]{max-width:520px;margin:0 auto}
+.nav{top:0;bottom:auto;max-width:none;translate:none;left:0;border-top:0;border-bottom:1px solid var(--line);justify-content:flex-start;gap:6px;padding:12px 40px;align-items:center}
+body:not([data-v=splash]):not([data-v=player]) .nav{display:flex}
+.nav button{flex-direction:row;width:auto;height:42px;padding:0 18px;font-size:14px;gap:8px}.nav button svg{display:none}.nav button[data-t=pf]{margin-left:auto}
+.nl{display:flex;align-items:center;gap:8px;font-weight:700;font-size:20px;margin-right:34px;color:var(--tx);text-decoration:none}.nl i{width:28px;height:28px;border-radius:50%;background:var(--g);display:grid;place-items:center;font-style:normal;font-size:11px}
+.view:not(#splash):not(#player){padding-top:76px}
+#feat .fb{min-height:460px;background:linear-gradient(90deg,#0b0b0e 30%,#0b0b0e00 80%),var(--img) right top/auto 130% no-repeat,#15151a}
+.fi{max-width:540px;padding:64px}.fi h1{font-size:46px}.fi p{font-size:15px}
+.mv{width:190px}.mv .po{width:190px;height:275px}
+#pop{display:grid;grid-template-columns:repeat(2,1fr);gap:0 40px}
+.grid{grid-template-columns:repeat(6,1fr)}.grid .po{height:260px}
+#details.on{display:grid;grid-template-columns:360px 1fr;column-gap:56px;align-content:start;max-width:1100px;margin:auto;padding:110px 40px 60px}
+.dh{grid-column:1;grid-row:1/span 4;height:520px;min-height:0;border-radius:20px}.st,#dds,#dbtn{grid-column:2;padding-left:0}#details .back{top:90px;left:24px}
+.vid{height:78vh}.ai-s{left:auto;right:24px;bottom:24px;width:420px;height:60vh;border-radius:24px}
+#plans .wrap,#me .wrap,#info .wrap{max-width:560px}
+}
 /* plans */
 .pl{border:1.5px solid var(--line);background:#ffffff08;border-radius:24px;padding:18px;margin-bottom:14px;position:relative;transition:.25s;cursor:pointer}
 .pl.on{border-color:var(--o1);background:linear-gradient(135deg,#e8073b22,#e8073b0d);box-shadow:0 10px 36px #e8073b22}
@@ -91,10 +119,10 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-l
 <section class="view" id="home"><div class="wrap">
   <div class="hd"><button class="av" id="avb">?</button><div><h3 id="gn">Guest</h3><p>Welcome back 👋</p></div><button class="bell" id="bell"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/></svg></button></div>
   <div class="menu" id="menu"></div>
-  <div id="hv"><div class="sec">Now Showing<a>See All</a></div><div class="rail" id="nw"></div>
+  <div id="hv"><div id="feat"></div><div id="cw"></div><div class="sec">Now Showing<a>See All</a></div><div class="rail" id="nw"></div>
     <div class="sec" style="margin-top:26px">Coming Soon<a>See All</a></div><div id="pop"></div></div>
   <div id="sv" style="display:none"><div class="sbar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="q" placeholder="Search movies, shows…"></div><div class="grid" id="sg"></div></div>
-  <div class="sp"></div></div>
+  <div class="ft"><a href="#/about">About</a><a href="#/help">Help</a><a href="#/terms">Terms</a><a href="#/privacy">Privacy</a><span>© ORVEX</span></div><div class="sp"></div></div>
 </section>
 
 <section class="view" id="details">
@@ -103,7 +131,7 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-l
   <div class="st"><button class="tr" id="trb"><svg viewBox="0 0 24 24" style="fill:#fff;stroke:none"><path d="M7 4v16l13-8z"/></svg>Trailer</button>
     <div>★ License<small id="drt"></small></div><div>◷ Duration<small id="ddu"></small></div></div>
   <p id="dds" style="padding:22px 18px;color:#d0d0d6;font-size:14px;line-height:1.7"></p>
-  <div style="padding:0 24px 40px"><button class="btn" id="wnb" style="width:100%;padding:17px">Watch Now</button></div>
+  <div id="dbtn" style="padding:0 24px 40px"><button class="btn" id="wnb" style="width:100%;padding:17px">Watch Now</button></div>
 </section>
 
 <section class="view" id="player">
@@ -127,7 +155,9 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-l
   <p style="color:var(--mu);font-size:11.5px;text-align:center;margin-top:14px">UPI, cards, net banking &amp; wallets. Secured by Cashfree.</p></div>
 </section>
 
-<nav class="nav" id="nav">
+<section class="view" id="me"><div class="wrap"><div class="hd"><button class="back" id="mbk" style="position:static"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div class="logo" style="margin:auto"><i>▶</i>ORVEX</div><span style="width:42px"></span></div><div id="mec"></div></div></section>
+<section class="view" id="info"><div class="wrap"><div class="hd"><button class="back" id="ibk" style="position:static"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div class="logo" style="margin:auto"><i>▶</i>ORVEX</div><span style="width:42px"></span></div><div id="infoc"></div></div></section>
+<nav class="nav" id="nav"><a class="nl" href="#/"><i>▶</i>ORVEX</a>
   <button data-t="home" class="on"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v10H3z"/></svg>Home</button>
   <button data-t="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Search</button>
   <button data-t="list"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg>Wishlist</button>
@@ -170,28 +200,51 @@ const meta=i=>M[i].soon?'<span class="rt">● Coming Soon</span>':`<span class="
 const pc=i=>`<div class="mv" data-i="${i}">${art(i)}<h4>${M[i].t}</h4>${meta(i)}</div>`;
 const pr=i=>`<div class="pp" data-i="${i}">${art(i)}<div><h4>${M[i].t}</h4>${meta(i)}<div class="tg">${M[i].g.split(' / ').map(g=>`<span>${g}</span>`).join('')}</div><div class="du">${M[i].soon?'◷ Releasing soon':'◷ '+M[i].d}</div></div></div>`;
 const pg=i=>`<div data-i="${i}">${art(i)}</div>`,ids=f=>M.map((_,i)=>i).filter(i=>f(M[i]));
-function renderCat(){$('#nw').innerHTML=ids(m=>!m.soon).map(pc).join('');$('#pop').innerHTML=ids(m=>m.soon).map(pr).join('')}
-function show(id){$$('.view').forEach(v=>v.classList.toggle('on',v.id===id));$('#nav').style.display=id==='home'?'flex':'none';if(id!=='plans')planCb=null}
-let pi=0;
-function openDet(i){pi=i;const m=M[i];$('#dhh').style.background=m.im?`url(${m.im}) center top/cover`:`radial-gradient(70% 45% at 50% 30%,#ffffff44,transparent),linear-gradient(160deg,${m.c})`;$('#dtt').textContent=m.t;$('#dtt').style.display=m.im?'none':'';$('#dgn').innerHTML=m.g.split(' / ').join('<i>●</i>');$('#drt').textContent=m.soon?'—':m.lic;$('#ddu').textContent=m.soon?'TBA':m.d;$('#dds').innerHTML=(m.ds||DS)+(m.cr?`<br><br><small style="color:var(--mu)">${m.cr}</small>`:'');$('#trb').style.display=m.soon?'none':'';const w=$('#wnb');w.textContent=m.soon?'Coming Soon':'Watch Now';w.style.opacity=m.soon?.55:1;show('details')}
-document.addEventListener('click',e=>{const p=e.target.closest('[data-i]');if(p&&!p.closest('#splash'))openDet(+p.dataset.i)});
-$('#dbk').onclick=()=>show('home');$('#trb').onclick=()=>play(pi,false,true);$('#wnb').onclick=()=>M[pi].soon?toast('Coming soon — stay tuned!'):play(pi);$('#bell').onclick=()=>toast('No new notifications');
+function renderCat(){const m=M[0];$('#feat').innerHTML=`<div class="fb" style="--img:url(${m.im})"><div class="fi"><small>FEATURED</small><h1>${m.t}</h1><p>${m.ds}</p><div class="fr"><button class="btn" onclick="go('/watch/0')">▶ Play</button><button class="btn gh" onclick="go('/title/0')">ⓘ More Info</button></div></div></div>`;
+ let q={};try{q=JSON.parse(localStorage.ov_pos||'{}')}catch(e){}const c=Object.keys(q).filter(i=>M[i]&&q[i].t>10&&q[i].t<q[i].d-15);
+ $('#cw').innerHTML=c.length?`<div class="sec">Continue Watching</div><div class="rail">${c.map(i=>pc(i)).join('')}</div>`:'';
+ $('#nw').innerHTML=ids(m=>!m.soon).map(pc).join('');$('#pop').innerHTML=ids(m=>m.soon).map(pr).join('')}
+/* ---- website router: every page has its own URL (#/...) ---- */
+const go=p=>{location.hash='#'+p},rep=p=>location.replace('#'+p),back=fb=>history.length>1?history.back():go(fb);
+let authReady=false,pi=0;
+const INFO={about:['About ORVEX','<p>ORVEX is a streaming platform: watch movies anywhere, save your favourites and pick up where you left off. Our catalogue currently features free Creative Commons films, with new titles arriving soon.</p>'],
+help:['Help &amp; Support','<p>Payments, plans or playback problems? Write to us at <b>[your support email]</b> and include your account email.</p><p>Plans renew only when you choose to pay again — there is no hidden auto-debit in this version.</p>'],
+terms:['Terms of Service','<small>Template — have a lawyer review before launch.</small><p>By using ORVEX you agree to use the service lawfully and for personal viewing only. A paid plan gives access to the plan features for its period. Prices are shown in INR and may change for future purchases. Refunds follow the policy published at checkout.</p>'],
+privacy:['Privacy Policy','<small>Template — have a lawyer review before launch.</small><p>We store your account email and name (Firebase Authentication). Payments are processed by Cashfree; we do not see or store card details. Your wishlist and watch progress are kept in your browser. Contact us to delete your account.</p>']};
+function show(id,title,nv){$$('.view').forEach(v=>v.classList.toggle('on',v.id===id));document.body.dataset.v=id;document.title=title?title+' · ORVEX':'ORVEX — Watch Every Movie';$('#'+id).scrollTop=0;$$('#nav [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===nv))}
+function drawDet(i){pi=i;const m=M[i];$('#dhh').style.background=m.im?`url(${m.im}) center top/cover`:`radial-gradient(70% 45% at 50% 30%,#ffffff44,transparent),linear-gradient(160deg,${m.c})`;$('#dtt').textContent=m.t;$('#dtt').style.display=m.im?'none':'';$('#dgn').innerHTML=m.g.split(' / ').join('<i>●</i>');$('#drt').textContent=m.soon?'—':m.lic;$('#ddu').textContent=m.soon?'TBA':m.d;$('#dds').innerHTML=(m.ds||DS)+(m.cr?`<br><br><small style="color:var(--mu)">${m.cr}</small>`:'');$('#trb').style.display=m.soon?'none':'';const w=$('#wnb');w.textContent=m.soon?'Coming Soon':'Watch Now';w.style.opacity=m.soon?.55:1}
+function renderMe(){const s=sub();$('#mec').innerHTML=user?`<div class="av big">${$('#avb').innerHTML}</div><h2>${user.displayName||'ORVEX member'}</h2><p>${user.email||''}</p><div class="pl on" style="cursor:default;text-align:left"><h3>${s?s.plan.toUpperCase()+' plan':'No active plan'}</h3><ul><li>${s?'Valid till '+new Date(s.until).toLocaleDateString():'Choose a plan to watch full films'}</li></ul></div><button class="btn" onclick="go('/plans')">Plans &amp; billing</button><button class="btn gh" onclick="go('/list')">My Wishlist (${list.length})</button><button class="btn gh" onclick="signOut()">Sign out</button>`:`<h2>Welcome to ORVEX</h2><p>Sign in to watch films, save titles and manage your plan.</p><button class="btn" onclick="needAuth()">Sign in</button>`}
+async function signOut(){await auth.signOut();toast('Signed out');go('/')}
 function grid(a,isList){$('#sg').innerHTML=a.length?a.map(i=>pg(i)).join(''):'<p style="color:var(--mu);grid-column:1/-1">'+(isList?'Your wishlist is empty. Tap ♡ on a title to save it.':'No results')+'</p>'}
-$$('#nav button').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(t==='pf'){if(!user)return needAuth();return $('#avb').click()}
- $$('#nav button').forEach(x=>x.classList.toggle('on',x===b));$('#hv').style.display=t==='home'?'':'none';$('#sv').style.display=t==='home'?'none':'';
- if(t!=='home'){$('.sbar').style.display=t==='search'?'':'none';grid(t==='list'?list:ids(()=>1),t==='list')}});
+let ls=0;function savePos(){const n=Date.now();if(trial||n-ls<4000||!isFinite(v.duration))return;ls=n;let p={};try{p=JSON.parse(localStorage.ov_pos||'{}')}catch(e){}p[pi]={t:v.currentTime,d:v.duration};localStorage.ov_pos=JSON.stringify(p)}
+function route(){if(!authReady)return;const a=(location.hash.replace(/^#/,'')||'/').split('/').filter(Boolean),r=a[0]||'',n=+a[1],ok=Number.isInteger(n)&&M[n];
+ if(r!=='watch')v.pause();
+ if(!r){if(!user&&!localStorage.ov_seen)return show('splash');renderCat();$('#hv').style.display='';$('#sv').style.display='none';return show('home','Watch Every Movie','home')}
+ if(r==='welcome')return show('splash');
+ if(r==='search'||r==='list'){$('#hv').style.display='none';$('#sv').style.display='';$('.sbar').style.display=r==='search'?'':'none';$('#q').value='';grid(r==='list'?list:ids(()=>1),r==='list');return show('home',r==='list'?'Wishlist':'Search',r)}
+ if(r==='title'&&ok){drawDet(n);return show('details',M[n].t)}
+ if(r==='watch'&&ok){if(M[n].soon){toast('Coming soon — stay tuned!');return rep('/title/'+n)}const tr=a[2]==='t';
+  if(!user)return needAuth();if(!tr&&!sub()){toast('Choose a plan to start watching');return rep('/plans')}return play(n,a[2]==='ai',tr)}
+ if(r==='plans'){drawPlans();return show('plans','Plans')}
+ if(r==='me'){renderMe();return show('me','My Account','pf')}
+ if(INFO[r]){$('#infoc').innerHTML='<div class="info"><h2>'+INFO[r][0]+'</h2>'+INFO[r][1]+'</div>';return show('info',INFO[r][0])}
+ rep('/')}
+document.addEventListener('click',e=>{const p=e.target.closest('[data-i]');if(p&&!p.closest('#splash'))go('/title/'+p.dataset.i)});
+$('#dbk').onclick=()=>back('/');$('#mbk').onclick=()=>back('/');$('#ibk').onclick=()=>back('/');$('#trb').onclick=()=>go('/watch/'+pi+'/t');
+$('#wnb').onclick=()=>M[pi].soon?toast('Coming soon — stay tuned!'):go('/watch/'+pi);$('#bell').onclick=()=>toast('No new notifications');
+const NAVP={home:'/',search:'/search',list:'/list',pf:'/me'};$$('#nav button').forEach(b=>b.onclick=()=>go(NAVP[b.dataset.t]));
 $('#q').oninput=e=>grid(ids(m=>(m.t+m.g).toLowerCase().includes(e.target.value.toLowerCase())));
 /* ---- player + AI ---- */
 const v=$('#v'),fmt=s=>isFinite(s)?Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'):'0:00';let ctx=C[0];
 function play(i,ai,tr){if(M[i].soon)return toast('Coming soon — stay tuned!');if(!user)return needAuth(()=>play(i,ai,tr));if(!tr&&!sub()){toast('Choose a plan to start watching');return openPlans(()=>play(i,ai,tr))}
- const t=C[i];pi=i;hl();ctx=t;$('#pt').textContent=t[0]+(tr?' · Trailer':'');$('#pm').textContent=t[1]+' · '+t[2]+' · HD';show('player');$('#ais').classList.toggle('off',!ai);$('#ans').textContent='';trial=!!tr;if(v.getAttribute('src')!==M[i].v)v.src=M[i].v;v.poster=M[i].im||'';v.currentTime=0;v.play().catch(()=>{})}
+ const t=C[i];pi=i;hl();ctx=t;$('#pt').textContent=t[0]+(tr?' · Trailer':'');$('#pm').textContent=t[1]+' · '+t[2]+' · HD';show('player',t[0]);$('#ais').classList.toggle('off',!ai);$('#ans').textContent='';trial=!!tr;if(v.getAttribute('src')!==M[i].v)v.src=M[i].v;v.poster=M[i].im||'';let rp=0;try{const q=JSON.parse(localStorage.ov_pos||'{}')[i];if(q&&!tr&&q.t>10&&q.t<q.d-15)rp=q.t}catch(e){}v.currentTime=rp;v.play().catch(()=>{})}
 const hl=()=>$('#hl').textContent=list.includes(pi)?'♥':'♡';
 $('#hl').onclick=()=>{list=list.includes(pi)?list.filter(x=>x!==pi):[...list,pi];localStorage.cvList=JSON.stringify(list);hl();toast(list.includes(pi)?'Added to Wishlist':'Removed')};
 let trial=false;v.onerror=()=>toast('Video could not be loaded');
-$('#bk').onclick=()=>{v.pause();show('details')};
+$('#bk').onclick=()=>back('/title/'+pi);
 $('#pp').onclick=()=>v.paused?v.play():v.pause();
 v.onplay=v.onpause=()=>{$('#pp').style.opacity=v.paused?1:0;$('#pi2').innerHTML=v.paused?'<path d="M7 4v16l13-8z" fill="currentColor"/>':'<path d="M7 4h4v16H7zM13 4h4v16h-4z" fill="currentColor"/>'};
-v.ontimeupdate=()=>{if(trial&&v.currentTime>30){v.pause();trial=false;toast('Trailer ended — tap Watch Now for the full film')}$('#pr').style.width=v.currentTime/v.duration*100+'%';$('#ct').textContent=fmt(v.currentTime);$('#du2').textContent=fmt(v.duration)};
+v.ontimeupdate=()=>{savePos();if(trial&&v.currentTime>30){v.pause();trial=false;toast('Trailer ended — tap Watch Now for the full film')}$('#pr').style.width=v.currentTime/v.duration*100+'%';$('#ct').textContent=fmt(v.currentTime);$('#du2').textContent=fmt(v.duration)};
 $('#bar').onclick=e=>{const r=e.currentTarget.getBoundingClientRect();v.currentTime=(e.clientX-r.left)/r.width*v.duration};
 $('#mt').onclick=()=>v.muted=!v.muted;$('#fs').onclick=()=>(v.requestFullscreen||v.webkitEnterFullscreen).call(v);
 $('#aib').onclick=()=>$('#ais').classList.remove('off');$('#aix').onclick=()=>$('#ais').classList.add('off');
@@ -209,9 +262,9 @@ const sk=()=>'ov_sub_'+(user&&user.uid),sub=()=>{try{const x=JSON.parse(localSto
 const price=p=>cy==='y'?p.m*10:p.m;
 function drawPlans(){$('#pls').innerHTML=PL.map(p=>`<div class="pl ${p.id===sel?'on':''}" data-p="${p.id}">${p.pop?'<span class="bd">MOST POPULAR</span>':''}<h3>${p.n}<span class="pr">₹${price(p)}<small>/${cy==='y'?'yr':'mo'}</small></span></h3><ul>${p.f.map(f=>`<li>${f}</li>`).join('')}</ul></div>`).join('');
  $$('.pl').forEach(c=>c.onclick=()=>{sel=c.dataset.p;drawPlans()});const s=sub();$('#buy').textContent=(s?'Current: '+s.plan.toUpperCase()+' · ':'')+'Continue · ₹'+price(PL.find(p=>p.id===sel))}
-function openPlans(cb){planCb=cb||null;drawPlans();show('plans')}
+function openPlans(){go('/plans')}
 $$('.cy button').forEach(b=>b.onclick=()=>{cy=b.dataset.c;$$('.cy button').forEach(x=>x.classList.toggle('on',x===b));drawPlans()});
-$('#pbk').onclick=()=>show('home');
+$('#pbk').onclick=()=>back('/');
 $('#buy').onclick=async()=>{if(!user)return needAuth();const b=$('#buy');b.disabled=true;b.textContent='Opening secure payment…';
  try{const p=await callW(PAY,'/pay/create',{type:'subscription',plan:sel,cycle:cy});
   localStorage.ov_pending=JSON.stringify({uid:user.uid,orderId:p.orderId,plan:sel,cycle:cy});
@@ -219,13 +272,13 @@ $('#buy').onclick=async()=>{if(!user)return needAuth();const b=$('#buy');b.disab
  catch(e){toast(e.message||'Payment failed');drawPlans()}b.disabled=false};
 async function payReturn(){let pd;try{pd=JSON.parse(localStorage.ov_pending||'null')}catch(e){}const oid=new URLSearchParams(location.search).get('order');
  if(!pd||!oid||pd.uid!==user.uid||pd.orderId!==oid)return;history.replaceState(null,'',location.pathname);toast('Confirming your payment…');
- for(let i=0;i<8;i++){try{const st=await callW(PAY,'/pay/status',{orderId:oid});if(st.paymentStatus==='PAID'){localStorage[sk()]=JSON.stringify({plan:pd.plan,until:Date.now()+(pd.cycle==='y'?365:30)*864e5});localStorage.removeItem('ov_pending');toast('Payment confirmed — enjoy ORVEX!');show('home');renderCat();return}}catch(e){}await new Promise(r=>setTimeout(r,2500))}
+ for(let i=0;i<8;i++){try{const st=await callW(PAY,'/pay/status',{orderId:oid});if(st.paymentStatus==='PAID'){localStorage[sk()]=JSON.stringify({plan:pd.plan,until:Date.now()+(pd.cycle==='y'?365:30)*864e5});localStorage.removeItem('ov_pending');toast('Payment confirmed — enjoy ORVEX!');go('/');return}}catch(e){}await new Promise(r=>setTimeout(r,2500))}
  toast('Payment not confirmed yet. Please check again shortly.')}
 /* ---- auth ---- */
 let mode='in',after=null;
 function needAuth(cb){after=cb||null;$('#auth').classList.add('on')}
-$('#start').onclick=()=>user?(show('home'),renderCat()):needAuth(()=>{show('home');renderCat()});
-$('#cl').onclick=()=>$('#auth').classList.remove('on');
+$('#start').onclick=()=>{localStorage.ov_seen=1;go('/')};
+$('#cl').onclick=()=>{$('#auth').classList.remove('on');if(/^#\/watch/.test(location.hash))back('/')};
 $$('.tabs button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;$$('.tabs button').forEach(x=>x.classList.toggle('on',x===b));$('#nm').style.display=mode==='up'?'':'none';$('#sub').textContent=mode==='up'?'Create account':'Sign in';$('#er').textContent=''});
 const msg=e=>({'auth/invalid-email':'Enter a valid email.','auth/user-not-found':'No account with this email.','auth/wrong-password':'Incorrect password.','auth/invalid-credential':'Incorrect email or password.','auth/email-already-in-use':'Email already registered — sign in.','auth/weak-password':'Password needs 6+ characters.','auth/too-many-requests':'Too many attempts. Try later.','auth/network-request-failed':'Network error.','auth/unauthorized-domain':'This domain is not authorised in Firebase Auth.','auth/popup-closed-by-user':''}[e.code]??e.message??'Something went wrong.');
 async function run(fn){$('#er').textContent='';if(!auth)return $('#er').textContent='Auth service failed to load.';try{await fn()}catch(e){$('#er').textContent=msg(e)}}
@@ -234,9 +287,9 @@ $('#gg').onclick=()=>run(async()=>{const p=new firebase.auth.GoogleAuthProvider(
 $('#fg').onclick=()=>run(async()=>{const e=$('#em').value.trim();if(!e)return $('#er').textContent='Enter your email first.';await auth.sendPasswordResetEmail(e);toast('Reset link sent to '+e)});
 if(auth)auth.onAuthStateChanged(u=>{user=u;const n=u?(u.displayName||u.email||'U'):'?';$('#gn').textContent=u?(u.displayName||(u.email||'').split('@')[0]||'there'):'Guest';
  $('#avb').innerHTML=u&&u.photoURL?`<img src="${u.photoURL}" width="52" height="52" alt="" referrerpolicy="no-referrer">`:n[0].toUpperCase();
- if(u){$('#auth').classList.remove('on');$('#pw').value='';const f=after;after=null;if(f)f();payReturn()}});
-$('#avb').onclick=()=>{if(!user)return needAuth();const m=$('#menu');const s=sub();m.innerHTML=`<div>${user.displayName||''}<br>${user.email||''}${s?'<br><b style="color:var(--o2)">'+s.plan.toUpperCase()+' plan</b>':''}</div><button id="up">Plans &amp; billing</button><button id="lo">Sign out</button>`;m.classList.toggle('on');
- $('#up').onclick=()=>{m.classList.remove('on');openPlans()};$('#lo').onclick=async()=>{await auth.signOut();m.classList.remove('on');show('splash');toast('Signed out')}};
-renderCat();
+ if(u){$('#auth').classList.remove('on');$('#pw').value='';const f=after;after=null;if(f)f();payReturn()}
+ renderCat();if(!authReady){authReady=true;route()}else if(/^#\/(me|watch)/.test(location.hash))route()});
+$('#avb').onclick=()=>go('/me');
+window.addEventListener('hashchange',route);authReady=!auth;if(authReady)route();setTimeout(()=>{if(!authReady){authReady=true;route()}},3500);
 </script>
 </body></html>
