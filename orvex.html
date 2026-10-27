@@ -1,0 +1,2437 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>ORVEX — Stream Unlimited Movies, Originals & AI Watch Mind</title>
+  <meta name="theme-color" content="#07070a">
+  <meta name="description" content="ORVEX: Stream, download and watch offline with real-time AI Video Intelligence.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit for a true Netflix/Apple TV+ Cinema UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            display: ['"Outfit"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            obsidian: '#07070a',
+            charcoal: '#101016',
+            surface: '#16161f',
+            crimson: '#e50914',
+            ruby: '#ff1f4b',
+            amber: '#ff6b00',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Cashfree Payment SDK -->
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <style>
+    :root {
+      --bg: #07070a;
+      --surface: rgba(22, 22, 31, 0.78);
+      --line: rgba(255, 255, 255, 0.09);
+      --line-bright: rgba(255, 255, 255, 0.18);
+      --tx: #f8f8fc;
+      --mu: #9494a6;
+      --o1: #e50914;
+      --o2: #ff2d55;
+      --ai1: #ff5500;
+      --ai2: #ff9a00;
+      --grad-brand: linear-gradient(135deg, #e50914 0%, #b8062c 50%, #ff2d55 100%);
+      --grad-ai: linear-gradient(135deg, #ff4500 0%, #ff8c00 100%);
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      background-color: var(--bg);
+      color: var(--tx);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Hide scrollbars cleanly while keeping smooth momentum scroll */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Smooth GPU-accelerated view transitions */
+    .app-shell {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      margin: 0 auto;
+      background: var(--bg);
+      overflow: hidden;
+      transition: max-width 0.5s var(--ease-out-expo), height 0.5s var(--ease-out-expo), border-radius 0.5s var(--ease-out-expo), box-shadow 0.5s var(--ease-out-expo);
+    }
+
+    /* Optional Mobile Preview Frame Mode on Desktop */
+    body.mobile-frame-mode {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 20%, #261420 0%, #09090d 70%);
+    }
+    body.mobile-frame-mode .app-shell {
+      max-width: 430px;
+      height: min(92vh, 900px);
+      border-radius: 44px;
+      border: 8px solid #22222c;
+      box-shadow: 0 35px 90px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255,255,255,0.1);
+    }
+
+    .view {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-top: env(safe-area-inset-top);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.975) translateY(12px);
+      transition: opacity 0.42s var(--ease-out-expo), transform 0.48s var(--ease-out-expo);
+      will-change: opacity, transform;
+      z-index: 1;
+    }
+
+    .view.on {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1) translateY(0);
+      z-index: 10;
+    }
+
+    /* Ambient Dynamic Glow Behind Hero */
+    .ambient-glow {
+      position: fixed;
+      top: -15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90vw;
+      height: 55vh;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(229, 9, 20, 0.22) 0%, rgba(255, 107, 0, 0.08) 45%, transparent 72%);
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 0;
+      transition: background 0.8s ease;
+    }
+
+    /* Glassmorphism Utilities */
+    .glass {
+      background: rgba(20, 20, 28, 0.68);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--line);
+    }
+
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.25s var(--ease-spring);
+    }
+    .glass-pill:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.24);
+      transform: translateY(-1px);
+    }
+    .glass-pill:active {
+      transform: scale(0.96);
+    }
+
+    /* Brand Buttons */
+    .btn-primary {
+      background: var(--grad-brand);
+      color: #fff;
+      font-weight: 600;
+      border-radius: 9999px;
+      box-shadow: 0 10px 30px -5px rgba(229, 9, 20, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      transition: all 0.28s var(--ease-spring);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 38px -5px rgba(229, 9, 20, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    .btn-ai {
+      background: var(--grad-ai);
+      color: #fff;
+      font-weight: 600;
+      border-radius: 9999px;
+      box-shadow: 0 10px 30px -4px rgba(255, 95, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: all 0.28s var(--ease-spring);
+    }
+    .btn-ai:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 14px 36px -4px rgba(255, 95, 0, 0.75);
+    }
+
+    /* Movie Poster Cards */
+    .poster-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #14141d;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.38s var(--ease-spring), box-shadow 0.38s var(--ease-spring), border-color 0.3s ease;
+      cursor: pointer;
+    }
+    .poster-card:hover {
+      transform: translateY(-6px) scale(1.025);
+      border-color: rgba(255, 255, 255, 0.28);
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.85), 0 0 25px rgba(229, 9, 20, 0.22);
+      z-index: 5;
+    }
+    .poster-card:active {
+      transform: scale(0.97);
+    }
+    .poster-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--ease-out-expo);
+    }
+    .poster-card:hover img {
+      transform: scale(1.07);
+    }
+
+    /* 3D Center Stage Carousel (Cinevia / Netflix Mobile Hero) */
+    .stage-card {
+      transition: all 0.5s var(--ease-out-expo);
+      cursor: pointer;
+    }
+    .stage-card.active-stage {
+      transform: scale(1) translateZ(0);
+      border: 1.5px solid rgba(255, 120, 40, 0.65);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(229, 9, 20, 0.3);
+      z-index: 20;
+    }
+    .stage-card.side-stage {
+      transform: scale(0.86);
+      opacity: 0.55;
+      filter: saturate(0.75) brightness(0.75);
+      z-index: 10;
+    }
+    .stage-card.side-stage:hover {
+      opacity: 0.82;
+      transform: scale(0.89);
+    }
+
+    /* Splash Fanned Cards Animation */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
+      50% { transform: translateY(-10px) rotate(var(--rot, 0deg)); }
+    }
+    .fan-card {
+      animation: floatSlow 5s ease-in-out infinite;
+      box-shadow: 0 22px 50px rgba(0,0,0,0.85);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    /* 3D Glowing AI Intelligence Orb (Cinevia Style) */
+    .ai-orb-wrap {
+      position: relative;
+      width: 104px;
+      height: 104px;
+      margin: 8px auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ai-orb {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #ffe4b5 0%, #ff8c24 32%, #e52509 68%, #4a0600 100%);
+      box-shadow:
+        0 0 50px rgba(255, 102, 0, 0.65),
+        0 0 90px rgba(229, 9, 20, 0.4),
+        inset 0 0 24px rgba(255, 255, 255, 0.65),
+        inset -10px -14px 26px rgba(60, 0, 10, 0.8);
+      animation: orbPulse 3.4s ease-in-out infinite;
+    }
+    .ai-orb.thinking {
+      animation: orbThink 1.1s ease-in-out infinite;
+    }
+    @keyframes orbPulse {
+      0%, 100% { transform: scale(1); filter: hue-rotate(0deg); }
+      50% { transform: scale(1.06); filter: hue-rotate(-8deg); box-shadow: 0 0 70px rgba(255, 115, 0, 0.85), inset 0 0 30px rgba(255, 255, 255, 0.8); }
+    }
+    @keyframes orbThink {
+      0%, 100% { transform: scale(0.95) rotate(0deg); }
+      50% { transform: scale(1.12) rotate(180deg); filter: hue-rotate(20deg); }
+    }
+
+    /* AI Drawer Sheet */
+    .ai-drawer {
+      transition: transform 0.5s var(--ease-out-expo), opacity 0.4s ease;
+    }
+    .ai-drawer.off {
+      transform: translateY(104%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Custom Video Scrubber */
+    .scrubber-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      position: relative;
+      cursor: pointer;
+      transition: height 0.2s ease;
+    }
+    .scrubber-track:hover {
+      height: 8px;
+    }
+    .scrubber-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      background: linear-gradient(90deg, #ff5500, #e50914);
+      border-radius: 999px;
+    }
+    .scrubber-thumb {
+      position: absolute;
+      right: -7px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 12px rgba(255, 85, 0, 0.95);
+      transition: transform 0.15s ease;
+    }
+    .scrubber-track:hover .scrubber-thumb {
+      transform: translateY(-50%) scale(1.25);
+    }
+
+
+    /* ===== Netflix-style player ===== */
+    .vid.idle .nf-ui { opacity: 0; pointer-events: none !important; }
+    .vid.idle .nf-ui * { pointer-events: none !important; }
+    .vid.idle { cursor: none; }
+    .vid.intro #bar, .vid.intro #remain, .vid.intro #skipBack, .vid.intro #skipFwd, .vid.intro #skipBack2, .vid.intro #skipFwd2,
+    .vid.intro #nextBtn, .vid.intro #epBtn, .vid.intro #speedBtn, .vid.intro #aib, .vid.intro #epPanel, .vid.intro #speedPop { display: none !important; }
+    .nf-ui { transition: opacity 0.3s ease; }
+    .nf-btn { width: 40px; height: 40px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: #fff; opacity: 0.92; transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease; }
+    .nf-btn:hover { opacity: 1; transform: scale(1.12); }
+    .nf-btn:active { transform: scale(0.94); }
+    .nf-center { width: 68px; height: 68px; background: rgba(0,0,0,0.55); border: 1.5px solid rgba(255,255,255,0.35); backdrop-filter: blur(8px); }
+    .nf-big { width: 52px; height: 52px; }
+    @media (min-width: 640px) {
+      .vid:not(.is-paused) #pp { opacity: 0; pointer-events: none !important; }
+      .nf-center { width: 84px; height: 84px; }
+    }
+    .nf-bar .nf-track { height: 4px; transition: height 0.15s ease; }
+    .nf-bar:hover .nf-track, .nf-bar.drag .nf-track { height: 7px; }
+    .nf-thumb { position: absolute; right: -7px; top: 50%; width: 14px; height: 14px; border-radius: 50%; background: #e50914; transform: translateY(-50%) scale(0); transition: transform 0.15s ease; box-shadow: 0 0 0 3px rgba(229,9,20,0.25); }
+    .nf-bar:hover .nf-thumb, .nf-bar.drag .nf-thumb { transform: translateY(-50%) scale(1); }
+    .nf-tip { position: absolute; bottom: 26px; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; opacity: 0; pointer-events: none; font-variant-numeric: tabular-nums; }
+    .nf-tip.on { opacity: 1; }
+    .nf-vol { -webkit-appearance: none; appearance: none; width: 0; opacity: 0; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.35); transition: width 0.2s ease, opacity 0.2s ease, margin 0.2s ease; outline: none; }
+    .nf-volwrap:hover .nf-vol, .nf-vol:focus { width: 84px; opacity: 1; margin: 0 8px 0 2px; }
+    .nf-vol::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
+    .nf-vol::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 50%; background: #fff; }
+    .nf-pop { position: absolute; display: none; background: rgba(18,18,24,0.94); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.14); border-radius: 14px; z-index: 30; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
+    .nf-pop.open { display: block; }
+    .nf-side { }
+    .nf-spin { width: 54px; height: 54px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.2); border-top-color: #e50914; animation: nfspin 0.8s linear infinite; }
+    #nfSpin.on { display: flex; }
+    @keyframes nfspin { to { transform: rotate(360deg); } }
+    .nf-flash { position: absolute; top: 0; bottom: 0; width: 34%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: rgba(255,255,255,0.16); color: #fff; font-weight: 700; font-size: 13px; opacity: 0; pointer-events: none; z-index: 8; }
+    .nf-flash.show { animation: nfflash 0.55s ease; }
+    @keyframes nfflash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+    .vid:fullscreen { max-height: none; height: 100%; width: 100%; }
+    .vid:-webkit-full-screen { max-height: none; height: 100%; width: 100%; }
+
+    /* Toast Notification */
+    .toast-notification {
+      position: fixed;
+      top: max(20px, env(safe-area-inset-top));
+      left: 50%;
+      transform: translate(-50%, -130%);
+      z-index: 100;
+      transition: transform 0.42s var(--ease-spring), opacity 0.35s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .toast-notification.on {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Ambient Lighting Backdrop -->
+  <div class="ambient-glow" id="ambientGlow"></div>
+
+  <!-- Main Application Container -->
+  <div class="app-shell" id="appShell">
+
+    <!-- ==========================================
+         1. SPLASH / ONBOARDING VIEW (CINEVIA + ORVEX)
+         ========================================== -->
+    <section class="view on" id="splash">
+      <div class="relative min-h-full w-full flex flex-col justify-between overflow-hidden bg-obsidian">
+        <!-- Cinematic Background Art + Vignette -->
+        <div class="absolute inset-0 pointer-events-none">
+          <img 
+            src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1600&q=80" 
+            alt="Cinema Backdrop" 
+            class="w-full h-full object-cover opacity-35 scale-105"
+            onerror="this.style.display='none'"
+          >
+          <div class="absolute inset-0 bg-gradient-to-b from-obsidian/80 via-obsidian/40 to-obsidian"></div>
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(229,9,20,0.28),transparent_65%)]"></div>
+        </div>
+
+        <!-- Top Brand Bar -->
+        <header class="relative z-10 flex items-center justify-between px-6 pt-5 max-w-6xl mx-auto w-full">
+          <div class="flex items-center gap-2.5 font-display font-extrabold text-xl tracking-wider">
+            <span class="w-9 h-9 rounded-full bg-gradient-to-tr from-crimson to-amber flex items-center justify-center shadow-lg shadow-crimson/40">
+              <svg class="w-4 h-4 fill-white stroke-none translate-x-0.5" viewBox="0 0 24 24"><path d="M6 4l15 8-15 8z"/></svg>
+            </span>
+            <span>ORVEX</span>
+          </div>
+          <button id="splashSignInBtn" class="glass-pill px-4 py-2 rounded-full text-xs font-semibold tracking-wide text-white/90">
+            Sign In
+          </button>
+        </header>
+
+        <!-- Center Fanned 3D Movie Deck + Floating Glass Badges (Inspired by Mockups 1, 2 & 3) -->
+        <div class="relative z-10 my-auto py-6 px-6 flex flex-col items-center justify-center max-w-4xl mx-auto w-full">
+          <div class="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center">
+            <!-- Left Fanned Card -->
+            <div class="fan-card absolute w-36 h-52 sm:w-44 sm:h-60 rounded-2xl overflow-hidden -translate-x-20 translate-y-4" style="--rot: -16deg; animation-delay: 0.2s;">
+              <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" alt="Sci-Fi" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x600/1d2b4a/ffffff?text=SPACE+TREK'">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end p-3">
+                <span class="font-display font-bold text-xs tracking-wider uppercase text-white/90">Space Trek</span>
+              </div>
+            </div>
+
+            <!-- Right Fanned Card -->
+            <div class="fan-card absolute w-36 h-52 sm:w-44 sm:h-60 rounded-2xl overflow-hidden translate-x-20 translate-y-4" style="--rot: 16deg; animation-delay: 0.7s;">
+              <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80" alt="Action" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x600/5a1818/ffffff?text=CROWN+OF+ASH'">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end p-3">
+                <span class="font-display font-bold text-xs tracking-wider uppercase text-white/90">Crown of Ash</span>
+              </div>
+            </div>
+
+            <!-- Center Hero Card -->
+            <div class="fan-card relative z-10 w-44 h-64 sm:w-52 sm:h-72 rounded-2xl overflow-hidden border-2 border-white/25 shadow-2xl" style="--rot: 0deg;">
+              <img src="posters/tears-of-steel.webp" alt="Tears of Steel" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/500x750/8c0d22/ffffff?text=ORVEX+ORIGINALS'">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-4">
+                <span class="inline-block w-fit px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest bg-crimson text-white mb-1">4K HDR • AI Ready</span>
+                <h3 class="font-display font-extrabold text-lg leading-tight">Tears of Steel</h3>
+                <p class="text-[11px] text-white/70">Sci-Fi • Cyberpunk</p>
+              </div>
+            </div>
+
+            <!-- Floating Glassmorphic Badges (Mockup 2 Style) -->
+            <div class="glass-pill absolute -left-4 top-6 z-20 px-3.5 py-2 rounded-full flex items-center gap-2 text-xs font-medium shadow-xl">
+              <svg class="w-4 h-4 text-ruby" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+              <span>AI Watch Mind</span>
+            </div>
+            <div class="glass-pill absolute -right-4 top-12 z-20 px-3.5 py-2 rounded-full flex items-center gap-2 text-xs font-medium shadow-xl">
+              <svg class="w-4 h-4 text-amber" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+              <span>2.5M Likes</span>
+            </div>
+            <div class="glass-pill absolute -bottom-2 left-4 z-20 px-3.5 py-2 rounded-full flex items-center gap-2 text-xs font-medium shadow-xl">
+              <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              <span>Offline 4K</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Onboarding Copy & CTA -->
+        <div class="relative z-10 px-6 pb-10 pt-2 text-center max-w-md mx-auto w-full" style="padding-bottom: calc(2.25rem + env(safe-area-inset-bottom));">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] text-white/75 mb-3">
+            <span class="w-2 h-2 rounded-full bg-crimson animate-pulse"></span>
+            Welcome to ORVEX Cinema
+          </div>
+          <h1 class="font-display font-extrabold text-3xl sm:text-4xl tracking-tight leading-tight">
+            Unlimited Movies,<br>Shows &amp; <span class="text-transparent bg-clip-text bg-gradient-to-r from-ruby via-crimson to-amber">AI Originals</span>
+          </h1>
+          <p class="text-white/60 text-sm mt-3 mb-7 leading-relaxed">
+            Stream anywhere, download offline, and ask our real-time AI Video Intelligence anything while you watch.
+          </p>
+          <button class="btn-primary w-full py-4 px-8 text-base flex items-center justify-center gap-2.5 group" id="start">
+            <span>Enter Now</span>
+            <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         2. HOME / BROWSE / SEARCH / WISHLIST VIEW
+         ========================================== -->
+    <section class="view" id="home">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 pb-32">
+
+        <!-- Sticky Top Navigation Bar -->
+        <header class="sticky top-0 z-30 py-3.5 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 bg-obsidian/80 backdrop-blur-xl border-b border-white/5 flex items-center justify-between gap-3">
+          <!-- Left: User Greeting / Brand -->
+          <div class="flex items-center gap-3">
+            <button id="avb" class="relative w-11 h-11 rounded-full bg-gradient-to-tr from-crimson to-amber p-0.5 flex items-center justify-center font-display font-bold text-sm shadow-lg shadow-crimson/25 overflow-hidden shrink-0">
+              <span id="avInner" class="w-full h-full rounded-full bg-charcoal flex items-center justify-center overflow-hidden">?</span>
+            </button>
+            <div class="leading-tight">
+              <div class="flex items-center gap-2">
+                <h3 id="gn" class="font-display font-bold text-base sm:text-lg text-white">Guest</h3>
+                <span id="subBadge" class="hidden px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-gradient-to-r from-crimson to-amber text-white">PRO</span>
+              </div>
+              <p class="text-xs text-white/55">Welcome back 👋</p>
+            </div>
+          </div>
+
+          <!-- Center Desktop Navigation Links -->
+          <div class="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/10">
+            <button data-nav-top="home" class="top-nav-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-crimson to-ruby text-white">Home</button>
+            <button data-nav-top="search" class="top-nav-btn px-4 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white">Explore &amp; Search</button>
+            <button data-nav-top="list" class="top-nav-btn px-4 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white">My Wishlist</button>
+            <button id="topPlansBtn" class="px-4 py-1.5 rounded-full text-xs font-semibold text-amber hover:text-white">Plans &amp; Pass</button>
+          </div>
+
+          <!-- Right Actions: Search Trigger, Mobile Frame Toggle (Desktop), Notification Bell -->
+          <div class="flex items-center gap-2">
+            <button id="quickSearchBtn" class="glass-pill w-10 h-10 rounded-full flex items-center justify-center text-white/80 hover:text-white" title="Search">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            </button>
+            <button id="frameToggleBtn" class="hidden lg:flex glass-pill px-3 h-10 rounded-full items-center gap-1.5 text-xs font-medium text-white/80 hover:text-white" title="Toggle Mobile App Frame">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              <span id="frameToggleLabel">Mobile View</span>
+            </button>
+            <button id="bell" class="glass-pill relative w-10 h-10 rounded-full flex items-center justify-center text-white/80 hover:text-white" title="Notifications">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/></svg>
+              <span class="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-ruby ring-2 ring-obsidian"></span>
+            </button>
+          </div>
+
+          <!-- Profile Dropdown Menu -->
+          <div id="menu" class="hidden absolute right-4 sm:right-6 top-16 w-64 glass rounded-2xl p-2 shadow-2xl z-50 border border-white/15"></div>
+        </header>
+
+        <!-- Category Filter Pills (All, Movies, Sci-Fi, Animation, Action, Coming Soon) -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-4" id="catPills">
+          <button data-cat="All" class="cat-pill px-4 py-2 rounded-full text-xs font-semibold bg-white text-obsidian shadow-md shrink-0 transition">All</button>
+          <button data-cat="Popular" class="cat-pill glass-pill px-4 py-2 rounded-full text-xs font-medium text-white/80 shrink-0">Popular</button>
+          <button data-cat="Sci-Fi" class="cat-pill glass-pill px-4 py-2 rounded-full text-xs font-medium text-white/80 shrink-0">Sci-Fi</button>
+          <button data-cat="Animation" class="cat-pill glass-pill px-4 py-2 rounded-full text-xs font-medium text-white/80 shrink-0">Animation</button>
+          <button data-cat="Action" class="cat-pill glass-pill px-4 py-2 rounded-full text-xs font-medium text-white/80 shrink-0">Action &amp; Crime</button>
+          <button data-cat="Soon" class="cat-pill glass-pill px-4 py-2 rounded-full text-xs font-medium text-white/80 shrink-0">Coming Soon</button>
+        </div>
+
+        <!-- ================= HOME FEED SECTION (#hv) ================= -->
+        <div id="hv">
+          
+          <!-- 3D CENTER-STAGE HERO CAROUSEL (Cinevia / Netflix Spotlight) -->
+          <div class="relative my-2 pt-2 pb-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              
+              <!-- 3-Card Interactive Stage Deck -->
+              <div class="lg:col-span-7 relative flex items-center justify-center h-[320px] sm:h-[370px] select-none" id="heroStage">
+                <!-- Populated dynamically by JS -->
+              </div>
+
+              <!-- Active Spotlight Details & Quick Actions -->
+              <div class="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left px-2">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-semibold text-amber mb-2.5">
+                  <span>★ <span id="spotImdb">9.2/10 IMDb</span></span>
+                  <span>•</span>
+                  <span id="spotBadge">4K ULTRA HD</span>
+                </div>
+                <h2 id="spotTitle" class="font-display font-extrabold text-2xl sm:text-4xl tracking-tight text-white">Tears of Steel</h2>
+                <p id="spotMeta" class="text-xs sm:text-sm text-white/65 mt-1.5 font-medium">2012 • 🎬 Sci-Fi / Action • 12m</p>
+                <p id="spotDesc" class="text-xs sm:text-sm text-white/60 mt-3 line-clamp-2 max-w-md leading-relaxed">
+                  In a dystopian Amsterdam, a group of warriors and scientists travel back in time to stop a catastrophe and save the world from destructive robots.
+                </p>
+
+                <!-- Dual Action Buttons: Watch Now + Details + AI Mind -->
+                <div class="flex items-center justify-center lg:justify-start gap-3 mt-5 w-full max-w-sm">
+                  <button id="spotWatchBtn" class="btn-ai flex-1 py-3 px-5 text-xs sm:text-sm flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>
+                    <span id="spotWatchTxt">WATCH NOW</span>
+                  </button>
+                  <button id="spotDetBtn" class="glass-pill flex-1 py-3 px-5 rounded-full text-xs sm:text-sm font-semibold text-white">
+                    Details
+                  </button>
+                  <button id="spotWishBtn" class="glass-pill w-11 h-11 rounded-full flex items-center justify-center text-lg text-ruby shrink-0" title="Toggle Wishlist">
+                    ♡
+                  </button>
+                </div>
+
+                <!-- Stage Pagination Dots -->
+                <div class="flex items-center gap-2 mt-5" id="spotDots"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTINUE WATCHING RAIL (Appears automatically when user watches a video) -->
+          <div id="cwSec" class="hidden mt-4 mb-8">
+            <div class="flex items-center justify-between mb-3.5">
+              <h3 class="font-display font-bold text-lg sm:text-xl flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-ruby"></span>
+                Continue Watching
+              </h3>
+              <button id="clearCwBtn" class="text-xs text-white/45 hover:text-white/80">Clear</button>
+            </div>
+            <div class="flex gap-4 overflow-x-auto no-scrollbar pb-2" id="cwRail"></div>
+          </div>
+
+          <!-- NOW SHOWING / STREAMING NOW RAIL -->
+          <div class="mt-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="font-display font-bold text-lg sm:text-xl text-white">Now Showing</h3>
+                <p class="text-xs text-white/50">Full-length HD streams &amp; AI-indexed originals</p>
+              </div>
+              <button data-see-all="now" class="glass-pill px-3.5 py-1.5 rounded-full text-xs text-white/75">See All</button>
+            </div>
+            <div class="flex gap-4 overflow-x-auto no-scrollbar pb-3 -mx-1 px-1" id="nw"></div>
+          </div>
+
+          <!-- POPULAR & COMING SOON RELEASES (Mockup 1 & 3 Style Cards) -->
+          <div class="mt-8">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="font-display font-bold text-lg sm:text-xl text-white">Popular &amp; Coming Soon</h3>
+                <p class="text-xs text-white/50">Reserve upcoming premieres &amp; watch official teasers</p>
+              </div>
+              <button data-see-all="soon" class="glass-pill px-3.5 py-1.5 rounded-full text-xs text-white/75">See All</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="pop"></div>
+          </div>
+
+        </div>
+
+        <!-- ================= SEARCH & WISHLIST GRID SECTION (#sv) ================= -->
+        <div id="sv" class="hidden pt-2">
+          <!-- Search Bar -->
+          <div class="sbar glass rounded-2xl px-4 py-1 flex items-center gap-3 mb-6 border border-white/15 focus-within:border-crimson transition">
+            <svg class="w-5 h-5 text-white/50 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="q" type="text" placeholder="Search movies, genres, sci-fi, animation…" class="w-full py-3 bg-transparent text-sm text-white placeholder-white/40 focus:outline-none">
+            <button id="clearSearchBtn" class="text-xs text-white/40 hover:text-white px-2">Clear</button>
+          </div>
+
+          <div class="flex items-center justify-between mb-4">
+            <h3 id="svTitle" class="font-display font-bold text-lg">Explore Catalog</h3>
+            <span id="svCount" class="text-xs text-white/50"></span>
+          </div>
+
+          <!-- Responsive Poster Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="sg"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         3. MOVIE DETAILS VIEW (MOCKUP 1 & 2 INSPIRED)
+         ========================================== -->
+    <section class="view" id="details">
+      <div class="relative min-h-full bg-obsidian pb-28">
+        
+        <!-- Top Floating Back & Share Bar -->
+        <div class="sticky top-3 z-30 flex items-center justify-between px-5 pt-2 max-w-5xl mx-auto">
+          <button id="dbk" class="glass-pill w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="flex items-center gap-2">
+            <button id="detWishBtn" class="glass-pill w-11 h-11 rounded-full flex items-center justify-center text-lg text-ruby shadow-lg" title="Add to Wishlist">♡</button>
+            <button id="detShareBtn" class="glass-pill w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg" title="Share Title">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Full-Bleed Hero Artwork Header -->
+        <div class="relative -mt-14 h-[54vh] min-h-[360px] max-h-[520px] w-full overflow-hidden flex flex-col justify-end items-center text-center px-6 pb-4" id="dhh">
+          <img id="dhhBg" src="" alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-cover scale-125 blur-2xl opacity-50">
+          <img id="dhhImg" src="" alt="" class="absolute inset-x-0 top-10 bottom-0 mx-auto h-[calc(100%-2.5rem)] w-auto max-w-full object-contain object-top rounded-2xl shadow-2xl" onerror="this.style.display='none'">
+          <div class="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/45 to-black/30"></div>
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,transparent_30%,#07070a_95%)]"></div>
+
+          <div class="relative z-10 max-w-2xl mx-auto">
+            <span id="detBadge" class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-crimson/90 text-white mb-2 shadow">ORVEX ORIGINAL</span>
+            <h1 id="dtt" class="font-display font-extrabold text-3xl sm:text-5xl tracking-tight text-white drop-shadow-lg"></h1>
+            <p id="dgn" class="text-xs sm:text-sm text-white/75 mt-2 font-medium"></p>
+          </div>
+        </div>
+
+        <!-- Main Details Content Container -->
+        <div class="max-w-3xl mx-auto px-5 sm:px-8">
+          
+          <!-- Stats Row: Trailer Button + IMDb Rating + Duration + License (Exact Mockup 1 Layout) -->
+          <div class="flex flex-wrap items-center justify-between gap-3 py-4 px-4 rounded-2xl glass my-2">
+            <button id="trb" class="px-4 py-2.5 rounded-xl border border-crimson bg-crimson/20 hover:bg-crimson/35 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition">
+              <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>
+              <span>Trailer</span>
+            </button>
+
+            <div class="flex items-center gap-2">
+              <span class="text-ruby text-base">★</span>
+              <div class="text-left">
+                <span class="text-[11px] text-white/55 block">IMDb Rating</span>
+                <strong id="drt" class="text-xs sm:text-sm font-bold text-ruby">9.1/10</strong>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="text-amber text-base">◷</span>
+              <div class="text-left">
+                <span class="text-[11px] text-white/55 block">Duration</span>
+                <strong id="ddu" class="text-xs sm:text-sm font-bold text-white">12m</strong>
+              </div>
+            </div>
+
+            <div class="hidden sm:flex items-center gap-2">
+              <span class="text-emerald-400 text-base">✦</span>
+              <div class="text-left">
+                <span class="text-[11px] text-white/55 block">Audio / Subs</span>
+                <strong class="text-xs sm:text-sm font-bold text-white">Dolby • EN</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Primary Watch Now / Reservation CTA + AI Quick Ask -->
+          <div class="flex flex-col sm:flex-row gap-3 mt-5">
+            <button id="wnb" class="btn-primary flex-1 py-4 px-6 text-base font-bold flex items-center justify-center gap-2.5">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>
+              <span id="wnbText">Watch Now</span>
+            </button>
+            <button id="detAiBtn" class="glass-pill py-4 px-6 rounded-full text-sm font-semibold text-amber flex items-center justify-center gap-2 border border-amber/30 hover:border-amber">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+              <span>Watch with AI Mind</span>
+            </button>
+          </div>
+
+          <!-- Synopsis -->
+          <div class="mt-6">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-white/45 mb-2">Storyline</h4>
+            <p id="dds" class="text-white/80 text-sm sm:text-base leading-relaxed"></p>
+          </div>
+
+          <!-- More Like This / Recommendations Rail -->
+          <div class="mt-8">
+            <h4 class="font-display font-bold text-base text-white mb-3">More Like This</h4>
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-3" id="detSimilar"></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         4. PLAYER + AI VIDEO INTELLIGENCE VIEW
+         ========================================== -->
+    <section class="view bg-black" id="player">
+      <div class="relative min-h-full flex flex-col bg-obsidian">
+
+        <!-- Video Viewport · Netflix-style player -->
+        <div class="vid is-paused relative w-full aspect-video max-h-[72vh] min-h-[220px] bg-black select-none overflow-hidden" id="vidContainer">
+          <video id="v" playsinline preload="metadata" class="absolute inset-0 w-full h-full object-contain bg-black"></video>
+
+          <!-- Gesture / click layer: mouse click = play/pause, double-click = fullscreen, double-tap sides = ±10s -->
+          <div id="tapZone" class="absolute inset-0 z-[5]"></div>
+
+          <!-- ±10s flash feedback -->
+          <div id="flashL" class="nf-flash left-0 rounded-r-[100px]"><svg viewBox="0 0 24 24" class="w-8 h-8"><path d="M11 5V1L6 6l5 5V7a6 6 0 1 1-6 6H3a8 8 0 1 0 8-8z" fill="currentColor"/></svg><span>10</span></div>
+          <div id="flashR" class="nf-flash right-0 rounded-l-[100px]"><svg viewBox="0 0 24 24" class="w-8 h-8"><path d="M13 5V1l5 5-5 5V7a6 6 0 1 0 6 6h2a8 8 0 1 1-8-8z" fill="currentColor"/></svg><span>10</span></div>
+
+          <!-- Buffering spinner -->
+          <div id="nfSpin" class="hidden absolute inset-0 items-center justify-center z-10 pointer-events-none"><div class="nf-spin"></div></div>
+
+          <!-- Top bar -->
+          <div class="nf-ui absolute inset-x-0 top-0 px-3 sm:px-5 pt-3 pb-8 bg-gradient-to-b from-black/80 to-transparent z-20 flex items-center gap-3 pointer-events-none">
+            <button id="bk" class="nf-btn pointer-events-auto" title="Back">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="min-w-0 leading-tight">
+              <span id="playerTopBadge" class="block text-[10px] font-bold uppercase tracking-widest text-ruby">ORVEX STREAM</span>
+              <h4 id="playerTopTitle" class="text-sm sm:text-base font-semibold text-white truncate"></h4>
+            </div>
+          </div>
+
+          <!-- Center controls (touch layout) -->
+          <div class="nf-ui absolute inset-0 flex items-center justify-center gap-10 sm:gap-0 z-20 pointer-events-none">
+            <button id="skipBack" class="nf-btn nf-big pointer-events-auto sm:hidden" title="Rewind 10s">
+              <svg viewBox="0 0 24 24" class="w-9 h-9"><path d="M11 5V1L6 6l5 5V7a6 6 0 1 1-6 6H3a8 8 0 1 0 8-8z" fill="currentColor"/><text x="12" y="16" font-size="6.6" font-weight="800" text-anchor="middle" fill="currentColor" font-family="Arial,sans-serif">10</text></svg>
+            </button>
+            <button id="pp" class="nf-btn nf-center pointer-events-auto" title="Play / Pause (k)">
+              <svg viewBox="0 0 24 24" id="pi2" class="w-10 h-10"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
+            </button>
+            <button id="skipFwd" class="nf-btn nf-big pointer-events-auto sm:hidden" title="Forward 10s">
+              <svg viewBox="0 0 24 24" class="w-9 h-9"><path d="M13 5V1l5 5-5 5V7a6 6 0 1 0 6 6h2a8 8 0 1 1-8-8z" fill="currentColor"/><text x="12" y="16" font-size="6.6" font-weight="800" text-anchor="middle" fill="currentColor" font-family="Arial,sans-serif">10</text></svg>
+            </button>
+          </div>
+
+          <!-- Bottom bar -->
+          <div class="nf-ui absolute inset-x-0 bottom-0 px-3 sm:px-5 pb-2 sm:pb-3 pt-12 bg-gradient-to-t from-black/90 via-black/55 to-transparent z-20 pointer-events-none">
+            <div class="flex items-center gap-3 pointer-events-auto">
+              <div id="bar" class="nf-bar relative flex-1 h-6 flex items-center cursor-pointer touch-none">
+                <div class="nf-track relative w-full rounded-full bg-white/25">
+                  <div id="buf" class="absolute inset-y-0 left-0 rounded-full bg-white/35" style="width:0%"></div>
+                  <div id="pr" class="absolute inset-y-0 left-0 rounded-full bg-[#e50914]" style="width:0%"><span class="nf-thumb"></span></div>
+                </div>
+                <div id="barTip" class="nf-tip">0:00</div>
+              </div>
+              <span id="remain" class="text-xs sm:text-sm font-medium tabular-nums text-white/90 min-w-[3.4rem] text-right">0:00</span>
+            </div>
+
+            <div class="flex items-center justify-between mt-0.5 pointer-events-auto">
+              <div class="flex items-center gap-0.5 sm:gap-1.5">
+                <button id="pp2" class="nf-btn hidden sm:flex" title="Play / Pause (k)"><svg viewBox="0 0 24 24" id="pi3" class="w-7 h-7"><path d="M7 4v16l13-8z" fill="currentColor"/></svg></button>
+                <button id="skipBack2" class="nf-btn hidden sm:flex" title="Back 10s (←)">
+                  <svg viewBox="0 0 24 24" class="w-7 h-7"><path d="M11 5V1L6 6l5 5V7a6 6 0 1 1-6 6H3a8 8 0 1 0 8-8z" fill="currentColor"/><text x="12" y="16" font-size="6.6" font-weight="800" text-anchor="middle" fill="currentColor" font-family="Arial,sans-serif">10</text></svg>
+                </button>
+                <button id="skipFwd2" class="nf-btn hidden sm:flex" title="Forward 10s (→)">
+                  <svg viewBox="0 0 24 24" class="w-7 h-7"><path d="M13 5V1l5 5-5 5V7a6 6 0 1 0 6 6h2a8 8 0 1 1-8-8z" fill="currentColor"/><text x="12" y="16" font-size="6.6" font-weight="800" text-anchor="middle" fill="currentColor" font-family="Arial,sans-serif">10</text></svg>
+                </button>
+                <div class="nf-volwrap flex items-center">
+                  <button id="mt" class="nf-btn" title="Mute (m)">
+                    <svg id="volIcon" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4zM16 9a4 4 0 0 1 0 6"/></svg>
+                  </button>
+                  <input id="vol" type="range" min="0" max="1" step="0.02" value="1" class="nf-vol hidden sm:block" aria-label="Volume">
+                </div>
+              </div>
+
+              <div class="flex items-center gap-0.5 sm:gap-1.5">
+                <button id="aib" class="btn-ai px-3 h-9 rounded-full flex items-center gap-1.5 text-xs font-bold mr-1" title="Ask AI about this scene">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+                  <span class="hidden xs:inline sm:inline">AI Mind</span>
+                </button>
+                <button id="nextBtn" class="nf-btn" title="Next title">
+                  <svg viewBox="0 0 24 24" class="w-6 h-6"><path d="M6 5v14l10-7z M17 5h2v14h-2z" fill="currentColor"/></svg>
+                </button>
+                <button id="epBtn" class="nf-btn" title="Episodes &amp; More">
+                  <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M7 20h10"/></svg>
+                </button>
+                <div class="relative">
+                  <button id="speedBtn" class="nf-btn !w-auto px-2 text-xs font-bold" title="Playback speed">1x</button>
+                  <div id="speedPop" class="nf-pop right-0 bottom-full mb-2 w-28"></div>
+                </div>
+                <button id="pipBtn" class="nf-btn hidden sm:flex" title="Picture-in-Picture (p)">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><rect x="11" y="11" width="9" height="7" rx="1" fill="currentColor"/></svg>
+                </button>
+                <button id="fs" class="nf-btn" title="Fullscreen (f)">
+                  <svg id="fsIcon" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Episodes / More titles panel -->
+          <div id="epPanel" class="nf-pop nf-side top-14 bottom-24 right-3 w-[min(340px,86%)] overflow-y-auto no-scrollbar p-2">
+            <div class="flex items-center justify-between px-2 py-2">
+              <strong class="font-display text-sm">Episodes &amp; More</strong>
+              <button id="epClose" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-xs">✕</button>
+            </div>
+            <div id="epList" class="space-y-1.5"></div>
+          </div>
+
+          <!-- Up Next end card -->
+          <div id="upNext" class="nf-pop nf-side bottom-24 right-3 w-[min(300px,86%)] p-3">
+            <div class="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-2">Up Next · <span id="unCount">8</span>s</div>
+            <div class="flex gap-3">
+              <img id="unImg" src="" alt="" class="w-16 h-24 object-cover rounded-lg shrink-0">
+              <div class="min-w-0 flex flex-col">
+                <strong id="unTitle" class="text-sm leading-snug"></strong>
+                <span id="unMeta" class="text-[11px] text-white/55 mt-0.5"></span>
+                <div class="flex gap-2 mt-auto pt-2">
+                  <button id="unPlay" class="px-3 py-1.5 rounded bg-white text-black text-xs font-bold">▶ Play</button>
+                  <button id="unCancel" class="px-3 py-1.5 rounded bg-white/15 text-white text-xs font-semibold">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Below-Player Meta, Reactions, Download & Tabs (Mockup 2 Inspired) -->
+        <div class="flex-1 overflow-y-auto max-w-4xl w-full mx-auto px-5 py-5 pb-28">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 id="pt" class="font-display font-bold text-xl sm:text-2xl text-white"></h2>
+              <p id="pm" class="text-xs sm:text-sm text-white/55 mt-1"></p>
+            </div>
+            <button id="hl" class="glass-pill w-11 h-11 rounded-full flex items-center justify-center text-xl text-ruby shrink-0">♡</button>
+          </div>
+
+          <!-- Action Pills: Like, Share, Offline Download, Open AI -->
+          <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-4">
+            <button id="likeBtn" class="glass-pill px-4 py-2 rounded-full flex items-center gap-2 text-xs font-semibold text-white shrink-0">
+              <svg class="w-4 h-4 text-ruby" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+              <span id="likeCount">2.5M</span>
+            </button>
+            <button id="shareBtn" class="glass-pill px-4 py-2 rounded-full flex items-center gap-2 text-xs font-semibold text-white shrink-0">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              <span>Share</span>
+            </button>
+            <button id="dlBtn" class="glass-pill px-4 py-2 rounded-full flex items-center gap-2 text-xs font-semibold text-white shrink-0">
+              <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              <span id="dlTxt">Download</span>
+            </button>
+            <button id="openAiPill" class="glass-pill px-4 py-2 rounded-full flex items-center gap-2 text-xs font-semibold text-amber border border-amber/30 shrink-0">
+              <span>✨ Scene Summary</span>
+            </button>
+          </div>
+
+          <p id="playerDesc" class="text-xs sm:text-sm text-white/70 leading-relaxed mb-6"></p>
+
+          <!-- Tabs: Scenes & Episodes | More Like This -->
+          <div class="border-b border-white/10 flex items-center gap-6 mb-4 text-xs sm:text-sm font-semibold">
+            <button class="pb-2.5 border-b-2 border-crimson text-white">Key Scenes &amp; Chapters</button>
+            <span class="pb-2.5 text-white/45">More Like This</span>
+          </div>
+
+          <!-- Interactive Timestamp Scene Jumpers -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6" id="sceneChapters"></div>
+
+          <!-- Related Titles Row -->
+          <div class="grid grid-cols-3 sm:grid-cols-4 gap-3" id="playerRelated"></div>
+        </div>
+
+        <!-- =====================================================
+             AI VIDEO INTELLIGENCE BOTTOM SHEET (EXACT MOCKUP 3/4)
+             ===================================================== -->
+        <div id="ais" class="ai-drawer off fixed inset-x-0 bottom-0 z-50 max-w-2xl mx-auto h-[62vh] min-h-[420px] rounded-t-[32px] bg-gradient-to-b from-[#221f26] via-[#16151a] to-[#0d0c10] border-t border-white/15 p-5 flex flex-col shadow-[0_-25px_70px_rgba(0,0,0,0.95)]" style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));">
+          <!-- Drag Handle -->
+          <div class="w-10 h-1 rounded-full bg-white/20 mx-auto mb-2"></div>
+
+          <!-- Header -->
+          <div class="flex items-center justify-between text-xs sm:text-sm text-white/70">
+            <span class="font-medium flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber animate-ping"></span>
+              Ask about this video <span id="aiTimeBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-amber font-mono">@ 0:00</span>
+            </span>
+            <button id="aix" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white">✕</button>
+          </div>
+
+          <!-- 3D Glowing Orb -->
+          <div class="ai-orb-wrap">
+            <div class="ai-orb" id="aiOrb"></div>
+          </div>
+
+          <h3 class="text-center font-display text-xl sm:text-2xl font-semibold leading-snug">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber to-crimson font-bold">AI Video</span> Intelligence<br>And Summary
+          </h3>
+
+          <!-- Answer Output Box -->
+          <div id="ans" class="flex-1 overflow-y-auto my-3 px-4 py-2 text-xs sm:text-sm leading-relaxed text-white/85 text-center flex items-center justify-center">
+            Tap any intelligence prompt below or ask a question about the current scene, plot, or characters.
+          </div>
+
+          <!-- Prompt Pills -->
+          <div class="flex flex-wrap gap-2 justify-center my-2" id="tags"></div>
+
+          <!-- Ask Input Bar -->
+          <div class="flex items-center gap-2 mt-2 bg-white/10 border border-white/15 rounded-full p-1.5 pl-4">
+            <span class="text-white/40 text-lg font-light">+</span>
+            <input id="ai" type="text" placeholder="Ask a question about this scene…" class="flex-1 bg-transparent text-xs sm:text-sm text-white placeholder-white/45 focus:outline-none py-2">
+            <button id="voiceBtn" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/75" title="Voice Question">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v4M8 21h8"/></svg>
+            </button>
+            <button id="send" class="btn-ai w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4 fill-none stroke-current" stroke-width="2.2" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         5. SUBSCRIPTION PLANS & CASHFREE CHECKOUT
+         ========================================== -->
+    <section class="view" id="plans">
+      <div class="max-w-3xl mx-auto px-5 py-6 pb-24">
+        <div class="flex items-center justify-between mb-6">
+          <button id="pbk" class="glass-pill w-10 h-10 rounded-full flex items-center justify-center text-white">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="flex items-center gap-2 font-display font-extrabold text-lg tracking-wider">
+            <span class="w-7 h-7 rounded-full bg-gradient-to-tr from-crimson to-amber flex items-center justify-center text-xs">▶</span>
+            <span>ORVEX PASS</span>
+          </div>
+          <span class="w-10"></span>
+        </div>
+
+        <div class="text-center max-w-md mx-auto mb-6">
+          <h2 class="font-display font-extrabold text-2xl sm:text-4xl">Choose Your Plan</h2>
+          <p class="text-white/60 text-xs sm:text-sm mt-2">Stream in 4K HDR, download offline, and unlock unlimited AI Video Intelligence. Cancel anytime.</p>
+        </div>
+
+        <!-- Billing Cycle Switcher -->
+        <div class="cy flex max-w-xs mx-auto bg-white/5 border border-white/10 rounded-full p-1 mb-7">
+          <button class="on flex-1 py-2.5 rounded-full text-xs font-semibold transition" data-c="m">Monthly</button>
+          <button class="flex-1 py-2.5 rounded-full text-xs font-semibold transition" data-c="y">Yearly · 2 Months Free</button>
+        </div>
+
+        <!-- Plans Container -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6" id="pls"></div>
+
+        <div class="max-w-md mx-auto">
+          <button class="btn-primary w-full py-4 text-sm sm:text-base font-bold" id="buy">Continue</button>
+          <p class="text-white/45 text-xs text-center mt-3 flex items-center justify-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            UPI, Cards, Net Banking &amp; Wallets. Secured by Cashfree.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         FLOATING BOTTOM NAVIGATION BAR (MOBILE + DOCK)
+         ========================================== -->
+    <nav id="nav" class="hidden fixed left-1/2 -translate-x-1/2 bottom-3 z-40 w-[92%] max-w-[400px] glass rounded-3xl p-1.5 px-3 items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.85)] border border-white/15">
+      <button data-t="home" class="nav-btn on flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-[10px] font-semibold gap-1 transition-all">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg>
+        <span>Home</span>
+      </button>
+      <button data-t="search" class="nav-btn flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-[10px] font-semibold gap-1 text-white/55 hover:text-white transition-all">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <span>Search</span>
+      </button>
+      <!-- Center Glowing AI Mind Quick-Launch Button (Mockup 3 Style) -->
+      <button data-t="ai-quick" class="w-12 h-12 rounded-full btn-ai flex items-center justify-center shadow-lg -my-1" title="Launch AI Watch Mind">
+        <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+      </button>
+      <button data-t="list" class="nav-btn flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-[10px] font-semibold gap-1 text-white/55 hover:text-white transition-all">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg>
+        <span>Wishlist</span>
+      </button>
+      <button data-t="pf" class="nav-btn flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-[10px] font-semibold gap-1 text-white/55 hover:text-white transition-all">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+
+    <!-- ==========================================
+         AUTHENTICATION MODAL SHEET (FIREBASE AUTH)
+         ========================================== -->
+    <div id="auth" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="sheet w-full max-w-md bg-[#14141c] border border-white/15 rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2 font-display font-extrabold text-lg">
+            <span class="w-7 h-7 rounded-full bg-gradient-to-tr from-crimson to-amber flex items-center justify-center text-xs">▶</span>
+            <span>ORVEX ID</span>
+          </div>
+          <button id="cl" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:text-white">✕</button>
+        </div>
+
+        <div class="tabs flex bg-white/5 p-1 rounded-full border border-white/10 mb-5">
+          <button class="on flex-1 py-2.5 rounded-full text-xs font-semibold transition" data-m="in">Sign In</button>
+          <button class="flex-1 py-2.5 rounded-full text-xs font-semibold transition" data-m="up">Create Account</button>
+        </div>
+
+        <div class="space-y-3">
+          <input class="f w-full bg-white/5 border border-white/15 focus:border-crimson rounded-2xl px-4 py-3.5 text-sm text-white placeholder-white/40 outline-none transition" id="nm" placeholder="Full name" style="display:none" autocomplete="name">
+          <input class="f w-full bg-white/5 border border-white/15 focus:border-crimson rounded-2xl px-4 py-3.5 text-sm text-white placeholder-white/40 outline-none transition" id="em" type="email" placeholder="Email address" autocomplete="email">
+          <input class="f w-full bg-white/5 border border-white/15 focus:border-crimson rounded-2xl px-4 py-3.5 text-sm text-white placeholder-white/40 outline-none transition" id="pw" type="password" placeholder="Password" autocomplete="current-password">
+        </div>
+
+        <div class="text-ruby text-xs min-h-[20px] my-2 font-medium" id="er"></div>
+
+        <button class="btn-primary w-full py-3.5 text-sm font-bold" id="sub">Sign In</button>
+
+        <div class="relative flex py-4 items-center">
+          <div class="flex-grow border-t border-white/10"></div>
+          <span class="flex-shrink mx-3 text-white/40 text-xs">or continue with</span>
+          <div class="flex-grow border-t border-white/10"></div>
+        </div>
+
+        <button class="glass-pill w-full py-3.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2.5 text-white" id="gg">
+          <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6l3.7 2.9c2.2-2 3.7-5 3.7-8.7z"/><path fill="#FBBC05" d="M5.3 14.8c-.2-.8-.4-1.6-.4-2.5s.2-1.7.4-2.5L1.6 7C.6 9 0 11.2 0 13.5s.6 4.5 1.6 6.5l3.7-2.9z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.1-6.7-5l-3.7 2.8C3.5 20.9 7.4 24 12 24z"/></svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="flex items-center justify-between mt-4 pt-2 text-xs text-white/55">
+          <button id="fg" class="hover:text-white">Forgot password?</button>
+          <button id="guestDemoBtn" class="text-amber hover:underline font-medium">Browse Preview</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Toast Banner -->
+    <div id="toast" class="toast-notification glass px-5 py-3 rounded-full text-xs sm:text-sm font-medium text-white shadow-2xl border border-white/20 flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-ruby"></span>
+      <span id="toastMsg">Notification</span>
+    </div>
+
+  </div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const $$ = s => [...document.querySelectorAll(s)];
+
+    /* ============================================================================
+       1. FIREBASE AUTH + MONTE CASHFREE PAYMENT WORKER CONFIGURATION
+       ============================================================================ */
+    const firebaseConfig = {
+      apiKey: "AIzaSyC30TcmMVhP_8HdFYS1WufRiZwSDYNMTF0",
+      authDomain: "pulse2-92372.firebaseapp.com",
+      databaseURL: "https://pulse2-92372-default-rtdb.firebaseio.com",
+      projectId: "pulse2-92372",
+      storageBucket: "pulse2-92372.firebasestorage.app",
+      messagingSenderId: "276235725177",
+      appId: "1:276235725177:web:0f4e0789fae80a435927a8"
+    };
+    const PAY = "https://monte-pay.sgursharn076.workers.dev";
+    let auth = null, user = null;
+
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      auth = firebase.auth();
+    } catch (e) {
+      console.warn('Firebase unavailable', e);
+    }
+
+    const callW = async (base, path, body) => {
+      if (!auth || !auth.currentUser) throw new Error('Please sign in first');
+      const r = await fetch(base + path, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + await auth.currentUser.getIdToken()
+        },
+        body: JSON.stringify(body || {})
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error || 'Request failed');
+      return j;
+    };
+
+    let toastTimer = null;
+    function toast(m) {
+      const t = $('#toast');
+      $('#toastMsg').textContent = m;
+      t.classList.add('on');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('on'), 3000);
+    }
+
+    /* ============================================================================
+       2. PRODUCTION CATALOG (Real Playable HD Streams + High-Res Cinema Artwork)
+       ============================================================================ */
+    const G = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/";
+    const M = [
+      {
+        t: "Tears of Steel",
+        free: 1,
+        y: 2012,
+        g: "Sci-Fi / Action",
+        imdb: "8.9/10",
+        im: "posters/tears-of-steel.webp",
+        v: "https://ftp.nluug.nl/pub/graphics/blender/demo/movies/ToS/tears_of_steel_720p.mov",
+        vf: G + "TearsOfSteel.mp4",
+        d: "12m",
+        lic: "CC BY 3.0",
+        cr: "© Blender Foundation | mango.blender.org",
+        ds: "In a dystopian future Amsterdam, an elite team of warriors and scientists gather at the Oude Kerk to stage a desperate last stand against sentient machines.",
+        chapters: [
+          { title: "The Bridge Confrontation", time: 15 },
+          { title: "Oude Kerk Lab Briefing", time: 140 },
+          { title: "Cybernetic Assault", time: 390 }
+        ]
+      },
+      {
+        t: "Sintel: The Dragon Blade",
+        y: 2010,
+        g: "Animation / Fantasy",
+        imdb: "9.4/10",
+        im: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=900&q=80",
+        v: G + "Sintel.mp4",
+        d: "15m",
+        lic: "CC BY 3.0",
+        cr: "© Blender Foundation | sintel.org",
+        ds: "A lone warrior named Sintel traverses frozen peaks and ancient ruins in search of Scales, a baby dragon she nursed back to health before it was captured.",
+        chapters: [
+          { title: "Mountain Ambush", time: 32 },
+          { title: "Finding Baby Scales", time: 185 },
+          { title: "The Dragon's Lair", time: 540 }
+        ]
+      },
+      {
+        t: "Big Buck Bunny",
+        free: 1,
+        y: 2008,
+        g: "Animation / Comedy",
+        imdb: "8.6/10",
+        im: "posters/big-buck-bunny.webp",
+        v: "https://res.cloudinary.com/x5ypna1e/video/upload/BigBuckBunny_320x180_2.mp4",
+        vf: G + "BigBuckBunny.mp4",
+        tv: "https://kashishai.com/dwOW8abpgt1Pfka.mp4",
+        d: "10m",
+        lic: "CC BY 3.0",
+        cr: "© Blender Foundation | peach.blender.org",
+        ds: "A giant rabbit with a heart bigger than himself loses his patience when three bullying woodland rodents cross the line. A hilarious slapstick revenge tale.",
+        chapters: [
+          { title: "Morning in the Meadow", time: 20 },
+          { title: "The Butterfly Incident", time: 135 },
+          { title: "Forest Traps Unleashed", time: 310 }
+        ]
+      },
+      {
+        t: "Sita Sings the Blues",
+        free: 1,
+        y: 2008,
+        g: "Animation / Musical",
+        imdb: "9.1/10",
+        im: "posters/sita-sings-the-blues.webp",
+        v: "https://archive.org/download/Sita_Sings_the_Blues/Sita_Sings_the_Blues_512kb.mp4",
+        d: "1h 22m",
+        lic: "CC-0 Public",
+        cr: "A film by Nina Paley | sitasingstheblues.com",
+        ds: "The greatest break-up story ever told: the ancient Indian epic Ramayana retold through 1920s Annette Hanshaw jazz vocals alongside a modern heartbreak.",
+        chapters: [
+          { title: "Prologue & Jazz Overture", time: 60 },
+          { title: "Exile in the Forest", time: 600 },
+          { title: "Trial by Fire", time: 1800 }
+        ]
+      },
+      {
+        t: "Elephants Dream",
+        y: 2006,
+        g: "Sci-Fi / Surreal",
+        imdb: "8.4/10",
+        im: "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=900&q=80",
+        v: G + "ElephantsDream.mp4",
+        d: "11m",
+        lic: "CC BY 2.5",
+        cr: "© Blender Foundation | orange.blender.org",
+        ds: "Proog and Emo journey deep inside the labyrinthine chambers of a colossal, reality-bending Machine where perception and obsession collide.",
+        chapters: [
+          { title: "Inside the Colossal Machine", time: 25 },
+          { title: "The Elevator Abyss", time: 210 },
+          { title: "Emo's Awakening", time: 450 }
+        ]
+      },
+      {
+        t: "Nightfall Protocol",
+        y: 2026,
+        g: "Crime / Action",
+        imdb: "9.3/10",
+        im: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=900&q=80",
+        v: G + "ForBiggerBlazes.mp4",
+        c: "#1d2b4a,#0a0f1e",
+        d: "2h 14m",
+        soon: 1,
+        ds: "When a rogue intelligence network locks down Neo-Tokyo's financial grid, a disavowed operative has six hours to extract the master cipher."
+      },
+      {
+        t: "Space Trek: Odyssey",
+        y: 2026,
+        g: "Sci-Fi / Adventure",
+        imdb: "9.5/10",
+        im: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=900&q=80",
+        v: G + "ForBiggerEscapes.mp4",
+        c: "#233a63,#0b1424",
+        d: "2h 38m",
+        soon: 1,
+        ds: "Humanity's first faster-than-light vessel crosses the event horizon of a binary pulsar, uncovering an ancient civilization frozen in time."
+      },
+      {
+        t: "Iron Verdict",
+        y: 2026,
+        g: "Action / Thriller",
+        imdb: "8.8/10",
+        im: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=900&q=80",
+        v: G + "ForBiggerFun.mp4",
+        c: "#5a2a1a,#140805",
+        d: "1h 58m",
+        soon: 1,
+        ds: "A high-stakes courtroom thriller collides with underground syndicate warfare when the key witness turns out to be the architect of the heist."
+      },
+      {
+        t: "Crown of Ash",
+        y: 2026,
+        g: "Action / Fantasy",
+        imdb: "9.2/10",
+        im: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=900&q=80",
+        v: G + "WeAreGoingOnBullrun.mp4",
+        c: "#7a3b10,#1a0b02",
+        d: "2h 25m",
+        soon: 1,
+        ds: "Forged in volcanic fire, a shattered kingdom's last heir must unite rival dragon clans before an eternal eclipse consumes the realm."
+      }
+    ];
+
+    const C = M.map(m => [m.t, String(m.y), m.g, m.c || '#222,#000']);
+    const DS = "This title is coming soon to ORVEX. Watch the official teaser trailer now!";
+
+    let list = [];
+    try { list = JSON.parse(localStorage.cvList || "[]"); } catch (e) {}
+
+    let watchHistory = {};
+    try { watchHistory = JSON.parse(localStorage.ovHistory || "{}"); } catch (e) {}
+
+    /* ============================================================================
+       3. HERO STAGE CAROUSEL & CATALOG RENDERING
+       ============================================================================ */
+    let stageIdx = 0;
+    const stagePool = [0, 1, 2, 3, 4];
+
+    function renderHeroStage() {
+      const stageEl = $('#heroStage');
+      const total = stagePool.length;
+      const prevIdx = stagePool[(stageIdx - 1 + total) % total];
+      const currIdx = stagePool[stageIdx];
+      const nextIdx = stagePool[(stageIdx + 1) % total];
+
+      const cardHTML = (mIdx, role) => {
+        const m = M[mIdx];
+        const isCenter = role === 'center';
+        const posClass = isCenter
+          ? 'active-stage w-48 sm:w-56 h-72 sm:h-80 z-20'
+          : role === 'left'
+          ? 'side-stage w-40 sm:w-48 h-60 sm:h-72 -translate-x-20 sm:-translate-x-28 -rotate-6'
+          : 'side-stage w-40 sm:w-48 h-60 sm:h-72 translate-x-20 sm:translate-x-28 rotate-6';
+
+        return `
+          <div class="stage-card absolute rounded-3xl overflow-hidden bg-charcoal ${posClass}" data-stage-role="${role}" data-stage-i="${mIdx}">
+            <img src="${m.im}" alt="${m.t}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/500x750/1e1b2e/ffffff?text=${encodeURIComponent(m.t)}'">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-4">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-amber">★ ${m.imdb}</span>
+              <h4 class="font-display font-bold text-sm sm:text-base text-white leading-tight mt-0.5">${m.t}</h4>
+            </div>
+          </div>
+        `;
+      };
+
+      stageEl.innerHTML = cardHTML(prevIdx, 'left') + cardHTML(currIdx, 'center') + cardHTML(nextIdx, 'right');
+
+      // Update Spotlight Metadata
+      const activeM = M[currIdx];
+      $('#spotTitle').textContent = activeM.t;
+      $('#spotImdb').textContent = activeM.imdb + ' IMDb';
+      $('#spotBadge').textContent = activeM.soon ? 'PREMIERE TEASER' : (activeM.free ? 'FREE' : '4K ULTRA HD');
+      $('#spotMeta').textContent = `${activeM.y} • 🎬 ${activeM.g} • ${activeM.d}`;
+      $('#spotDesc').textContent = activeM.ds || DS;
+      $('#spotWatchTxt').textContent = activeM.soon ? 'WATCH TEASER' : (activeM.free ? 'WATCH FREE' : 'WATCH NOW');
+      $('#spotWishBtn').textContent = list.includes(currIdx) ? '♥' : '♡';
+
+      // Dots
+      $('#spotDots').innerHTML = stagePool.map((mIdx, idx) => `
+        <button data-dot="${idx}" class="h-1.5 rounded-full transition-all ${idx === stageIdx ? 'w-6 bg-amber' : 'w-2 bg-white/25 hover:bg-white/50'}"></button>
+      `).join('');
+
+      // Bind stage clicks
+      $$('#heroStage [data-stage-role]').forEach(el => {
+        el.onclick = () => {
+          const role = el.dataset.stageRole;
+          if (role === 'left') {
+            stageIdx = (stageIdx - 1 + total) % total;
+            renderHeroStage();
+          } else if (role === 'right') {
+            stageIdx = (stageIdx + 1) % total;
+            renderHeroStage();
+          } else {
+            openDet(currIdx);
+          }
+        };
+      });
+
+      $$('#spotDots [data-dot]').forEach(btn => {
+        btn.onclick = () => {
+          stageIdx = +btn.dataset.dot;
+          renderHeroStage();
+        };
+      });
+
+      $('#spotWatchBtn').onclick = () => play(currIdx, false, !!activeM.soon);
+      $('#spotDetBtn').onclick = () => openDet(currIdx);
+      $('#spotWishBtn').onclick = () => toggleWishlist(currIdx);
+    }
+
+    // Poster Card Templates
+    const pc = i => {
+      const m = M[i];
+      return `
+        <div class="mv shrink-0 w-36 sm:w-44 group" data-i="${i}">
+          <div class="poster-card w-full h-52 sm:h-64 relative">
+            <img src="${m.im}" alt="${m.t}" loading="lazy" onerror="this.src='https://placehold.co/400x600/1a1625/ffffff?text=${encodeURIComponent(m.t)}'">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"></div>
+            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-[10px] font-bold text-amber border border-white/10">★ ${m.imdb.split('/')[0]}</span>
+            ${m.free ? '<span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-500 text-white shadow">Free</span>' : ''}
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/35">
+              <span class="w-11 h-11 rounded-full bg-crimson text-white flex items-center justify-center shadow-lg">
+                <svg class="w-5 h-5 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>
+              </span>
+            </div>
+          </div>
+          <h4 class="font-display font-semibold text-sm text-white mt-2.5 truncate group-hover:text-ruby transition">${m.t}</h4>
+          <div class="flex items-center justify-between text-[11px] text-white/55 mt-0.5">
+            <span>${m.g.split(' / ')[0]}</span>
+            <span>${m.d}</span>
+          </div>
+        </div>
+      `;
+    };
+
+    const pr = i => {
+      const m = M[i];
+      return `
+        <div class="pp glass rounded-2xl p-3 flex gap-3.5 items-center hover:border-white/25 transition cursor-pointer group" data-i="${i}">
+          <div class="poster-card w-20 h-28 rounded-xl shrink-0">
+            <img src="${m.im}" alt="${m.t}" loading="lazy" onerror="this.src='https://placehold.co/300x420/1d2b4a/ffffff?text=${encodeURIComponent(m.t)}'">
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-crimson/20 text-ruby border border-crimson/30">${m.soon ? 'Coming Soon' : (m.free ? 'Free' : 'Streaming')}</span>
+              <span class="text-[11px] font-semibold text-amber">★ ${m.imdb}</span>
+            </div>
+            <h4 class="font-display font-bold text-base text-white mt-1 truncate group-hover:text-ruby transition">${m.t}</h4>
+            <div class="flex flex-wrap gap-1.5 my-1.5">
+              ${m.g.split(' / ').map(g => `<span class="bg-white/10 rounded-md px-2 py-0.5 text-[10px] text-white/75 font-medium">${g}</span>`).join('')}
+            </div>
+            <div class="text-[11px] text-white/50 flex items-center gap-2">
+              <span>◷ ${m.d}</span>
+              <span>•</span>
+              <span class="text-white/75 group-hover:underline">Watch Teaser →</span>
+            </div>
+          </div>
+        </div>
+      `;
+    };
+
+    const pg = i => {
+      const m = M[i];
+      return `
+        <div class="group cursor-pointer" data-i="${i}">
+          <div class="poster-card aspect-[2/3] w-full relative">
+            <img src="${m.im}" alt="${m.t}" loading="lazy" onerror="this.src='https://placehold.co/400x600/181824/ffffff?text=${encodeURIComponent(m.t)}'">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+            ${m.free ? '<span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-500 text-white shadow">Free</span>' : ''}
+            ${m.soon ? '<span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-gradient-to-r from-crimson to-amber text-white">Soon</span>' : ''}
+            <div class="absolute bottom-2.5 left-2.5 right-2.5">
+              <span class="text-[10px] font-bold text-amber">★ ${m.imdb}</span>
+              <h4 class="font-display font-bold text-xs sm:text-sm text-white truncate">${m.t}</h4>
+            </div>
+          </div>
+        </div>
+      `;
+    };
+
+    const ids = f => M.map((_, i) => i).filter(i => f(M[i]));
+
+    function renderContinueWatching() {
+      const entries = Object.entries(watchHistory).filter(([k, val]) => val && val.time > 5 && M[k]);
+      const sec = $('#cwSec');
+      if (!entries.length) {
+        sec.classList.add('hidden');
+        return;
+      }
+      sec.classList.remove('hidden');
+      $('#cwRail').innerHTML = entries.map(([idx, data]) => {
+        const m = M[idx];
+        const pct = Math.min(95, Math.max(8, Math.round((data.time / (data.duration || 600)) * 100)));
+        return `
+          <div class="shrink-0 w-60 glass rounded-2xl overflow-hidden cursor-pointer group border border-white/10 hover:border-white/25 transition" data-cw="${idx}">
+            <div class="relative h-32 w-full overflow-hidden">
+              <img src="${m.im}" alt="${m.t}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <span class="w-10 h-10 rounded-full bg-crimson/90 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition">
+                  <svg class="w-4 h-4 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>
+                </span>
+              </div>
+              <div class="absolute inset-x-0 bottom-0 h-1 bg-white/20">
+                <div class="h-full bg-gradient-to-r from-amber to-crimson" style="width:${pct}%"></div>
+              </div>
+            </div>
+            <div class="p-3 flex items-center justify-between">
+              <div class="truncate pr-2">
+                <h5 class="font-display font-bold text-xs text-white truncate">${m.t}</h5>
+                <span class="text-[11px] text-white/50">Resume at ${fmt(data.time)}</span>
+              </div>
+              <span class="text-[10px] font-semibold text-amber shrink-0">${pct}%</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      $$('#cwRail [data-cw]').forEach(el => {
+        el.onclick = () => play(+el.dataset.cw, false, false, true);
+      });
+    }
+
+    $('#clearCwBtn').onclick = () => {
+      watchHistory = {};
+      localStorage.removeItem('ovHistory');
+      renderContinueWatching();
+      toast('Watch history cleared');
+    };
+
+    function renderCat() {
+      renderHeroStage();
+      renderContinueWatching();
+      $('#nw').innerHTML = ids(m => !m.soon).map(pc).join('');
+      $('#pop').innerHTML = ids(m => m.soon).map(pr).join('');
+    }
+
+    /* ============================================================================
+       4. VIEW NAVIGATION & CATEGORY FILTERING
+       ============================================================================ */
+    function show(id) {
+      $$('.view').forEach(v => v.classList.toggle('on', v.id === id));
+      const pv = document.getElementById('v'); if (id !== 'player' && pv && !pv.paused) pv.pause();
+      $('#nav').style.display = id === 'home' ? 'flex' : 'none';
+      if (id !== 'plans') planCb = null;
+    }
+
+    let pi = 0;
+    function openDet(i) {
+      pi = i;
+      const m = M[i];
+      const img = $('#dhhImg');
+      img.style.display = '';
+      img.src = m.im;
+      $('#dhhBg').src = m.im;
+      $('#detBadge').textContent = m.soon ? 'COMING SOON • PREMIERE' : (m.free ? 'FREE • ' + m.lic : (m.lic ? 'OPEN MOVIE • ' + m.lic : 'ORVEX ORIGINAL'));
+      $('#dtt').textContent = m.t;
+      $('#dgn').innerHTML = `${m.y} <span class="text-ruby mx-1.5">•</span> ${m.g.split(' / ').join(' <span class="text-ruby mx-1">•</span> ')}`;
+      $('#drt').textContent = m.imdb || '9.0/10';
+      $('#ddu').textContent = m.d || 'TBA';
+      $('#dds').innerHTML = (m.ds || DS) + (m.cr ? `<br><br><small class="text-white/45 text-xs">${m.cr}</small>` : '');
+      $('#wnbText').textContent = m.soon ? 'Watch Official Teaser' : (m.free ? 'Watch Free' : 'Watch Full Movie');
+      $('#detWishBtn').textContent = list.includes(i) ? '♥' : '♡';
+
+      // Render Similar Titles
+      const sim = ids((_, idx) => idx !== i).slice(0, 4);
+      $('#detSimilar').innerHTML = sim.map(pg).join('');
+
+      show('details');
+    }
+
+    document.addEventListener('click', e => {
+      const p = e.target.closest('[data-i]');
+      if (p && !p.closest('#splash')) openDet(+p.dataset.i);
+    });
+
+    function toggleWishlist(idx) {
+      list = list.includes(idx) ? list.filter(x => x !== idx) : [...list, idx];
+      localStorage.cvList = JSON.stringify(list);
+      $('#detWishBtn').textContent = list.includes(pi) ? '♥' : '♡';
+      $('#spotWishBtn').textContent = list.includes(stagePool[stageIdx]) ? '♥' : '♡';
+      hl();
+      toast(list.includes(idx) ? 'Added to your Wishlist ♥' : 'Removed from Wishlist');
+    }
+
+    $('#dbk').onclick = () => show('home');
+    $('#detWishBtn').onclick = () => toggleWishlist(pi);
+    $('#detShareBtn').onclick = () => shareTitle(M[pi].t);
+    $('#trb').onclick = () => play(pi, false, true);
+    $('#wnb').onclick = () => play(pi, false, !!M[pi].soon);
+    $('#detAiBtn').onclick = () => play(pi, true, !!M[pi].soon);
+    $('#bell').onclick = () => toast('New 4K HDR Remasters & AI Scene Summaries are live!');
+
+    function shareTitle(title) {
+      const dummy = document.createElement('textarea');
+      dummy.value = `Watch "${title}" in 4K with AI Video Intelligence on ORVEX: ${location.href}`;
+      document.body.appendChild(dummy);
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+      toast(`Link to "${title}" copied to clipboard!`);
+    }
+
+    function grid(a, isList, label = 'Explore Catalog') {
+      $('#svTitle').textContent = isList ? 'My Saved Wishlist' : label;
+      $('#svCount').textContent = `${a.length} ${a.length === 1 ? 'title' : 'titles'}`;
+      $('#sg').innerHTML = a.length
+        ? a.map(i => pg(i)).join('')
+        : `<div class="col-span-full glass rounded-2xl p-10 text-center text-white/55 text-sm">${
+            isList ? 'Your wishlist is empty. Tap ♡ on any movie to save it for later.' : 'No matching movies or shows found.'
+          }</div>`;
+    }
+
+    function switchHomeTab(t) {
+      if (t === 'ai-quick') {
+        // Launch current spotlight movie directly with AI Video Intelligence open!
+        return play(stagePool[stageIdx], true, true);
+      }
+      if (t === 'pf') {
+        if (!user) return needAuth();
+        return $('#avb').click();
+      }
+      $$('#nav .nav-btn').forEach(x => {
+        const active = x.dataset.t === t;
+        x.classList.toggle('on', active);
+        x.classList.toggle('bg-gradient-to-r', active);
+        x.classList.toggle('from-crimson', active);
+        x.classList.toggle('to-ruby', active);
+        x.classList.toggle('text-white', active);
+        x.classList.toggle('text-white/55', !active);
+      });
+      $$('[data-nav-top]').forEach(x => {
+        const active = x.dataset.navTop === t;
+        x.classList.toggle('bg-gradient-to-r', active);
+        x.classList.toggle('from-crimson', active);
+        x.classList.toggle('to-ruby', active);
+        x.classList.toggle('text-white', active);
+        x.classList.toggle('text-white/70', !active);
+      });
+
+      $('#hv').classList.toggle('hidden', t !== 'home');
+      $('#sv').classList.toggle('hidden', t === 'home');
+      if (t !== 'home') {
+        $('.sbar').style.display = t === 'search' ? 'flex' : 'none';
+        grid(t === 'list' ? list : ids(() => 1), t === 'list', t === 'list' ? 'My Wishlist' : 'All Movies & Originals');
+      }
+    }
+
+    $$('#nav button').forEach(b => b.onclick = () => switchHomeTab(b.dataset.t));
+    $$('[data-nav-top]').forEach(b => b.onclick = () => switchHomeTab(b.dataset.navTop));
+    $('#quickSearchBtn').onclick = () => {
+      show('home');
+      switchHomeTab('search');
+      setTimeout(() => $('#q').focus(), 100);
+    };
+    $('#topPlansBtn').onclick = () => openPlans();
+
+    // Category Pills Filtering
+    $$('#catPills .cat-pill').forEach(btn => {
+      btn.onclick = () => {
+        $$('#catPills .cat-pill').forEach(p => {
+          p.className = 'cat-pill glass-pill px-4 py-2 rounded-full text-xs font-medium text-white/80 shrink-0';
+        });
+        btn.className = 'cat-pill px-4 py-2 rounded-full text-xs font-semibold bg-white text-obsidian shadow-md shrink-0 transition';
+        const cat = btn.dataset.cat;
+        if (cat === 'All') {
+          switchHomeTab('home');
+        } else if (cat === 'Soon') {
+          $('#hv').classList.add('hidden');
+          $('#sv').classList.remove('hidden');
+          $('.sbar').style.display = 'none';
+          grid(ids(m => m.soon), false, 'Coming Soon Premieres');
+        } else if (cat === 'Popular') {
+          $('#hv').classList.add('hidden');
+          $('#sv').classList.remove('hidden');
+          $('.sbar').style.display = 'none';
+          grid(ids(m => parseFloat(m.imdb) >= 9.0), false, 'Top Rated on IMDb');
+        } else {
+          $('#hv').classList.add('hidden');
+          $('#sv').classList.remove('hidden');
+          $('.sbar').style.display = 'none';
+          grid(ids(m => m.g.toLowerCase().includes(cat.toLowerCase())), false, `${cat} Collection`);
+        }
+      };
+    });
+
+    $$('[data-see-all]').forEach(btn => {
+      btn.onclick = () => {
+        const type = btn.dataset.seeAll;
+        $('#hv').classList.add('hidden');
+        $('#sv').classList.remove('hidden');
+        $('.sbar').style.display = 'flex';
+        grid(ids(m => type === 'now' ? !m.soon : m.soon), false, type === 'now' ? 'Now Showing' : 'Coming Soon');
+      };
+    });
+
+    $('#q').oninput = e => {
+      const val = e.target.value.toLowerCase().trim();
+      grid(ids(m => (m.t + ' ' + m.g + ' ' + (m.ds || '')).toLowerCase().includes(val)), false, val ? `Results for "${e.target.value}"` : 'Explore Catalog');
+    };
+    $('#clearSearchBtn').onclick = () => {
+      $('#q').value = '';
+      grid(ids(() => 1), false);
+    };
+
+    // Desktop Mobile-Frame Preview Toggle
+    $('#frameToggleBtn').onclick = () => {
+      document.body.classList.toggle('mobile-frame-mode');
+      const isFrame = document.body.classList.contains('mobile-frame-mode');
+      $('#frameToggleLabel').textContent = isFrame ? 'Full Screen' : 'Mobile View';
+      toast(isFrame ? 'Switched to Mobile App Frame' : 'Switched to Widescreen Cinema Mode');
+    };
+
+    /* ============================================================================
+       5. CUSTOM VIDEO PLAYER + AI VIDEO INTELLIGENCE ENGINE
+       ============================================================================ */
+    const v = $('#v');
+    const fmt = s => isFinite(s) && s >= 0 ? Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0') : '0:00';
+    let ctx = C[0];
+    let trial = false;
+    let playbackSpeeds = [1, 1.25, 1.5, 2];
+    let speedIdx = 0;
+
+    function play(i, ai, tr, resume = false) {
+      if (!user && !tr) return needAuth(() => play(i, ai, tr, resume));
+      if (!tr && !M[i].free && !sub()) {
+        toast('Choose an ORVEX plan to stream full movies');
+        return openPlans(() => play(i, ai, tr, resume));
+      }
+
+      const m = M[i];
+      const t = C[i];
+      pi = i;
+      hl();
+      ctx = t;
+
+      $('#playerTopBadge').textContent = tr ? 'OFFICIAL TEASER' : (m.free ? 'FREE ON ORVEX' : 'ORVEX STREAM');
+      $('#playerTopTitle').textContent = m.t;
+      $('#pt').textContent = m.t + (tr ? ' · Official Teaser' : '');
+      $('#pm').textContent = `${m.y} · ${m.g} · ★ ${m.imdb} · 4K Dolby Atmos`;
+      $('#playerDesc').textContent = m.ds || DS;
+
+      // Render Interactive Scene Chapters
+      const chaps = m.chapters || [
+        { title: "Opening Sequence", time: 5 },
+        { title: "Midpoint Escalation", time: 18 },
+        { title: "Climactic Finale", time: 26 }
+      ];
+      $('#sceneChapters').innerHTML = chaps.map(c => `
+        <button data-seek="${c.time}" class="glass rounded-xl p-3 text-left hover:border-amber/60 transition flex items-center justify-between group">
+          <div>
+            <span class="text-[10px] font-mono text-amber block">Jump to ${fmt(c.time)}</span>
+            <strong class="text-xs font-semibold text-white group-hover:text-amber transition">${c.title}</strong>
+          </div>
+          <span class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white text-xs">▶</span>
+        </button>
+      `).join('');
+
+      $$('#sceneChapters [data-seek]').forEach(btn => {
+        btn.onclick = () => {
+          v.currentTime = +btn.dataset.seek;
+          v.play().catch(() => {});
+          toast(`Jumped to ${fmt(+btn.dataset.seek)}`);
+        };
+      });
+
+      // Render Related Titles under player
+      $('#playerRelated').innerHTML = ids((_, idx) => idx !== i).slice(0, 4).map(pg).join('');
+
+      show('player');
+      $('#ais').classList.toggle('off', !ai);
+      $('#ans').textContent = `Ask anything about "${m.t}" — plot, character motives, or live scene breakdown.`;
+      trial = !!tr;
+
+      const srcUrl = (tr && m.tv) ? m.tv : m.v;
+      v.poster = m.im || '';
+      pendingSrc = srcUrl;
+      pendingTime = (resume && watchHistory[i]) ? watchHistory[i].time : 0;
+      if (INTRO_URL && pendingTime <= 0) {
+        // ORVEX logo intro plays before every movie / trailer, then flows straight into it
+        introPhase = true;
+        vc.classList.add('intro');
+        v.src = INTRO_URL;
+        v.play().catch(() => {});
+        try { pre.src = srcUrl; pre.load(); } catch (e) {}   // warm the cache while the intro plays
+      } else {
+        startMain();
+      }
+    }
+
+    /* ORVEX intro bumper */
+    const INTRO_URL = "https://kashishai.com/1793082778926537.mp4";
+    let introPhase = false, pendingSrc = '', pendingTime = 0;
+    const pre = document.createElement('video');
+    pre.muted = true; pre.preload = 'auto'; pre.playsInline = true;
+    function startMain() {
+      introPhase = false;
+      vc.classList.remove('intro');
+      if (v.getAttribute('src') !== pendingSrc) v.src = pendingSrc;
+      v.currentTime = pendingTime;
+      v.play().catch(() => {});
+      try { pre.removeAttribute('src'); pre.load(); } catch (e) {}
+    }
+
+    const hl = () => $('#hl').textContent = list.includes(pi) ? '♥' : '♡';
+    $('#hl').onclick = () => toggleWishlist(pi);
+
+    v.onerror = () => {
+      if (introPhase) return startMain();
+      const mm = M[pi];
+      if (mm && mm.vf && v.getAttribute('src') === mm.v) { const t = v.currentTime; v.src = mm.vf; v.currentTime = t; v.play().catch(() => {}); return; } toast('Video stream temporarily unavailable'); };
+    $('#bk').onclick = () => {
+      v.pause();
+      renderContinueWatching();
+      show('details');
+    };
+    /* ============================================================================
+       NETFLIX-STYLE PLAYER ENGINE
+       auto-hide controls · double-tap ±10s · drag scrub + hover preview ·
+       volume memory · speed menu · episodes panel · up-next autoplay · shortcuts
+       ============================================================================ */
+    const vc = $('#vidContainer');
+    const fmtT = s => {
+      if (!isFinite(s) || s < 0) return '0:00';
+      s = Math.floor(s);
+      const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+      return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0');
+    };
+    const ICON_PLAY = '<path d="M7 4v16l13-8z" fill="currentColor"/>';
+    const ICON_PAUSE = '<path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/>';
+    const isPlayerOn = () => $('#player').classList.contains('on');
+    const togglePlay = () => { if (v.ended) v.currentTime = 0; v.paused ? v.play().catch(() => {}) : v.pause(); };
+    const seekBy = d => { if (introPhase) return; v.currentTime = Math.max(0, Math.min((v.duration || Infinity) - 0.1, v.currentTime + d)); };
+
+    /* ---- auto-hide UI ---- */
+    let idleT = null, dragging = false;
+    const popOpen = () => !!vc.querySelector('.nf-pop.open:not(#upNext)');
+    function wake() {
+      vc.classList.remove('idle');
+      clearTimeout(idleT);
+      if (!v.paused && !dragging && !popOpen()) idleT = setTimeout(() => vc.classList.add('idle'), 3200);
+    }
+    ['mousemove', 'pointerdown', 'touchstart'].forEach(ev => vc.addEventListener(ev, wake, { passive: true }));
+    vc.addEventListener('mouseleave', () => { if (!v.paused && !popOpen()) vc.classList.add('idle'); });
+
+    /* ---- play / pause state ---- */
+    v.onplay = v.onpause = () => {
+      const html = v.paused ? ICON_PLAY : ICON_PAUSE;
+      $('#pi2').innerHTML = html;
+      $('#pi3').innerHTML = html;
+      vc.classList.toggle('is-paused', v.paused);
+      wake();
+    };
+    $('#pp').onclick = $('#pp2').onclick = e => { e.stopPropagation(); togglePlay(); };
+    $('#skipBack').onclick = $('#skipBack2').onclick = () => { seekBy(-10); flash(-1); wake(); };
+    $('#skipFwd').onclick = $('#skipFwd2').onclick = () => { seekBy(10); flash(1); wake(); };
+
+    /* ---- ±10s flash ---- */
+    function flash(side) {
+      const el = $(side < 0 ? '#flashL' : '#flashR');
+      el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 550);
+    }
+
+    /* ---- gestures: mouse click = play/pause, dblclick = fullscreen, touch double-tap = ±10s ---- */
+    const tz = $('#tapZone');
+    let lastTap = 0, lastSide = 0, tapT = null, lastPT = 'mouse';
+    tz.addEventListener('pointerup', e => {
+      lastPT = e.pointerType;
+      if (e.pointerType === 'mouse') { if (e.button === 0) togglePlay(); return; }
+      const r = tz.getBoundingClientRect();
+      const side = (e.clientX - r.left) / r.width < 0.5 ? -1 : 1;
+      const now = Date.now();
+      if (now - lastTap < 300 && side === lastSide) {
+        clearTimeout(tapT); lastTap = 0;
+        seekBy(10 * side); flash(side); wake();
+      } else {
+        lastTap = now; lastSide = side; clearTimeout(tapT);
+        tapT = setTimeout(() => {
+          if (vc.classList.contains('idle') || v.paused) wake();
+          else { clearTimeout(idleT); vc.classList.add('idle'); }
+        }, 300);
+      }
+    });
+    tz.addEventListener('dblclick', () => { if (lastPT === 'mouse') toggleFs(); });
+
+    /* ---- progress: drag scrub + hover time preview + buffered ---- */
+    const bar = $('#bar'), tip = $('#barTip');
+    const pctFrom = e => { const r = bar.getBoundingClientRect(); return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); };
+    const paint = p => { $('#pr').style.width = (p * 100) + '%'; };
+    function scrub(e) {
+      if (introPhase) return;
+      const p = pctFrom(e);
+      if (isFinite(v.duration)) { v.currentTime = p * v.duration; paint(p); }
+    }
+    function showTip(e) {
+      const p = pctFrom(e);
+      tip.textContent = fmtT(p * (v.duration || 0));
+      tip.style.left = (p * 100) + '%';
+      tip.classList.add('on');
+    }
+    bar.addEventListener('pointerdown', e => { dragging = true; bar.setPointerCapture(e.pointerId); bar.classList.add('drag'); scrub(e); showTip(e); wake(); });
+    bar.addEventListener('pointermove', e => { showTip(e); if (dragging) scrub(e); });
+    bar.addEventListener('pointerup', () => { dragging = false; bar.classList.remove('drag'); tip.classList.remove('on'); wake(); });
+    bar.addEventListener('pointerleave', () => { if (!dragging) tip.classList.remove('on'); });
+
+    v.onprogress = () => {
+      try {
+        const b = v.buffered;
+        if (b.length && v.duration) $('#buf').style.width = (b.end(b.length - 1) / v.duration * 100) + '%';
+      } catch (e) {}
+    };
+
+    v.ontimeupdate = () => {
+      if (introPhase) return;
+      if (trial && v.currentTime > 30) {
+        v.pause();
+        trial = false;
+        toast('Teaser preview ended — unlock ORVEX Pass for the full film');
+      }
+      if (!dragging) paint(v.currentTime / (v.duration || 1) || 0);
+      $('#remain').textContent = '-' + fmtT((v.duration || 0) - v.currentTime);
+      $('#aiTimeBadge').textContent = '@ ' + fmt(v.currentTime);
+      if (v.currentTime > 5 && isFinite(v.duration)) {
+        watchHistory[pi] = { time: v.currentTime, duration: v.duration };
+        try { localStorage.ovHistory = JSON.stringify(watchHistory); } catch (e) {}
+      }
+    };
+    v.onloadedmetadata = () => { if (introPhase) return; $('#remain').textContent = '-' + fmtT(v.duration); v.onprogress(); };
+
+    /* ---- buffering spinner ---- */
+    const spin = on => $('#nfSpin').classList.toggle('on', on);
+    v.addEventListener('waiting', () => spin(true));
+    v.addEventListener('loadstart', () => { spin(true); hideUpNext(); closePops(); });
+    ['playing', 'canplay', 'pause', 'error'].forEach(ev => v.addEventListener(ev, () => spin(false)));
+
+    /* ---- volume (remembered) ---- */
+    const vol = $('#vol');
+    const volIcon = () => {
+      $('#volIcon').innerHTML = (v.muted || v.volume === 0)
+        ? '<path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/>'
+        : (v.volume < 0.5 ? '<path d="M11 5 6 9H3v6h3l5 4zM15.5 9.5a3.5 3.5 0 0 1 0 5"/>' : '<path d="M11 5 6 9H3v6h3l5 4zM16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/>');
+      vol.value = v.muted ? 0 : v.volume;
+    };
+    try { const sv = parseFloat(localStorage.ovVol); if (isFinite(sv)) v.volume = Math.min(1, Math.max(0, sv)); } catch (e) {}
+    vol.oninput = () => {
+      v.volume = +vol.value; v.muted = v.volume === 0;
+      try { localStorage.ovVol = v.volume; } catch (e) {}
+    };
+    v.onvolumechange = volIcon;
+    $('#mt').onclick = () => { v.muted = !v.muted; };
+    volIcon();
+
+    /* ---- speed menu ---- */
+    const rates = [0.5, 0.75, 1, 1.25, 1.5, 2];
+    const sp = $('#speedPop');
+    sp.innerHTML = rates.map(r => `<button data-r="${r}" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-white/15 flex items-center justify-between"><span>${r === 1 ? 'Normal' : r + 'x'}</span><span class="tick text-ruby"></span></button>`).join('');
+    function setRate(r) {
+      v.playbackRate = r;
+      $('#speedBtn').textContent = r + 'x';
+      $$('#speedPop button').forEach(b => b.querySelector('.tick').textContent = (+b.dataset.r === r) ? '✓' : '');
+    }
+    $$('#speedPop button').forEach(b => b.onclick = e => { e.stopPropagation(); setRate(+b.dataset.r); closePops(); toast('Playback speed: ' + b.dataset.r + 'x'); });
+    setRate(1);
+    function closePops() { $$('#vidContainer .nf-pop').forEach(p => { if (p.id !== 'upNext') p.classList.remove('open'); }); wake(); }
+    $('#speedBtn').onclick = e => { e.stopPropagation(); const o = !sp.classList.contains('open'); closePops(); sp.classList.toggle('open', o); wake(); };
+
+    /* ---- episodes & more panel ---- */
+    function buildEpisodes() {
+      $('#epList').innerHTML = M.map((m, i) => ({ m, i })).filter(x => !x.m.soon).map(({ m, i }) => `
+        <button data-i="${i}" class="w-full flex gap-3 p-2 rounded-xl text-left hover:bg-white/10 ${i === pi ? 'bg-white/10 ring-1 ring-white/20' : ''}">
+          <img src="${m.im}" alt="" class="w-14 h-20 object-cover rounded-lg shrink-0">
+          <div class="min-w-0">
+            <strong class="text-xs block leading-snug">${m.t}</strong>
+            <span class="text-[10px] text-white/50">${m.y} · ${m.d || ''}</span>
+            <p class="text-[10px] text-white/55 mt-1 line-clamp-2">${m.ds || ''}</p>
+          </div>
+        </button>`).join('');
+      $$('#epList button').forEach(b => b.onclick = e => { e.stopPropagation(); closePops(); v.pause(); play(+b.dataset.i, false, false); });
+    }
+    $('#epBtn').onclick = e => { e.stopPropagation(); const o = !$('#epPanel').classList.contains('open'); closePops(); if (o) buildEpisodes(); $('#epPanel').classList.toggle('open', o); wake(); };
+    $('#epClose').onclick = closePops;
+
+    /* ---- up next + autoplay ---- */
+    let unTimer = null;
+    const nextIdx = () => {
+      for (let k = 1; k < M.length; k++) { const j = (pi + k) % M.length; if (!M[j].soon) return j; }
+      return -1;
+    };
+    function hideUpNext() { clearInterval(unTimer); $('#upNext').classList.remove('open'); }
+    function showUpNext() {
+      const j = nextIdx(); if (j < 0) return;
+      const m = M[j];
+      $('#unImg').src = m.im; $('#unTitle').textContent = m.t; $('#unMeta').textContent = `${m.y} · ${m.d || ''}`;
+      let n = 8; $('#unCount').textContent = n;
+      $('#upNext').classList.add('open'); vc.classList.remove('idle');
+      clearInterval(unTimer);
+      unTimer = setInterval(() => { n--; $('#unCount').textContent = n; if (n <= 0) { hideUpNext(); play(j, false, false); } }, 1000);
+    }
+    $('#unPlay').onclick = () => { const j = nextIdx(); hideUpNext(); if (j >= 0) play(j, false, false); };
+    $('#unCancel').onclick = hideUpNext;
+    $('#nextBtn').onclick = () => { const j = nextIdx(); if (j >= 0) { v.pause(); play(j, false, false); } };
+    v.onended = () => {
+      if (introPhase) return startMain();
+      delete watchHistory[pi];
+      try { localStorage.ovHistory = JSON.stringify(watchHistory); } catch (e) {}
+      if (!trial) showUpNext();
+    };
+
+    /* ---- picture-in-picture + fullscreen ---- */
+    $('#pipBtn').onclick = async () => {
+      try {
+        if (document.pictureInPictureElement) await document.exitPictureInPicture();
+        else if (v.requestPictureInPicture) await v.requestPictureInPicture();
+        else toast('Picture-in-Picture not supported on this browser');
+      } catch (e) { toast('Start playing video first for Picture-in-Picture'); }
+    };
+    function toggleFs() {
+      if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else if (vc.requestFullscreen) vc.requestFullscreen().catch(() => {});
+      else if (vc.webkitRequestFullscreen) vc.webkitRequestFullscreen();
+      else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+    }
+    $('#fs').onclick = toggleFs;
+    document.addEventListener('fullscreenchange', () => {
+      const on = !!document.fullscreenElement;
+      $('#fsIcon').innerHTML = on
+        ? '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>'
+        : '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>';
+      try { if (on && screen.orientation && screen.orientation.lock && matchMedia('(pointer:coarse)').matches) screen.orientation.lock('landscape').catch(() => {}); } catch (e) {}
+      wake();
+    });
+
+    /* ---- keyboard shortcuts ---- */
+    document.addEventListener('keydown', e => {
+      if (!isPlayerOn() || /INPUT|TEXTAREA/.test((document.activeElement || {}).tagName || '') || e.metaKey || e.ctrlKey || e.altKey) return;
+      const k = e.key.toLowerCase();
+      let used = true;
+      if (k === ' ' || k === 'k') togglePlay();
+      else if (k === 'arrowleft' || k === 'j') { seekBy(-10); flash(-1); }
+      else if (k === 'arrowright' || k === 'l') { seekBy(10); flash(1); }
+      else if (k === 'arrowup') { v.volume = Math.min(1, v.volume + 0.1); v.muted = false; try { localStorage.ovVol = v.volume; } catch (x) {} }
+      else if (k === 'arrowdown') { v.volume = Math.max(0, v.volume - 0.1); try { localStorage.ovVol = v.volume; } catch (x) {} }
+      else if (k === 'm') v.muted = !v.muted;
+      else if (k === 'f') toggleFs();
+      else if (k === 'p') $('#pipBtn').click();
+      else if (k === 'escape') { closePops(); used = false; }
+      else if (/^[0-9]$/.test(k) && isFinite(v.duration) && !introPhase) v.currentTime = v.duration * (+k / 10);
+      else used = false;
+      if (used) { e.preventDefault(); wake(); }
+    });
+
+    // Player Action Pills
+    let liked = false;
+    $('#likeBtn').onclick = () => {
+      liked = !liked;
+      $('#likeCount').textContent = liked ? '2.51M' : '2.5M';
+      toast(liked ? 'You liked this movie 👍' : 'Reaction removed');
+    };
+    $('#shareBtn').onclick = () => shareTitle(M[pi].t);
+    $('#dlBtn').onclick = () => {
+      const btn = $('#dlTxt');
+      if (btn.textContent === 'Downloaded ✓') return toast('Available in your offline cache');
+      btn.textContent = 'Downloading 4K…';
+      setTimeout(() => {
+        btn.textContent = 'Downloaded ✓';
+        toast(`"${M[pi].t}" cached for offline viewing`);
+      }, 1400);
+    };
+
+    // AI Video Intelligence Sheet Controls
+    $('#aib').onclick = () => $('#ais').classList.remove('off');
+    $('#openAiPill').onclick = () => $('#ais').classList.remove('off');
+    $('#aix').onclick = () => $('#ais').classList.add('off');
+
+    const promptTags = ["Key Sacrifice", "Emotional Arc", "Video Summary", "Similar Shows", "Character Focus"];
+    $('#tags').innerHTML = promptTags.map(q => `
+      <button class="glass-pill px-3.5 py-2 rounded-full text-xs font-medium text-white/85 hover:text-amber hover:border-amber/50">${q}</button>
+    `).join('');
+    $$('#tags button').forEach(b => b.onclick = () => ask(b.textContent));
+
+    const AI_ENDPOINT = ""; /* Your backend: POST {title,question,time} → {answer} */
+    let typeTimer = null;
+
+    function typeWriterAnswer(text) {
+      clearInterval(typeTimer);
+      const ansEl = $('#ans');
+      ansEl.textContent = '';
+      let idx = 0;
+      typeTimer = setInterval(() => {
+        ansEl.textContent += text.charAt(idx);
+        idx++;
+        if (idx >= text.length) clearInterval(typeTimer);
+      }, 14);
+    }
+
+    async function ask(q) {
+      if (!q.trim()) return;
+      const orb = $('#aiOrb');
+      orb.classList.add('thinking');
+      $('#ans').textContent = `Analyzing "${ctx[0]}" at ${fmt(v.currentTime)}…`;
+      $('#ai').value = '';
+      let a;
+
+      if (AI_ENDPOINT) {
+        try {
+          const res = await fetch(AI_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: ctx[0], question: q, time: v.currentTime })
+          });
+          a = (await res.json()).answer;
+        } catch (e) {}
+      }
+
+      if (!a) {
+        const curFilm = M[pi];
+        const stamp = fmt(v.currentTime);
+        const m = {
+          "Key Sacrifice": `At ${stamp} in ${ctx[0]}, the central turning point hinges on a high-stakes personal sacrifice that reshapes every loyalty before the final act.`,
+          "Emotional Arc": `${ctx[0]} (${ctx[1]}) builds from quiet tension into full-scale emotional resolve. Right around ${stamp}, the pacing tightens to highlight the protagonist's inner conflict.`,
+          "Video Summary": `${ctx[0]}: ${curFilm.ds} Currently at ${stamp}, the visual direction uses contrast and score to heighten the ${ctx[2].toLowerCase()} atmosphere.`,
+          "Similar Shows": `If you love ${ctx[0]}, watch ${C.filter(t => t !== ctx).slice(0, 3).map(t => t[0]).join(', ')} next in the ORVEX 4K catalog.`,
+          "Character Focus": `In ${ctx[0]}, the lead's decisions drive the narrative momentum—watch how their motivations evolve between the opening sequence and ${stamp}.`
+        };
+        a = m[q] || `[Scene @ ${stamp}] In "${ctx[0]}", "${q}" relates to its ${ctx[2].toLowerCase()} core: ${curFilm.ds}`;
+      }
+
+      setTimeout(() => {
+        orb.classList.remove('thinking');
+        typeWriterAnswer(a);
+      }, 480);
+    }
+
+    $('#send').onclick = () => ask($('#ai').value);
+    $('#ai').onkeydown = e => e.key === 'Enter' && ask(e.target.value);
+
+    // Voice Question Support (Web Speech API with graceful fallback)
+    $('#voiceBtn').onclick = () => {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) return toast('Voice recognition not supported in this browser');
+      const rec = new SpeechRec();
+      rec.lang = 'en-US';
+      toast('Listening… Ask your question');
+      rec.onresult = e => {
+        const transcript = e.results[0][0].transcript;
+        $('#ai').value = transcript;
+        ask(transcript);
+      };
+      rec.onerror = () => toast('Could not capture voice audio');
+      rec.start();
+    };
+
+    /* ============================================================================
+       6. SUBSCRIPTION PLANS & CASHFREE WORKER PAYMENT INTEGRATION
+       ============================================================================ */
+    const PL = [
+      {
+        id: 'free',
+        n: 'Free',
+        m: 0,
+        f: ['Tears of Steel, Big Buck Bunny & Sita Sings the Blues', 'Stream free with a free account', 'Watch official teasers', 'No payment needed']
+      },
+      {
+        id: 'basic',
+        n: 'Basic',
+        m: 149,
+        f: ['HD 720p streaming', '1 screen at a time', 'Phone & tablet access', 'Ad-free experience']
+      },
+      {
+        id: 'standard',
+        n: 'Standard',
+        m: 299,
+        pop: 1,
+        f: ['Full HD 1080p', '2 screens simultaneously', 'Download & watch offline', 'AI Video Intelligence', 'Ad-free experience']
+      },
+      {
+        id: 'premium',
+        n: 'Premium 4K',
+        m: 499,
+        f: ['4K Ultra HD + HDR10', '4 screens simultaneously', 'Unlimited offline downloads', 'Priority AI Watch Mind', 'Early access to Originals']
+      }
+    ];
+
+    let cy = 'm', sel = 'standard', planCb = null;
+    const sk = () => 'ov_sub_' + (user && user.uid);
+    const sub = () => {
+      try {
+        const x = JSON.parse(localStorage[sk()] || 'null');
+        return x && x.until > Date.now() ? x : null;
+      } catch (e) {
+        return null;
+      }
+    };
+    const price = p => cy === 'y' ? p.m * 10 : p.m;
+
+    function drawPlans() {
+      $('#pls').innerHTML = PL.map(p => {
+        const active = p.id === sel;
+        return `
+          <div class="pl relative rounded-3xl p-5 cursor-pointer transition-all border ${
+            active
+              ? 'border-crimson bg-gradient-to-b from-crimson/20 to-crimson/5 shadow-[0_12px_40px_rgba(229,9,20,0.25)] scale-[1.02]'
+              : 'border-white/10 bg-white/5 hover:border-white/25'
+          }" data-p="${p.id}">
+            ${p.pop ? '<span class="absolute -top-3 right-5 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-crimson to-amber text-white shadow">MOST POPULAR</span>' : ''}
+            <div class="flex items-baseline justify-between mb-4">
+              <h3 class="font-display font-bold text-lg text-white">${p.n}</h3>
+              <div class="text-right">
+                ${p.m === 0 ? '<span class="font-display font-extrabold text-2xl text-white">Free</span>' : `<span class="font-display font-extrabold text-2xl text-white">₹${price(p)}</span>
+                <small class="text-xs text-white/50">/${cy === 'y' ? 'yr' : 'mo'}</small>`}
+              </div>
+            </div>
+            <ul class="space-y-2.5 text-xs text-white/80">
+              ${p.f.map(f => `<li class="flex items-center gap-2"><span class="text-ruby font-bold">✓</span><span>${f}</span></li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }).join('');
+
+      $$('.pl').forEach(c => c.onclick = () => {
+        sel = c.dataset.p;
+        drawPlans();
+      });
+
+      const s = sub();
+      $('#buy').textContent = (s ? 'Current: ' + s.plan.toUpperCase() + ' · ' : '') + 'Continue with ' + PL.find(p => p.id === sel).n + (sel === 'free' ? '' : ' · ₹' + price(PL.find(p => p.id === sel)));
+    }
+
+    function openPlans(cb) {
+      planCb = cb || null;
+      drawPlans();
+      show('plans');
+    }
+
+    $$('.cy button').forEach(b => b.onclick = () => {
+      cy = b.dataset.c;
+      $$('.cy button').forEach(x => {
+        const active = x === b;
+        x.classList.toggle('on', active);
+        x.classList.toggle('bg-white/15', active);
+        x.classList.toggle('text-white', active);
+        x.classList.toggle('text-white/55', !active);
+      });
+      drawPlans();
+    });
+
+    $('#pbk').onclick = () => show('home');
+
+    $('#buy').onclick = async () => {
+      if (sel === 'free') {
+        if (!user) return needAuth();
+        toast('Free plan active — enjoy the 3 free movies');
+        return planCb ? (planCb = null, show('home')) : show('home');
+      }
+      if (!user) return needAuth();
+      const b = $('#buy');
+      b.disabled = true;
+      b.textContent = 'Opening secure Cashfree checkout…';
+      try {
+        const p = await callW(PAY, '/pay/create', { type: 'subscription', plan: sel, cycle: cy });
+        localStorage.ov_pending = JSON.stringify({ uid: user.uid, orderId: p.orderId, plan: sel, cycle: cy });
+        Cashfree({ mode: p.mode }).checkout({ paymentSessionId: p.paymentSessionId, redirectTarget: '_self' });
+      } catch (e) {
+        toast(e.message || 'Payment initialization failed');
+        drawPlans();
+      }
+      b.disabled = false;
+    };
+
+    async function payReturn() {
+      let pd;
+      try { pd = JSON.parse(localStorage.ov_pending || 'null'); } catch (e) {}
+      const oid = new URLSearchParams(location.search).get('order');
+      if (!pd || !oid || !user || pd.uid !== user.uid || pd.orderId !== oid) return;
+      history.replaceState(null, '', location.pathname);
+      toast('Confirming your payment…');
+      for (let i = 0; i < 8; i++) {
+        try {
+          const st = await callW(PAY, '/pay/status', { orderId: oid });
+          if (st.paymentStatus === 'PAID') {
+            localStorage[sk()] = JSON.stringify({ plan: pd.plan, until: Date.now() + (pd.cycle === 'y' ? 365 : 30) * 864e5 });
+            localStorage.removeItem('ov_pending');
+            toast('Payment confirmed — welcome to ORVEX Pass!');
+            updateSubBadge();
+            show('home');
+            renderCat();
+            return;
+          }
+        } catch (e) {}
+        await new Promise(r => setTimeout(r, 2500));
+      }
+      toast('Payment not confirmed yet. Please check again shortly.');
+    }
+
+    function updateSubBadge() {
+      const s = sub();
+      const badge = $('#subBadge');
+      if (s) {
+        badge.textContent = s.plan.toUpperCase();
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    /* ============================================================================
+       7. FIREBASE AUTHENTICATION HANDLERS
+       ============================================================================ */
+    let mode = 'in', after = null;
+
+    function needAuth(cb) {
+      after = cb || null;
+      $('#auth').classList.remove('hidden');
+      $('#auth').classList.add('flex');
+    }
+
+    function closeAuth() {
+      $('#auth').classList.add('hidden');
+      $('#auth').classList.remove('flex');
+    }
+
+    $('#start').onclick = () => {
+      show('home');
+      renderCat();
+    };
+    $('#splashSignInBtn').onclick = () => needAuth(() => {
+      show('home');
+      renderCat();
+    });
+    $('#guestDemoBtn').onclick = () => {
+      closeAuth();
+      show('home');
+      renderCat();
+    };
+    $('#cl').onclick = closeAuth;
+
+    $$('.tabs button').forEach(b => b.onclick = () => {
+      mode = b.dataset.m;
+      $$('.tabs button').forEach(x => {
+        const active = x === b;
+        x.classList.toggle('on', active);
+        x.classList.toggle('bg-white/15', active);
+        x.classList.toggle('text-white', active);
+        x.classList.toggle('text-white/55', !active);
+      });
+      $('#nm').style.display = mode === 'up' ? '' : 'none';
+      $('#sub').textContent = mode === 'up' ? 'Create Account' : 'Sign In';
+      $('#er').textContent = '';
+    });
+
+    const msg = e => ({
+      'auth/invalid-email': 'Enter a valid email address.',
+      'auth/user-not-found': 'No account found with this email.',
+      'auth/wrong-password': 'Incorrect password.',
+      'auth/invalid-credential': 'Incorrect email or password.',
+      'auth/email-already-in-use': 'Email already registered — sign in instead.',
+      'auth/weak-password': 'Password needs at least 6 characters.',
+      'auth/too-many-requests': 'Too many attempts. Please try again later.',
+      'auth/network-request-failed': 'Network error. Check your connection.',
+      'auth/unauthorized-domain': 'Domain not authorised in Firebase Auth.',
+      'auth/popup-closed-by-user': ''
+    }[e.code] ?? e.message ?? 'Authentication failed.');
+
+    async function run(fn) {
+      $('#er').textContent = '';
+      if (!auth) return $('#er').textContent = 'Auth service unavailable.';
+      try {
+        await fn();
+      } catch (e) {
+        $('#er').textContent = msg(e);
+      }
+    }
+
+    $('#sub').onclick = () => run(async () => {
+      const e = $('#em').value.trim(), p = $('#pw').value;
+      if (mode === 'up') {
+        const c = await auth.createUserWithEmailAndPassword(e, p);
+        if ($('#nm').value.trim()) await c.user.updateProfile({ displayName: $('#nm').value.trim() });
+      } else {
+        await auth.signInWithEmailAndPassword(e, p);
+      }
+    });
+
+    $('#gg').onclick = () => run(async () => {
+      const p = new firebase.auth.GoogleAuthProvider();
+      try {
+        await auth.signInWithPopup(p);
+      } catch (e) {
+        if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') {
+          await auth.signInWithRedirect(p);
+        } else throw e;
+      }
+    });
+
+    $('#fg').onclick = () => run(async () => {
+      const e = $('#em').value.trim();
+      if (!e) return $('#er').textContent = 'Enter your email address first.';
+      await auth.sendPasswordResetEmail(e);
+      toast('Password reset link sent to ' + e);
+    });
+
+    if (auth) {
+      auth.onAuthStateChanged(u => {
+        user = u;
+        const n = u ? (u.displayName || u.email || 'U') : '?';
+        $('#gn').textContent = u ? (u.displayName || (u.email || '').split('@')[0] || 'Member') : 'Guest';
+        $('#avInner').innerHTML = u && u.photoURL
+          ? `<img src="${u.photoURL}" class="w-full h-full object-cover" alt="" referrerpolicy="no-referrer" onerror="this.parentElement.textContent='${n[0].toUpperCase()}'">`
+          : n[0].toUpperCase();
+        updateSubBadge();
+        if (u) {
+          closeAuth();
+          $('#pw').value = '';
+          const f = after;
+          after = null;
+          if (f) f();
+          payReturn();
+        }
+      });
+    }
+
+    $('#avb').onclick = e => {
+      e.stopPropagation();
+      if (!user) return needAuth();
+      const m = $('#menu');
+      const s = sub();
+      m.innerHTML = `
+        <div class="px-3 py-2.5 border-b border-white/10 text-xs">
+          <div class="font-bold text-white truncate">${user.displayName || 'ORVEX Member'}</div>
+          <div class="text-white/50 truncate mt-0.5">${user.email || ''}</div>
+          ${s ? `<span class="inline-block mt-1.5 px-2 py-0.5 rounded-full bg-crimson/20 text-ruby font-bold text-[10px]">${s.plan.toUpperCase()} PASS ACTIVE</span>` : '<span class="inline-block mt-1.5 text-[10px] text-amber">Free Preview Tier</span>'}
+        </div>
+        <button id="up" class="w-full text-left px-3 py-2.5 rounded-xl text-xs font-medium text-white hover:bg-white/10 transition mt-1 flex items-center justify-between">
+          <span>Plans &amp; Billing</span>
+          <span class="text-amber">→</span>
+        </button>
+        <button id="lo" class="w-full text-left px-3 py-2.5 rounded-xl text-xs font-medium text-ruby hover:bg-white/10 transition flex items-center justify-between">
+          <span>Sign Out</span>
+          <span>⎋</span>
+        </button>
+      `;
+      m.classList.toggle('hidden');
+      $('#up').onclick = () => { m.classList.add('hidden'); openPlans(); };
+      $('#lo').onclick = async () => {
+        await auth.signOut();
+        m.classList.add('hidden');
+        show('splash');
+        toast('Signed out of ORVEX');
+      };
+    };
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#menu') && !e.target.closest('#avb')) {
+        $('#menu').classList.add('hidden');
+      }
+    });
+
+    // Initialize UI
+    $$('.tabs button')[0].classList.add('bg-white/15', 'text-white');
+    $$('.cy button')[0].classList.add('bg-white/15', 'text-white');
+    switchHomeTab('home');
+    renderCat();
+  </script>
+</body>
+</html>
