@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NDTI Console — Enterprise Data Management Platform</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Enterprise thin scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f8fafc; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white">
+
+  <div class="min-h-screen flex flex-col">
+    <!-- ==========================================
+         TOP NAVIGATION BAR
+         ========================================== -->
+    <header class="h-14 bg-white border-b border-slate-200 sticky top-0 z-30 px-4 flex items-center justify-between gap-4">
+      <!-- Left: Logo + Context Selectors -->
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="p-1.5 text-slate-600 hover:bg-slate-100 rounded-md" title="Toggle Navigation">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Uploaded NDTI Cloud Logo Vector Recreation -->
+        <div onclick="switchTab('overview')" class="flex items-center gap-2.5 cursor-pointer select-none">
+          <svg viewBox="0 0 120 82" class="w-9 h-6 flex-shrink-0" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="ndtiBlueLeft" x1="8" y1="30" x2="45" y2="75" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#0B84FF" />
+                <stop offset="100%" stop-color="#0051D5" />
+              </linearGradient>
+              <linearGradient id="ndtiBlueTop" x1="35" y1="6" x2="84" y2="72" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#19A2FF" />
+                <stop offset="65%" stop-color="#0066FF" />
+                <stop offset="100%" stop-color="#3B27BA" />
+              </linearGradient>
+              <linearGradient id="ndtiRibbon" x1="34" y1="30" x2="86" y2="74" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF" />
+                <stop offset="60%" stop-color="#F5F3FF" />
+                <stop offset="100%" stop-color="#9333EA" />
+              </linearGradient>
+              <linearGradient id="ndtiOrangeRight" x1="82" y1="28" x2="112" y2="74" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFBC1F" />
+                <stop offset="100%" stop-color="#F97316" />
+              </linearGradient>
+            </defs>
+            <path d="M34 74H28C14.745 74 4 63.255 4 50C4 37.45 13.64 27.15 26 26.1V74H34Z" fill="url(#ndtiBlueLeft)" />
+            <path d="M26 26.5C30.5 14.5 42.2 6 56 6C72.5 6 86 19.2 86 35.8V74H26V26.5Z" fill="url(#ndtiBlueTop)" />
+            <path d="M26 26.2C36.5 26.2 44.5 31.2 55 41.5L86 72.5V54.5L56.5 26.8C46.5 18.2 35.8 18.5 26 26.2Z" fill="url(#ndtiRibbon)" />
+            <path d="M86 31.2C99.8 31.8 111 43.1 111 57C111 66.4 103.4 74 94 74H86V31.2Z" fill="url(#ndtiOrangeRight)" />
+          </svg>
+          <div class="flex items-center gap-2">
+            <span class="text-lg font-extrabold tracking-tight text-slate-900">NDTI</span>
+            <span class="hidden sm:inline-block text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">Console</span>
+          </div>
+        </div>
+
+        <!-- Global Company & Project Selectors -->
+        <div class="hidden xl:flex items-center gap-2 ml-3 pl-3 border-l border-slate-200">
+          <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1">
+            <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-500"></i>
+            <span class="text-[11px] font-medium text-slate-500">Company:</span>
+            <select id="companyFilter" onchange="applyGlobalFilters()" class="text-xs font-semibold text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+              <option value="ALL">All Companies (3)</option>
+              <option value="Kashish AI">Kashish AI</option>
+              <option value="Nexor Technologies">Nexor Technologies</option>
+              <option value="Nexor Sparks">Nexor Sparks</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1">
+            <i data-lucide="flame" class="w-3.5 h-3.5 text-blue-600"></i>
+            <span class="text-[11px] font-medium text-slate-500">Project:</span>
+            <select id="projectFilter" onchange="applyGlobalFilters()" class="text-xs font-mono font-medium text-slate-800 bg-transparent focus:outline-none cursor-pointer">
+              <option value="ALL">All Firebase Projects</option>
+              <option value="kashish-ai-prod-core">kashish-ai-prod-core</option>
+              <option value="kashish-vector-store-v2">kashish-vector-store-v2</option>
+              <option value="nexor-tech-erp-main">nexor-tech-erp-main</option>
+              <option value="nexor-tech-billing-vault">nexor-tech-billing-vault</option>
+              <option value="nexor-sparks-stream-io">nexor-sparks-stream-io</option>
+              <option value="nexor-sparks-sandbox-09">nexor-sparks-sandbox-09</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: Global Search Bar -->
+      <div class="flex-1 max-w-md hidden md:block">
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input
+            id="globalSearchInput"
+            type="text"
+            oninput="applyGlobalFilters()"
+            placeholder="Search projects, collections, snapshots, or logs..."
+            class="w-full pl-9 pr-12 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
+          />
+          <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-slate-400 border border-slate-200 rounded px-1.5 py-0.5 bg-white">⌘K</span>
+        </div>
+      </div>
+
+      <!-- Right: Notifications, Help, Profile -->
+      <div class="flex items-center gap-2">
+        <button onclick="showToast('All 6 Firebase clusters operating within normal SLA parameters.')" class="p-2 text-slate-600 hover:bg-slate-100 rounded-md relative" title="Notifications">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span class="w-2 h-2 rounded-full bg-blue-600 absolute top-1.5 right-1.5"></span>
+        </button>
+        <button onclick="showToast('NDTI Control Plane v4.2 • Enterprise Documentation')" class="p-2 text-slate-600 hover:bg-slate-100 rounded-md" title="Help & Documentation">
+          <i data-lucide="help-circle" class="w-4 h-4"></i>
+        </button>
+        <div class="h-5 w-px bg-slate-200 mx-1"></div>
+        <div class="flex items-center gap-2.5 pl-1">
+          <div class="w-8 h-8 rounded-full bg-slate-900 text-white text-xs font-semibold flex items-center justify-center">AM</div>
+          <div class="hidden sm:block leading-tight">
+            <div class="text-xs font-semibold text-slate-900">Arjun Mehta</div>
+            <div class="text-[10px] text-slate-500">Principal Cloud Admin</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         MAIN WORKSPACE (SIDEBAR + CONTENT)
+         ========================================== -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Collapsible Left Sidebar -->
+      <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex-shrink-0 flex flex-col justify-between transition-all duration-200">
+        <div class="p-3 space-y-5 overflow-y-auto">
+          <!-- Brand Header inside Sidebar -->
+          <div id="sidebarBrandBox" class="px-2.5 py-2 rounded-md bg-slate-50 border border-slate-200/80">
+            <div class="text-[10px] font-bold tracking-[0.16em] text-blue-600 uppercase">NDTI Fabric</div>
+            <div class="text-[11px] font-medium text-slate-500 mt-0.5">DATA • CLOUD • INTELLIGENCE</div>
+          </div>
+
+          <!-- Navigation Links -->
+          <nav id="navContainer" class="space-y-1"></nav>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-3 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
+          <div id="sidebarFooterStatus" class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>All Systems Operational</span>
+          </div>
+          <span class="font-mono text-[10px] text-slate-400">v4.2</span>
+        </div>
+      </aside>
+
+      <!-- Dynamic Main Content Container -->
+      <main id="mainContent" class="flex-1 overflow-y-auto p-6 lg:p-8 max-w-[1600px] w-full mx-auto"></main>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 1: CONNECT FIREBASE PROJECT
+       ========================================== -->
+  <div id="connectModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-lg max-w-md w-full shadow-xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="flame" class="w-4 h-4 text-blue-600"></i>
+          <h3 class="text-sm font-semibold text-slate-900">Connect Firebase Project</h3>
+        </div>
+        <button onclick="closeConnectModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <form onsubmit="handleAddProject(event)" class="p-5 space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Company Organization</label>
+          <select id="newProjCompany" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white">
+            <option value="Kashish AI">Kashish AI</option>
+            <option value="Nexor Technologies">Nexor Technologies</option>
+            <option value="Nexor Sparks">Nexor Sparks</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Project Display Name</label>
+          <input id="newProjName" type="text" required placeholder="e.g. Kashish AI Inference Cluster" class="w-full px-3 py-2 border border-slate-300 rounded-md" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Firebase Project ID</label>
+          <input id="newProjId" type="text" required placeholder="e.g. kashish-inference-prod-01" class="w-full px-3 py-2 font-mono border border-slate-300 rounded-md" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Cloud Region</label>
+            <select id="newProjRegion" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white">
+              <option value="us-central1">us-central1</option>
+              <option value="europe-west1">europe-west1</option>
+              <option value="asia-south1">asia-south1</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Environment</label>
+            <select id="newProjEnv" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white">
+              <option value="prod">Production</option>
+              <option value="staging">Staging</option>
+              <option value="analytics">Analytics</option>
+            </select>
+          </div>
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeConnectModal()" class="px-3.5 py-2 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700">Connect Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: JSON DOCUMENT INSPECTOR
+       ========================================== -->
+  <div id="jsonModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-lg max-w-lg w-full shadow-xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <div>
+          <span id="jsonModalSubtitle" class="text-[11px] font-mono text-blue-600"></span>
+          <h3 class="text-sm font-semibold text-slate-900">Firestore Document Payload</h3>
+        </div>
+        <button onclick="closeJsonModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-5">
+        <pre id="jsonModalContent" class="p-4 rounded-md bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       TOAST NOTIFICATION
+       ========================================== -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-lg shadow-lg border border-slate-700 hidden items-center gap-2.5 text-xs">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toastText"></span>
+  </div>
+
+  <!-- ==========================================
+       APPLICATION LOGIC & DUMMY DATA
+       ========================================== -->
+  <script>
+    let activeTab = 'overview';
+    let sidebarCollapsed = false;
+    let explorerCollectionFilter = 'ALL';
+
+    const NAV_ITEMS = [
+      { id: 'overview', label: 'Overview', icon: 'layout-dashboard' },
+      { id: 'companies', label: 'Companies', icon: 'building-2', badge: '3' },
+      { id: 'explorer', label: 'Data Explorer', icon: 'database' },
+      { id: 'firebase', label: 'Firebase Connections', icon: 'flame', badge: '6' },
+      { id: 'sync', label: 'Data Synchronization', icon: 'arrow-left-right', badge: 'CDC' },
+      { id: 'backup', label: 'Backup & Recovery', icon: 'hard-drive-download' },
+      { id: 'logs', label: 'Activity Logs', icon: 'scroll-text' },
+      { id: 'monitoring', label: 'Monitoring', icon: 'activity' },
+      { id: 'access', label: 'Access Control', icon: 'shield-check' },
+      { id: 'settings', label: 'Settings', icon: 'settings' }
+    ];
+
+    const COMPANIES = [
+      {
+        name: 'Kashish AI',
+        icon: 'sparkles',
+        region: 'us-central1 (Iowa)',
+        env: 'Multi-Region',
+        tagline: 'Generative AI Models, Vector Embeddings & Inference Telemetry',
+        records: '18.4M',
+        storage: '412.8 GB / 500 GB',
+        sla: '99.98%'
+      },
+      {
+        name: 'Nexor Technologies',
+        icon: 'cpu',
+        region: 'europe-west1 (Belgium)',
+        env: 'Production',
+        tagline: 'Core Enterprise ERP, Client Ledger & Distributed Microservices',
+        records: '24.9M',
+        storage: '684.2 GB / 1 TB',
+        sla: '99.95%'
+      },
+      {
+        name: 'Nexor Sparks',
+        icon: 'zap',
+        region: 'asia-south1 (Mumbai)',
+        env: 'Hybrid',
+        tagline: 'High-Velocity IoT Events, Edge Telemetry & Consumer Feeds',
+        records: '9.1M',
+        storage: '198.4 GB / 250 GB',
+        sla: '98.72%'
+      }
+    ];
+
+    let PROJECTS = [
+      { id: 'kashish-ai-prod-core', name: 'Kashish AI Production Core', company: 'Kashish AI', region: 'us-central1', status: 'Connected', collections: 34, docs: '11,420,900', storage: '268.4 GB', pct: 74, lastSync: '22 sec ago' },
+      { id: 'kashish-vector-store-v2', name: 'Kashish Vector Metadata Hub', company: 'Kashish AI', region: 'us-east4', status: 'Syncing', collections: 18, docs: '6,980,110', storage: '144.4 GB', pct: 58, lastSync: 'Active stream' },
+      { id: 'nexor-tech-erp-main', name: 'Nexor Enterprise ERP Primary', company: 'Nexor Technologies', region: 'europe-west1', status: 'Connected', collections: 62, docs: '16,890,450', storage: '482.0 GB', pct: 81, lastSync: '1 min ago' },
+      { id: 'nexor-tech-billing-vault', name: 'Nexor Global Billing & Ledger', company: 'Nexor Technologies', region: 'us-central1', status: 'Connected', collections: 27, docs: '8,012,300', storage: '202.2 GB', pct: 45, lastSync: '4 mins ago' },
+      { id: 'nexor-sparks-stream-io', name: 'Nexor Sparks Telemetry Stream', company: 'Nexor Sparks', region: 'asia-south1', status: 'Connected', collections: 19, docs: '7,450,800', storage: '156.1 GB', pct: 62, lastSync: '38 sec ago' },
+      { id: 'nexor-sparks-sandbox-09', name: 'Nexor Sparks Staging Node', company: 'Nexor Sparks', region: 'asia-south1', status: 'Degraded', collections: 14, docs: '1,649,200', storage: '42.3 GB', pct: 28, lastSync: '47 mins ago' }
+    ];
+
+    let BACKUPS = [
+      { snapId: 'snap-20261027-0400-kashish', project: 'kashish-ai-prod-core', company: 'Kashish AI', type: 'Automated Daily', size: '268.4 GB', docs: '11,420,900', created: 'Today, 04:00 UTC', status: 'Verified' },
+      { snapId: 'snap-20261027-0330-nexor-erp', project: 'nexor-tech-erp-main', company: 'Nexor Technologies', type: 'Automated Daily', size: '482.0 GB', docs: '16,890,450', created: 'Today, 03:30 UTC', status: 'Verified' },
+      { snapId: 'snap-20261026-2215-sparks', project: 'nexor-sparks-stream-io', company: 'Nexor Sparks', type: 'Pre-Sync Point', size: '155.8 GB', docs: '7,412,000', created: 'Yesterday, 22:15 UTC', status: 'Completed' },
+      { snapId: 'snap-20261026-1800-billing', project: 'nexor-tech-billing-vault', company: 'Nexor Technologies', type: 'Manual Snapshot', size: '201.9 GB', docs: '8,009,120', created: 'Yesterday, 18:00 UTC', status: 'Verified' }
+    ];
+
+    const EXPLORER_DOCS = [
+      { docId: 'usr_ksh_9928410a', collection: 'enterprise_tenants', company: 'Kashish AI', project: 'kashish-ai-prod-core', size: '14.8 KB', status: 'Indexed', payload: { tenantId: 'tnt_kashish_global_01', tier: 'ENTERPRISE_DEDICATED', modelQuotaTokens: 500000000, compliance: ['SOC2_TYPE_II', 'ISO27001'] } },
+      { docId: 'inv_nxr_8841209b', collection: 'ledger_settlements', company: 'Nexor Technologies', project: 'nexor-tech-billing-vault', size: '8.2 KB', status: 'Indexed', payload: { settlementId: 'stl_9948102', currency: 'USD', amountCents: 14850000, counterparty: 'Kashish AI Holdings' } },
+      { docId: 'evt_spk_7731904c', collection: 'iot_telemetry_streams', company: 'Nexor Sparks', project: 'nexor-sparks-stream-io', size: '4.1 KB', status: 'Indexed', payload: { cluster: 'mumbai-edge-04', activeSensors: 4096, avgLatencyMs: 11.4, firmware: 'sparks-os-5.1' } },
+      { docId: 'emb_ksh_6620194d', collection: 'vector_embeddings_meta', company: 'Kashish AI', project: 'kashish-vector-store-v2', size: '32.6 KB', status: 'Syncing', payload: { indexName: 'enterprise-knowledge-1536d', dimensions: 1536, metric: 'cosine_similarity' } },
+      { docId: 'org_nxr_5519082e', collection: 'erp_workforce_nodes', company: 'Nexor Technologies', project: 'nexor-tech-erp-main', size: '19.4 KB', status: 'Indexed', payload: { department: 'ENG-CLOUD-INFRA', costCenter: 'CC-4019-EU', principals: 142 } }
+    ];
+
+    const ACTIVITY_LOGS = [
+      { time: '2026-10-27 14:24:11 UTC', action: 'firestore.collections.syncTrigger', actor: 'arjun.mehta@ndti.cloud', project: 'kashish-ai-prod-core', company: 'Kashish AI', latency: '142 ms', status: 'Success' },
+      { time: '2026-10-27 14:18:05 UTC', action: 'backup.snapshots.verifyIntegrity', actor: 'system-scheduler@ndti.iam', project: 'kashish-ai-prod-core', company: 'Kashish AI', latency: '890 ms', status: 'Success' },
+      { time: '2026-10-27 13:55:49 UTC', action: 'iam.serviceAccounts.rotateKey', actor: 'elena.rostova@nexortech.io', project: 'nexor-tech-erp-main', company: 'Nexor Technologies', latency: '215 ms', status: 'Success' },
+      { time: '2026-10-27 13:42:19 UTC', action: 'sync.stream.highWatermarkWarning', actor: 'sync-worker-09@ndti.iam', project: 'nexor-sparks-sandbox-09', company: 'Nexor Sparks', latency: '1420 ms', status: 'Warning' },
+      { time: '2026-10-27 13:10:02 UTC', action: 'storage.buckets.exportUnencrypted', actor: 'unknown@203.0.113.88', project: 'nexor-tech-billing-vault', company: 'Nexor Technologies', latency: '12 ms', status: 'Blocked' }
+    ];
+
+    function badgeHTML(status) {
+      const s = status.toLowerCase();
+      let cls = 'bg-slate-100 text-slate-700 border-slate-200';
+      let dot = 'bg-slate-400';
+      if (['connected', 'active', 'verified', 'completed', 'indexed', 'success', 'production', 'multi-region'].includes(s)) {
+        cls = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        dot = 'bg-emerald-500';
+      } else if (['syncing', 'hybrid'].includes(s)) {
+        cls = 'bg-blue-50 text-blue-700 border-blue-200';
+        dot = 'bg-blue-600 animate-pulse';
+      } else if (['degraded', 'warning'].includes(s)) {
+        cls = 'bg-amber-50 text-amber-800 border-amber-200';
+        dot = 'bg-amber-500';
+      } else if (['blocked', 'disconnected'].includes(s)) {
+        cls = 'bg-rose-50 text-rose-700 border-rose-200';
+        dot = 'bg-rose-500';
+      }
+      return `<span class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full border ${cls}">
+        <span class="w-1.5 h-1.5 rounded-full ${dot}"></span>${status}
+      </span>`;
+    }
+
+    function renderSidebar() {
+      const nav = document.getElementById('navContainer');
+      nav.innerHTML = NAV_ITEMS.map(item => {
+        const isActive = activeTab === item.id;
+        return `
+          <button onclick="switchTab('${item.id}')" class="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition ${
+            isActive
+              ? 'bg-blue-50 text-blue-700 font-semibold border-l-2 border-blue-600'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+          }">
+            <div class="flex items-center gap-3">
+              <i data-lucide="${item.icon}" class="w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}"></i>
+              ${!sidebarCollapsed ? `<span>${item.label}</span>` : ''}
+            </div>
+            ${!sidebarCollapsed && item.badge ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded ${isActive ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600'}">${item.badge}</span>` : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function toggleSidebar() {
+      sidebarCollapsed = !sidebarCollapsed;
+      const sb = document.getElementById('sidebar');
+      const brandBox = document.getElementById('sidebarBrandBox');
+      const footerStatus = document.getElementById('sidebarFooterStatus');
+      sb.className = `${sidebarCollapsed ? 'w-16' : 'w-64'} bg-white border-r border-slate-200 flex-shrink-0 flex flex-col justify-between transition-all duration-200`;
+      brandBox.style.display = sidebarCollapsed ? 'none' : 'block';
+      footerStatus.style.display = sidebarCollapsed ? 'none' : 'flex';
+      renderSidebar();
+      lucide.createIcons();
+    }
+
+    function switchTab(tabId) {
+      activeTab = tabId;
+      renderSidebar();
+      renderMainContent();
+      lucide.createIcons();
+    }
+
+    function applyGlobalFilters() {
+      renderMainContent();
+      lucide.createIcons();
+    }
+
+    function getFilteredProjects() {
+      const comp = document.getElementById('companyFilter').value;
+      const proj = document.getElementById('projectFilter').value;
+      const q = document.getElementById('globalSearchInput').value.toLowerCase();
+      return PROJECTS.filter(p => {
+        const matchC = comp === 'ALL' || p.company === comp;
+        const matchP = proj === 'ALL' || p.id === proj;
+        const matchQ = !q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || p.company.toLowerCase().includes(q);
+        return matchC && matchP && matchQ;
+      });
+    }
+
+    function renderMainContent() {
+      const container = document.getElementById('mainContent');
+      const filteredProjs = getFilteredProjects();
+
+      if (activeTab === 'overview') {
+        container.innerHTML = `
+          <div class="space-y-6">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200">
+              <div>
+                <div class="text-xs font-semibold uppercase tracking-wider text-blue-600">Centralized Control Plane • Org ID: ndti-global-01</div>
+                <h1 class="text-2xl font-semibold text-slate-900 mt-1">Enterprise Infrastructure Overview</h1>
+                <p class="text-sm text-slate-500 mt-0.5">Unified telemetry, Firebase Firestore clusters, and multi-company replication across Kashish AI, Nexor Technologies, and Nexor Sparks.</p>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <button onclick="showToast('Synchronized all active CDC replication pipelines.')" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50">
+                  <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i><span>Sync All Nodes</span>
+                </button>
+                <button onclick="openConnectModal()" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i><span>Connect Project</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 4 Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div onclick="switchTab('companies')" class="bg-white border border-slate-200 rounded-lg p-5 hover:border-blue-400 transition cursor-pointer">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Companies</span>
+                  <div class="w-8 h-8 rounded-md bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600"><i data-lucide="building-2" class="w-4 h-4"></i></div>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                  <span class="text-2xl font-bold text-slate-900">3</span>
+                  <span class="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">100% Healthy</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">Kashish AI • Nexor Tech • Nexor Sparks</p>
+              </div>
+
+              <div onclick="switchTab('firebase')" class="bg-white border border-slate-200 rounded-lg p-5 hover:border-blue-400 transition cursor-pointer">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Connected Projects</span>
+                  <div class="w-8 h-8 rounded-md bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600"><i data-lucide="flame" class="w-4 h-4"></i></div>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                  <span class="text-2xl font-bold text-slate-900">${PROJECTS.length}</span>
+                  <span class="text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">4 Cloud Regions</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">174 Firestore collections indexed</p>
+              </div>
+
+              <div onclick="switchTab('explorer')" class="bg-white border border-slate-200 rounded-lg p-5 hover:border-blue-400 transition cursor-pointer">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Records</span>
+                  <div class="w-8 h-8 rounded-md bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600"><i data-lucide="database" class="w-4 h-4"></i></div>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                  <span class="text-2xl font-bold text-slate-900">52,402,760</span>
+                  <span class="text-xs font-medium text-emerald-700">+4.2% (24h)</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">1.29 TB total managed storage</p>
+              </div>
+
+              <div onclick="switchTab('backup')" class="bg-white border border-slate-200 rounded-lg p-5 hover:border-blue-400 transition cursor-pointer">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Last Backup</span>
+                  <div class="w-8 h-8 rounded-md bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600"><i data-lucide="hard-drive-download" class="w-4 h-4"></i></div>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                  <span class="text-2xl font-bold text-slate-900">04:00 UTC</span>
+                  ${badgeHTML('Verified')}
+                </div>
+                <p class="text-xs text-slate-500 mt-2">AES-256 Point-in-Time Recovery</p>
+              </div>
+            </div>
+
+            <!-- Infrastructure Overview Tables -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div class="xl:col-span-2 bg-white border border-slate-200 rounded-lg overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+                  <div>
+                    <h2 class="text-sm font-semibold text-slate-900">Firebase Infrastructure & Storage Usage</h2>
+                    <p class="text-xs text-slate-500">Live connection status and quota consumption across connected projects</p>
+                  </div>
+                  <button onclick="switchTab('firebase')" class="text-xs font-medium text-blue-600 hover:text-blue-800">View All →</button>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        <th class="py-3 px-4">Project / ID</th>
+                        <th class="py-3 px-4">Company</th>
+                        <th class="py-3 px-4">Status</th>
+                        <th class="py-3 px-4">Storage Usage</th>
+                        <th class="py-3 px-4 text-right">Records</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 text-xs">
+                      ${filteredProjs.map(p => `
+                        <tr class="hover:bg-slate-50">
+                          <td class="py-3.5 px-4">
+                            <div class="font-medium text-slate-900">${p.name}</div>
+                            <div class="font-mono text-[11px] text-slate-500">${p.id} • ${p.region}</div>
+                          </td>
+                          <td class="py-3.5 px-4 font-medium text-slate-700">${p.company}</td>
+                          <td class="py-3.5 px-4">${badgeHTML(p.status)}</td>
+                          <td class="py-3.5 px-4 min-w-[150px]">
+                            <div class="flex justify-between text-[11px] mb-1">
+                              <span class="font-medium text-slate-700">${p.storage}</span>
+                              <span class="text-slate-500">${p.pct}%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                              <div class="h-full ${p.pct > 80 ? 'bg-amber-500' : 'bg-blue-600'} rounded-full" style="width:${p.pct}%"></div>
+                            </div>
+                          </td>
+                          <td class="py-3.5 px-4 text-right font-mono text-slate-800">${p.docs}</td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Sync History Panel -->
+              <div class="bg-white border border-slate-200 rounded-lg flex flex-col justify-between overflow-hidden">
+                <div>
+                  <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+                    <div>
+                      <h2 class="text-sm font-semibold text-slate-900">Synchronization History</h2>
+                      <p class="text-xs text-slate-500">Active CDC replication streams</p>
+                    </div>
+                    <button onclick="switchTab('sync')" class="text-xs font-medium text-blue-600">Manage</button>
+                  </div>
+                  <div class="divide-y divide-slate-200 text-xs">
+                    <div class="p-4">
+                      <div class="flex justify-between items-start">
+                        <span class="font-semibold text-slate-900">Kashish AI Core → NDTI Lakehouse</span>
+                        ${badgeHTML('Active')}
+                      </div>
+                      <div class="font-mono text-[11px] text-slate-500 mt-1">kashish-ai-prod-core → ndti-warehouse</div>
+                      <div class="text-[11px] text-slate-500 mt-2 flex justify-between">
+                        <span>Throughput: <strong class="text-slate-800">4,820 ops/s</strong></span>
+                        <span>Continuous (4s lag)</span>
+                      </div>
+                    </div>
+                    <div class="p-4">
+                      <div class="flex justify-between items-start">
+                        <span class="font-semibold text-slate-900">Nexor ERP → Kashish Vector Hub</span>
+                        ${badgeHTML('Active')}
+                      </div>
+                      <div class="font-mono text-[11px] text-slate-500 mt-1">nexor-tech-erp-main → kashish-vector-v2</div>
+                      <div class="text-[11px] text-slate-500 mt-2 flex justify-between">
+                        <span>Throughput: <strong class="text-slate-800">1,910 ops/s</strong></span>
+                        <span>4 mins ago</span>
+                      </div>
+                    </div>
+                    <div class="p-4">
+                      <div class="flex justify-between items-start">
+                        <span class="font-semibold text-slate-900">Nexor Sparks → Nexor ERP Replica</span>
+                        ${badgeHTML('Syncing')}
+                      </div>
+                      <div class="font-mono text-[11px] text-slate-500 mt-1">nexor-sparks-stream-io → nexor-tech-erp</div>
+                      <div class="text-[11px] text-slate-500 mt-2 flex justify-between">
+                        <span>Throughput: <strong class="text-slate-800">3,190 ops/s</strong></span>
+                        <span>Syncing (92%)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
+                  <span>Zero replication schema conflicts</span>
+                  <span class="font-mono">SLA: 99.99%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (activeTab === 'companies') {
+        container.innerHTML = `
+          <div class="space-y-6">
+            <div class="pb-4 border-b border-slate-200">
+              <h1 class="text-xl font-semibold text-slate-900">Managed Companies</h1>
+              <p class="text-sm text-slate-500 mt-0.5">Enterprise tenants isolated by IAM boundaries under the NDTI Data Fabric.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              ${COMPANIES.map(c => {
+                const cProjs = PROJECTS.filter(p => p.company === c.name);
+                return `
+                  <div class="bg-white border border-slate-200 rounded-lg flex flex-col justify-between overflow-hidden hover:border-blue-300 transition">
+                    <div>
+                      <div class="p-5 border-b border-slate-100">
+                        <div class="flex items-start justify-between">
+                          <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+                              <i data-lucide="${c.icon}" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                              <h2 class="text-base font-semibold text-slate-900">${c.name}</h2>
+                              <span class="text-xs font-mono text-slate-500">${c.region}</span>
+                            </div>
+                          </div>
+                          ${badgeHTML(c.env)}
+                        </div>
+                        <p class="text-xs text-slate-600 mt-3 leading-relaxed">${c.tagline}</p>
+                      </div>
+                      <div class="grid grid-cols-3 divide-x divide-slate-100 border-b border-slate-100 bg-slate-50/60 text-center">
+                        <div class="p-3"><div class="text-[11px] text-slate-500">Projects</div><div class="text-base font-bold text-slate-900">${cProjs.length}</div></div>
+                        <div class="p-3"><div class="text-[11px] text-slate-500">Records</div><div class="text-base font-bold text-slate-900">${c.records}</div></div>
+                        <div class="p-3"><div class="text-[11px] text-slate-500">Sync SLA</div><div class="text-base font-bold text-emerald-700">${c.sla}</div></div>
+                      </div>
+                      <div class="p-5 space-y-2">
+                        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Connected Firebase Projects</div>
+                        ${cProjs.map(cp => `
+                          <div class="flex items-center justify-between px-3 py-2 rounded bg-slate-50 border border-slate-200 text-xs">
+                            <span class="font-mono text-slate-800 truncate">${cp.id}</span>
+                            ${badgeHTML(cp.status)}
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                    <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
+                      <span class="text-slate-500">Storage: <strong class="text-slate-800">${c.storage}</strong></span>
+                      <button onclick="switchTab('explorer')" class="font-semibold text-blue-600 hover:text-blue-800">Explore Data →</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      } else if (activeTab === 'firebase') {
+        container.innerHTML = `
+          <div class="space-y-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+              <div>
+                <h1 class="text-xl font-semibold text-slate-900">Firebase Connections</h1>
+                <p class="text-sm text-slate-500 mt-0.5">Manage Google Cloud service accounts, Firestore endpoints, and IAM federation.</p>
+              </div>
+              <button onclick="openConnectModal()" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                <i data-lucide="plus" class="w-4 h-4"></i><span>Connect Project</span>
+              </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              ${filteredProjs.map(p => `
+                <div class="bg-white border border-slate-200 rounded-lg flex flex-col justify-between hover:border-blue-300 transition">
+                  <div class="p-5">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <span class="text-[11px] font-semibold uppercase tracking-wider text-blue-600">${p.company}</span>
+                        <h3 class="text-sm font-semibold text-slate-900 mt-0.5">${p.name}</h3>
+                      </div>
+                      ${badgeHTML(p.status)}
+                    </div>
+                    <div class="mt-4 p-2.5 rounded bg-slate-50 border border-slate-200 flex items-center justify-between">
+                      <div>
+                        <div class="text-[10px] uppercase font-semibold text-slate-400">Project ID</div>
+                        <div class="text-xs font-mono font-medium text-slate-800">${p.id}</div>
+                      </div>
+                      <button onclick="showToast('Copied project ID: ${p.id}')" class="p-1.5 text-slate-500 hover:text-slate-900"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-4 text-xs">
+                      <div class="p-2.5 rounded border border-slate-100 bg-slate-50/50"><span class="text-slate-500 block text-[11px]">Collections</span><span class="font-semibold text-slate-900">${p.collections}</span></div>
+                      <div class="p-2.5 rounded border border-slate-100 bg-slate-50/50"><span class="text-slate-500 block text-[11px]">Documents</span><span class="font-semibold font-mono text-slate-900">${p.docs}</span></div>
+                      <div class="p-2.5 rounded border border-slate-100 bg-slate-50/50"><span class="text-slate-500 block text-[11px]">Region</span><span class="font-mono text-slate-800">${p.region}</span></div>
+                      <div class="p-2.5 rounded border border-slate-100 bg-slate-50/50"><span class="text-slate-500 block text-[11px]">Storage</span><span class="font-semibold text-slate-900">${p.storage}</span></div>
+                    </div>
+                  </div>
+                  <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
+                    <span class="text-slate-500">Last Sync: <strong class="text-slate-700">${p.lastSync}</strong></span>
+                    <button onclick="showToast('Verified TLS handshake with ${p.id} (18ms)')" class="px-3 py-1 font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100">Connect Project</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (activeTab === 'sync') {
+        container.innerHTML = `
+          <div class="space-y-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+              <div>
+                <h1 class="text-xl font-semibold text-slate-900">Data Synchronization</h1>
+                <p class="text-sm text-slate-500 mt-0.5">Source and destination topology with real-time Change Data Capture (CDC) pipelines.</p>
+              </div>
+              <button onclick="showToast('Triggered real-time synchronization wave across all pipelines.')" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i><span>Trigger Sync Now</span>
+              </button>
+            </div>
+
+            <!-- Visual Data Flow Topology -->
+            <div class="bg-white border border-slate-200 rounded-lg p-6">
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <span class="text-[11px] font-semibold uppercase tracking-wider text-blue-600">Live Replication Fabric</span>
+                  <h2 class="text-base font-semibold text-slate-900">Source to Destination Data Flow</h2>
+                </div>
+                ${badgeHTML('Active')}
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-11 gap-4 items-center">
+                <!-- Source Panel -->
+                <div class="lg:col-span-4 bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2.5">
+                  <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 pb-2 border-b border-slate-200">Source Firebase Projects</div>
+                  <div class="p-3 bg-white rounded border border-slate-200 flex justify-between items-center text-xs">
+                    <div><div class="font-semibold">Kashish AI Core</div><div class="font-mono text-[11px] text-slate-500">kashish-ai-prod-core</div></div>
+                    <span class="font-mono text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">4.8k ops/s</span>
+                  </div>
+                  <div class="p-3 bg-white rounded border border-slate-200 flex justify-between items-center text-xs">
+                    <div><div class="font-semibold">Nexor ERP Primary</div><div class="font-mono text-[11px] text-slate-500">nexor-tech-erp-main</div></div>
+                    <span class="font-mono text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">1.9k ops/s</span>
+                  </div>
+                  <div class="p-3 bg-white rounded border border-slate-200 flex justify-between items-center text-xs">
+                    <div><div class="font-semibold">Nexor Sparks Stream</div><div class="font-mono text-[11px] text-slate-500">nexor-sparks-stream-io</div></div>
+                    <span class="font-mono text-[11px] text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">3.1k ops/s</span>
+                  </div>
+                </div>
+
+                <!-- Center Engine -->
+                <div class="lg:col-span-3 flex flex-col items-center justify-center py-4">
+                  <div class="w-full flex items-center">
+                    <div class="h-0.5 flex-1 bg-blue-500"></div>
+                    <div class="px-4 py-3 rounded-xl bg-blue-600 text-white text-center shadow-md">
+                      <i data-lucide="arrow-left-right" class="w-5 h-5 mx-auto mb-1"></i>
+                      <div class="text-xs font-bold">NDTI CDC ROUTER</div>
+                      <div class="text-[10px] text-blue-100 font-mono">42ms Avg Latency</div>
+                    </div>
+                    <div class="h-0.5 flex-1 bg-blue-500"></div>
+                  </div>
+                </div>
+
+                <!-- Destination Panel -->
+                <div class="lg:col-span-4 bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2.5">
+                  <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 pb-2 border-b border-slate-200">Destination Clusters</div>
+                  <div class="p-3 bg-white rounded border border-slate-200 flex justify-between items-center text-xs">
+                    <div><div class="font-semibold">NDTI Central Warehouse</div><div class="font-mono text-[11px] text-slate-500">ndti-central-warehouse-prod</div></div>
+                    ${badgeHTML('Active')}
+                  </div>
+                  <div class="p-3 bg-white rounded border border-slate-200 flex justify-between items-center text-xs">
+                    <div><div class="font-semibold">Kashish Vector Store</div><div class="font-mono text-[11px] text-slate-500">kashish-vector-store-v2</div></div>
+                    ${badgeHTML('Active')}
+                  </div>
+                  <div class="p-3 bg-white rounded border border-slate-200 flex justify-between items-center text-xs">
+                    <div><div class="font-semibold">Nexor Analytics Replica</div><div class="font-mono text-[11px] text-slate-500">nexor-tech-erp-main</div></div>
+                    ${badgeHTML('Syncing')}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (activeTab === 'backup') {
+        container.innerHTML = `
+          <div class="space-y-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+              <div>
+                <h1 class="text-xl font-semibold text-slate-900">Backup & Recovery</h1>
+                <p class="text-sm text-slate-500 mt-0.5">Immutable AES-256 encrypted snapshots and non-destructive point-in-time recovery.</p>
+              </div>
+              <button onclick="createManualSnapshot()" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                <i data-lucide="hard-drive-download" class="w-4 h-4"></i><span>Create Snapshot</span>
+              </button>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                    <th class="py-3 px-4">Snapshot ID</th>
+                    <th class="py-3 px-4">Company / Project</th>
+                    <th class="py-3 px-4">Backup Type</th>
+                    <th class="py-3 px-4">Size & Records</th>
+                    <th class="py-3 px-4">Created</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-xs">
+                  ${BACKUPS.map(b => `
+                    <tr class="hover:bg-slate-50">
+                      <td class="py-3.5 px-4 font-mono font-medium text-slate-900">${b.snapId}</td>
+                      <td class="py-3.5 px-4"><div class="font-medium text-slate-900">${b.company}</div><div class="font-mono text-[11px] text-slate-500">${b.project}</div></td>
+                      <td class="py-3.5 px-4 text-slate-600">${b.type}</td>
+                      <td class="py-3.5 px-4"><div class="font-medium text-slate-800">${b.size}</div><div class="font-mono text-[11px] text-slate-500">${b.docs} docs</div></td>
+                      <td class="py-3.5 px-4 text-slate-600">${b.created}</td>
+                      <td class="py-3.5 px-4">${badgeHTML(b.status)}</td>
+                      <td class="py-3.5 px-4 text-right">
+                        <button onclick="showToast('Initiated point-in-time restore from ${b.snapId}')" class="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100">
+                          <i data-lucide="rotate-ccw" class="w-3 h-3"></i><span>Restore</span>
+                        </button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else if (activeTab === 'explorer') {
+        const docs = EXPLORER_DOCS.filter(d => explorerCollectionFilter === 'ALL' || d.collection === explorerCollectionFilter);
+        container.innerHTML = `
+          <div class="space-y-6">
+            <div class="pb-4 border-b border-slate-200">
+              <h1 class="text-xl font-semibold text-slate-900">Data Explorer</h1>
+              <p class="text-sm text-slate-500 mt-0.5">Browse and inspect indexed Firestore collections across connected organizations.</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+              <div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold text-slate-600">Collection:</span>
+                  <select onchange="explorerCollectionFilter = this.value; renderMainContent(); lucide.createIcons();" class="text-xs font-mono border border-slate-300 rounded px-2.5 py-1.5 bg-white">
+                    <option value="ALL" ${explorerCollectionFilter === 'ALL' ? 'selected' : ''}>All Collections (${EXPLORER_DOCS.length})</option>
+                    ${EXPLORER_DOCS.map(d => `<option value="${d.collection}" ${explorerCollectionFilter === d.collection ? 'selected' : ''}>${d.collection}</option>`).join('')}
+                  </select>
+                </div>
+                <span class="text-xs text-slate-500">Showing 1–${docs.length} of ${docs.length} documents</span>
+              </div>
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                    <th class="py-3 px-4">Document ID</th>
+                    <th class="py-3 px-4">Collection</th>
+                    <th class="py-3 px-4">Company / Project</th>
+                    <th class="py-3 px-4">Size</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4 text-right">Payload</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-xs">
+                  ${docs.map((d, idx) => `
+                    <tr class="hover:bg-slate-50">
+                      <td class="py-3.5 px-4 font-mono font-medium text-blue-700">${d.docId}</td>
+                      <td class="py-3.5 px-4 font-mono text-slate-700">${d.collection}</td>
+                      <td class="py-3.5 px-4"><div class="font-medium text-slate-900">${d.company}</div><div class="font-mono text-[11px] text-slate-500">${d.project}</div></td>
+                      <td class="py-3.5 px-4 font-mono text-slate-600">${d.size}</td>
+                      <td class="py-3.5 px-4">${badgeHTML(d.status)}</td>
+                      <td class="py-3.5 px-4 text-right">
+                        <button onclick="openJsonModal(${idx})" class="px-2.5 py-1 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50">Inspect JSON</button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else {
+        // Activity Logs & Governance Tabs
+        container.innerHTML = `
+          <div class="space-y-6">
+            <div class="pb-4 border-b border-slate-200">
+              <h1 class="text-xl font-semibold text-slate-900">Activity Logs & Governance</h1>
+              <p class="text-sm text-slate-500 mt-0.5">Immutable cloud audit trail across Kashish AI, Nexor Technologies, and Nexor Sparks.</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                    <th class="py-3 px-4">Timestamp (UTC)</th>
+                    <th class="py-3 px-4">Action</th>
+                    <th class="py-3 px-4">Actor</th>
+                    <th class="py-3 px-4">Project</th>
+                    <th class="py-3 px-4">Latency</th>
+                    <th class="py-3 px-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-xs">
+                  ${ACTIVITY_LOGS.map(l => `
+                    <tr class="hover:bg-slate-50">
+                      <td class="py-3.5 px-4 font-mono text-[11px] text-slate-500">${l.time}</td>
+                      <td class="py-3.5 px-4 font-mono font-medium text-slate-900">${l.action}</td>
+                      <td class="py-3.5 px-4 text-slate-700">${l.actor}</td>
+                      <td class="py-3.5 px-4 font-mono text-slate-700">${l.project}</td>
+                      <td class="py-3.5 px-4 font-mono text-slate-500">${l.latency}</td>
+                      <td class="py-3.5 px-4">${badgeHTML(l.status)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Modal & Interactive Actions
+    function openConnectModal() {
+      const m = document.getElementById('connectModal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeConnectModal() {
+      const m = document.getElementById('connectModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    function handleAddProject(e) {
+      e.preventDefault();
+      const company = document.getElementById('newProjCompany').value;
+      const name = document.getElementById('newProjName').value;
+      const id = document.getElementById('newProjId').value.toLowerCase().replace(/\s+/g, '-');
+      const region = document.getElementById('newProjRegion').value;
+      PROJECTS.unshift({
+        id, name, company, region, status: 'Connected', collections: 12, docs: '1,250,000', storage: '28.4 GB', pct: 22, lastSync: 'Just now'
+      });
+      closeConnectModal();
+      renderMainContent();
+      lucide.createIcons();
+      showToast(`Connected Firebase project "${id}"`);
+    }
+
+    function createManualSnapshot() {
+      const snapId = `snap-20261027-manual-${Math.floor(100 + Math.random() * 899)}`;
+      BACKUPS.unshift({
+        snapId, project: 'kashish-ai-prod-core', company: 'Kashish AI', type: 'Manual Snapshot', size: '268.5 GB', docs: '11,422,000', created: 'Just now (UTC)', status: 'Verified'
+      });
+      renderMainContent();
+      lucide.createIcons();
+      showToast(`Created immutable snapshot ${snapId}`);
+    }
+
+    function openJsonModal(idx) {
+      const doc = EXPLORER_DOCS[idx];
+      document.getElementById('jsonModalSubtitle').textContent = `${doc.collection} / ${doc.docId}`;
+      document.getElementById('jsonModalContent').textContent = JSON.stringify(doc.payload, null, 2);
+      const m = document.getElementById('jsonModal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeJsonModal() {
+      const m = document.getElementById('jsonModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastText').textContent = msg;
+      t.classList.remove('hidden');
+      t.classList.add('flex');
+      setTimeout(() => {
+        t.classList.add('hidden');
+        t.classList.remove('flex');
+      }, 3200);
+    }
+
+    // Initialize App on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSidebar();
+      renderMainContent();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
