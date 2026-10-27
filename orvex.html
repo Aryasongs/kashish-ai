@@ -347,6 +347,8 @@
     .vid.idle .nf-ui { opacity: 0; pointer-events: none !important; }
     .vid.idle .nf-ui * { pointer-events: none !important; }
     .vid.idle { cursor: none; }
+    .vid.intro #bar, .vid.intro #remain, .vid.intro #skipBack, .vid.intro #skipFwd, .vid.intro #skipBack2, .vid.intro #skipFwd2,
+    .vid.intro #nextBtn, .vid.intro #epBtn, .vid.intro #speedBtn, .vid.intro #aib, .vid.intro #epPanel, .vid.intro #speedPop { display: none !important; }
     .nf-ui { transition: opacity 0.3s ease; }
     .nf-btn { width: 40px; height: 40px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: #fff; opacity: 0.92; transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease; }
     .nf-btn:hover { opacity: 1; transform: scale(1.12); }
@@ -1004,7 +1006,7 @@
         </div>
 
         <!-- Plans Container -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" id="pls"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6" id="pls"></div>
 
         <div class="max-w-md mx-auto">
           <button class="btn-primary w-full py-4 text-sm sm:text-base font-bold" id="buy">Continue</button>
@@ -1153,6 +1155,7 @@
     const M = [
       {
         t: "Tears of Steel",
+        free: 1,
         y: 2012,
         g: "Sci-Fi / Action",
         imdb: "8.9/10",
@@ -1187,6 +1190,7 @@
       },
       {
         t: "Big Buck Bunny",
+        free: 1,
         y: 2008,
         g: "Animation / Comedy",
         imdb: "8.6/10",
@@ -1205,6 +1209,7 @@
       },
       {
         t: "Sita Sings the Blues",
+        free: 1,
         y: 2008,
         g: "Animation / Musical",
         imdb: "9.1/10",
@@ -1335,10 +1340,10 @@
       const activeM = M[currIdx];
       $('#spotTitle').textContent = activeM.t;
       $('#spotImdb').textContent = activeM.imdb + ' IMDb';
-      $('#spotBadge').textContent = activeM.soon ? 'PREMIERE TEASER' : '4K ULTRA HD';
+      $('#spotBadge').textContent = activeM.soon ? 'PREMIERE TEASER' : (activeM.free ? 'FREE' : '4K ULTRA HD');
       $('#spotMeta').textContent = `${activeM.y} • 🎬 ${activeM.g} • ${activeM.d}`;
       $('#spotDesc').textContent = activeM.ds || DS;
-      $('#spotWatchTxt').textContent = activeM.soon ? 'WATCH TEASER' : 'WATCH NOW';
+      $('#spotWatchTxt').textContent = activeM.soon ? 'WATCH TEASER' : (activeM.free ? 'WATCH FREE' : 'WATCH NOW');
       $('#spotWishBtn').textContent = list.includes(currIdx) ? '♥' : '♡';
 
       // Dots
@@ -1383,6 +1388,7 @@
             <img src="${m.im}" alt="${m.t}" loading="lazy" onerror="this.src='https://placehold.co/400x600/1a1625/ffffff?text=${encodeURIComponent(m.t)}'">
             <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"></div>
             <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-[10px] font-bold text-amber border border-white/10">★ ${m.imdb.split('/')[0]}</span>
+            ${m.free ? '<span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-500 text-white shadow">Free</span>' : ''}
             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/35">
               <span class="w-11 h-11 rounded-full bg-crimson text-white flex items-center justify-center shadow-lg">
                 <svg class="w-5 h-5 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>
@@ -1407,7 +1413,7 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-crimson/20 text-ruby border border-crimson/30">${m.soon ? 'Coming Soon' : 'Streaming'}</span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-crimson/20 text-ruby border border-crimson/30">${m.soon ? 'Coming Soon' : (m.free ? 'Free' : 'Streaming')}</span>
               <span class="text-[11px] font-semibold text-amber">★ ${m.imdb}</span>
             </div>
             <h4 class="font-display font-bold text-base text-white mt-1 truncate group-hover:text-ruby transition">${m.t}</h4>
@@ -1431,6 +1437,7 @@
           <div class="poster-card aspect-[2/3] w-full relative">
             <img src="${m.im}" alt="${m.t}" loading="lazy" onerror="this.src='https://placehold.co/400x600/181824/ffffff?text=${encodeURIComponent(m.t)}'">
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+            ${m.free ? '<span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-500 text-white shadow">Free</span>' : ''}
             ${m.soon ? '<span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-gradient-to-r from-crimson to-amber text-white">Soon</span>' : ''}
             <div class="absolute bottom-2.5 left-2.5 right-2.5">
               <span class="text-[10px] font-bold text-amber">★ ${m.imdb}</span>
@@ -1515,13 +1522,13 @@
       img.style.display = '';
       img.src = m.im;
       $('#dhhBg').src = m.im;
-      $('#detBadge').textContent = m.soon ? 'COMING SOON • PREMIERE' : (m.lic ? 'OPEN MOVIE • ' + m.lic : 'ORVEX ORIGINAL');
+      $('#detBadge').textContent = m.soon ? 'COMING SOON • PREMIERE' : (m.free ? 'FREE • ' + m.lic : (m.lic ? 'OPEN MOVIE • ' + m.lic : 'ORVEX ORIGINAL'));
       $('#dtt').textContent = m.t;
       $('#dgn').innerHTML = `${m.y} <span class="text-ruby mx-1.5">•</span> ${m.g.split(' / ').join(' <span class="text-ruby mx-1">•</span> ')}`;
       $('#drt').textContent = m.imdb || '9.0/10';
       $('#ddu').textContent = m.d || 'TBA';
       $('#dds').innerHTML = (m.ds || DS) + (m.cr ? `<br><br><small class="text-white/45 text-xs">${m.cr}</small>` : '');
-      $('#wnbText').textContent = m.soon ? 'Watch Official Teaser' : 'Watch Full Movie';
+      $('#wnbText').textContent = m.soon ? 'Watch Official Teaser' : (m.free ? 'Watch Free' : 'Watch Full Movie');
       $('#detWishBtn').textContent = list.includes(i) ? '♥' : '♡';
 
       // Render Similar Titles
@@ -1685,7 +1692,7 @@
 
     function play(i, ai, tr, resume = false) {
       if (!user && !tr) return needAuth(() => play(i, ai, tr, resume));
-      if (!tr && !sub()) {
+      if (!tr && !M[i].free && !sub()) {
         toast('Choose an ORVEX plan to stream full movies');
         return openPlans(() => play(i, ai, tr, resume));
       }
@@ -1696,7 +1703,7 @@
       hl();
       ctx = t;
 
-      $('#playerTopBadge').textContent = tr ? 'OFFICIAL TEASER' : 'ORVEX STREAM';
+      $('#playerTopBadge').textContent = tr ? 'OFFICIAL TEASER' : (m.free ? 'FREE ON ORVEX' : 'ORVEX STREAM');
       $('#playerTopTitle').textContent = m.t;
       $('#pt').textContent = m.t + (tr ? ' · Official Teaser' : '');
       $('#pm').textContent = `${m.y} · ${m.g} · ★ ${m.imdb} · 4K Dolby Atmos`;
@@ -1735,16 +1742,39 @@
       trial = !!tr;
 
       const srcUrl = (tr && m.tv) ? m.tv : m.v;
-      if (v.getAttribute('src') !== srcUrl) v.src = srcUrl;
       v.poster = m.im || '';
-      v.currentTime = (resume && watchHistory[i]) ? watchHistory[i].time : 0;
+      pendingSrc = srcUrl;
+      pendingTime = (resume && watchHistory[i]) ? watchHistory[i].time : 0;
+      if (INTRO_URL && pendingTime <= 0) {
+        // ORVEX logo intro plays before every movie / trailer, then flows straight into it
+        introPhase = true;
+        vc.classList.add('intro');
+        v.src = INTRO_URL;
+        v.play().catch(() => {});
+        try { pre.src = srcUrl; pre.load(); } catch (e) {}   // warm the cache while the intro plays
+      } else {
+        startMain();
+      }
+    }
+
+    /* ORVEX intro bumper */
+    const INTRO_URL = "https://kashishai.com/1793082778926537.mp4";
+    let introPhase = false, pendingSrc = '', pendingTime = 0;
+    const pre = document.createElement('video');
+    pre.muted = true; pre.preload = 'auto'; pre.playsInline = true;
+    function startMain() {
+      introPhase = false;
+      vc.classList.remove('intro');
+      if (v.getAttribute('src') !== pendingSrc) v.src = pendingSrc;
+      v.currentTime = pendingTime;
       v.play().catch(() => {});
+      try { pre.removeAttribute('src'); pre.load(); } catch (e) {}
     }
 
     const hl = () => $('#hl').textContent = list.includes(pi) ? '♥' : '♡';
     $('#hl').onclick = () => toggleWishlist(pi);
 
-    v.onerror = () => toast('Video stream temporarily unavailable');
+    v.onerror = () => { if (introPhase) return startMain(); toast('Video stream temporarily unavailable'); };
     $('#bk').onclick = () => {
       v.pause();
       renderContinueWatching();
@@ -1766,7 +1796,7 @@
     const ICON_PAUSE = '<path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/>';
     const isPlayerOn = () => $('#player').classList.contains('on');
     const togglePlay = () => { if (v.ended) v.currentTime = 0; v.paused ? v.play().catch(() => {}) : v.pause(); };
-    const seekBy = d => { v.currentTime = Math.max(0, Math.min((v.duration || Infinity) - 0.1, v.currentTime + d)); };
+    const seekBy = d => { if (introPhase) return; v.currentTime = Math.max(0, Math.min((v.duration || Infinity) - 0.1, v.currentTime + d)); };
 
     /* ---- auto-hide UI ---- */
     let idleT = null, dragging = false;
@@ -1825,6 +1855,7 @@
     const pctFrom = e => { const r = bar.getBoundingClientRect(); return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); };
     const paint = p => { $('#pr').style.width = (p * 100) + '%'; };
     function scrub(e) {
+      if (introPhase) return;
       const p = pctFrom(e);
       if (isFinite(v.duration)) { v.currentTime = p * v.duration; paint(p); }
     }
@@ -1847,6 +1878,7 @@
     };
 
     v.ontimeupdate = () => {
+      if (introPhase) return;
       if (trial && v.currentTime > 30) {
         v.pause();
         trial = false;
@@ -1860,7 +1892,7 @@
         try { localStorage.ovHistory = JSON.stringify(watchHistory); } catch (e) {}
       }
     };
-    v.onloadedmetadata = () => { $('#remain').textContent = '-' + fmtT(v.duration); v.onprogress(); };
+    v.onloadedmetadata = () => { if (introPhase) return; $('#remain').textContent = '-' + fmtT(v.duration); v.onprogress(); };
 
     /* ---- buffering spinner ---- */
     const spin = on => $('#nfSpin').classList.toggle('on', on);
@@ -1935,6 +1967,7 @@
     $('#unCancel').onclick = hideUpNext;
     $('#nextBtn').onclick = () => { const j = nextIdx(); if (j >= 0) { v.pause(); play(j, false, false); } };
     v.onended = () => {
+      if (introPhase) return startMain();
       delete watchHistory[pi];
       try { localStorage.ovHistory = JSON.stringify(watchHistory); } catch (e) {}
       if (!trial) showUpNext();
@@ -1978,7 +2011,7 @@
       else if (k === 'f') toggleFs();
       else if (k === 'p') $('#pipBtn').click();
       else if (k === 'escape') { closePops(); used = false; }
-      else if (/^[0-9]$/.test(k) && isFinite(v.duration)) v.currentTime = v.duration * (+k / 10);
+      else if (/^[0-9]$/.test(k) && isFinite(v.duration) && !introPhase) v.currentTime = v.duration * (+k / 10);
       else used = false;
       if (used) { e.preventDefault(); wake(); }
     });
@@ -2089,6 +2122,12 @@
        ============================================================================ */
     const PL = [
       {
+        id: 'free',
+        n: 'Free',
+        m: 0,
+        f: ['Tears of Steel, Big Buck Bunny & Sita Sings the Blues', 'Stream free with a free account', 'Watch official teasers', 'No payment needed']
+      },
+      {
         id: 'basic',
         n: 'Basic',
         m: 149,
@@ -2134,8 +2173,8 @@
             <div class="flex items-baseline justify-between mb-4">
               <h3 class="font-display font-bold text-lg text-white">${p.n}</h3>
               <div class="text-right">
-                <span class="font-display font-extrabold text-2xl text-white">₹${price(p)}</span>
-                <small class="text-xs text-white/50">/${cy === 'y' ? 'yr' : 'mo'}</small>
+                ${p.m === 0 ? '<span class="font-display font-extrabold text-2xl text-white">Free</span>' : `<span class="font-display font-extrabold text-2xl text-white">₹${price(p)}</span>
+                <small class="text-xs text-white/50">/${cy === 'y' ? 'yr' : 'mo'}</small>`}
               </div>
             </div>
             <ul class="space-y-2.5 text-xs text-white/80">
@@ -2151,7 +2190,7 @@
       });
 
       const s = sub();
-      $('#buy').textContent = (s ? 'Current: ' + s.plan.toUpperCase() + ' · ' : '') + 'Continue with ' + PL.find(p => p.id === sel).n + ' · ₹' + price(PL.find(p => p.id === sel));
+      $('#buy').textContent = (s ? 'Current: ' + s.plan.toUpperCase() + ' · ' : '') + 'Continue with ' + PL.find(p => p.id === sel).n + (sel === 'free' ? '' : ' · ₹' + price(PL.find(p => p.id === sel)));
     }
 
     function openPlans(cb) {
@@ -2175,6 +2214,11 @@
     $('#pbk').onclick = () => show('home');
 
     $('#buy').onclick = async () => {
+      if (sel === 'free') {
+        if (!user) return needAuth();
+        toast('Free plan active — enjoy the 3 free movies');
+        return planCb ? (planCb = null, show('home')) : show('home');
+      }
       if (!user) return needAuth();
       const b = $('#buy');
       b.disabled = true;
