@@ -26513,5 +26513,132 @@ html[data-theme="dark"] .active i,html[data-theme="dark"] .on i{color:#4FA8FF;}
   document.addEventListener('DOMContentLoaded',run);
 })();
 </script>
+
+<style id="kd-ui-3">
+/* ===== Kashish Domains UI — components + animations ===== */
+:root{
+  --kd-spring:cubic-bezier(.34,1.56,.64,1); --kd-out:cubic-bezier(.16,1,.3,1); --kd-smooth:cubic-bezier(.22,1,.36,1);
+  --kd-warm:linear-gradient(180deg,#F5F6F8 0%,#FDF8EF 100%);
+  --kd-card-shadow:0 18px 40px -24px rgba(20,24,34,.11); --kd-card-shadow-hover:0 24px 48px -20px rgba(20,24,34,.16);
+  --kd-btn-shadow:0 8px 20px -6px rgba(47,107,255,.55); --kd-btn-shadow-hover:0 12px 24px -6px rgba(47,107,255,.65);
+}
+html[data-theme="dark"]{--kd-warm:linear-gradient(180deg,#1E2027 0%,#191B21 100%);--kd-card-shadow:0 18px 40px -24px rgba(0,0,0,.6);--kd-card-shadow-hover:0 24px 48px -20px rgba(0,0,0,.7);}
+
+/* ---- keyframes (same set as domains) ---- */
+@keyframes kdFadeUp{from{opacity:0;transform:translateY(14px) scale(.992)}to{opacity:1;transform:none}}
+@keyframes kdCardCascade{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes kdRowCascade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes kdShellIn{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes kdModalSpring{0%{opacity:0;transform:translateY(40px) scale(.94)}100%{opacity:1;transform:none}}
+@keyframes kdSheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes kdFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes kdSheen{0%{transform:translateX(-140%) skewX(-18deg)}100%{transform:translateX(260%) skewX(-18deg)}}
+@keyframes kdRing{0%{box-shadow:0 0 0 0 rgba(47,107,255,.45)}100%{box-shadow:0 0 0 20px rgba(47,107,255,0)}}
+@keyframes kdPulseDot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.24);opacity:.78}}
+@keyframes kdBadgePop{0%{transform:scale(.6)}55%{transform:scale(1.28)}100%{transform:scale(1)}}
+@keyframes kdRipple{to{transform:scale(4);opacity:0}}
+@keyframes kdSplashLogo{0%{transform:scale(.2) rotate(-140deg);opacity:0}60%{transform:scale(1.15) rotate(8deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes kdSpin{to{transform:rotate(360deg)}}
+@keyframes kdBell{0%,100%{transform:rotate(0)}20%{transform:rotate(14deg)}40%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}80%{transform:rotate(-4deg)}}
+
+/* ---- screens + shell entrance ---- */
+html:root body .screen.active,html:root body #screen-home:not(.hidden),html:root body #screen-chat:not(.hidden){animation:kdFadeUp .42s var(--kd-out) backwards}
+html:root body #app{animation:kdShellIn .65s var(--kd-out) backwards}
+
+/* ---- cards: white, soft border; warm gradient + lift on hover/press ---- */
+html:root body .gcard{background:var(--card)!important;border:1px solid var(--border)!important;border-radius:16px!important;box-shadow:var(--kd-card-shadow)!important;
+  animation:kdCardCascade .6s var(--kd-out) backwards;transition:transform .32s var(--kd-smooth),box-shadow .32s var(--kd-smooth),background .25s,border-color .25s!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:root body .gcard:hover,html:root body .gcard:active{background:var(--kd-warm)!important;transform:translateY(-4px)!important;box-shadow:var(--kd-card-shadow-hover)!important;border-color:rgba(215,224,242,.9)!important}
+html:root body .gcard:nth-child(1){animation-delay:.12s}html:root body .gcard:nth-child(2){animation-delay:.18s}html:root body .gcard:nth-child(3){animation-delay:.24s}
+html:root body .gcard:nth-child(4){animation-delay:.30s}html:root body .gcard:nth-child(5){animation-delay:.36s}html:root body .gcard:nth-child(n+6){animation-delay:.42s}
+html:root body .quick-pill{background:var(--card)!important;border:1px solid #DCE2EC!important;font-weight:700;animation:kdRowCascade .38s var(--kd-out) backwards;transition:all .15s,transform .2s var(--kd-spring)!important}
+html[data-theme="dark"] body .quick-pill{border-color:var(--border)!important}
+html:root body .quick-pill:hover,html:root body .quick-pill:active{background:var(--ink)!important;color:var(--card)!important;border-color:var(--ink)!important}
+html:root body .recent-item,html:root body .settings-group>*{animation:kdRowCascade .38s var(--kd-out) backwards}
+html:root body .recent-list,html:root body .legal-list,html:root body .settings-group,html:root body .health-card,html:root body .model-sheet-list,html:root body .model-sheet-effort-row{
+  background:var(--card)!important;border:1px solid var(--border)!important;border-radius:16px!important;box-shadow:none!important}
+
+/* ---- primary buttons: blue, shadow, sheen sweep, lift ---- */
+html:root body .profile-save-btn,html:root body .auth-continue-btn.enabled,html:root body .post-nexor-btn,html:root body .fx-hs,html:root body .mic-send-btn.ready{
+  position:relative;overflow:hidden;background:var(--accent)!important;box-shadow:var(--kd-btn-shadow)!important}
+html:root body .profile-save-btn::after,html:root body .auth-continue-btn.enabled::after,html:root body .post-nexor-btn::after,html:root body .fx-hs::after,html:root body .mic-send-btn.ready::after{
+  content:"";position:absolute;top:0;left:0;width:45%;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.28),rgba(255,255,255,0));transform:translateX(-140%) skewX(-18deg);pointer-events:none}
+html:root body .profile-save-btn:hover::after,html:root body .auth-continue-btn.enabled:hover::after,html:root body .post-nexor-btn:hover::after,html:root body .fx-hs:hover::after,html:root body .mic-send-btn.ready:hover::after{animation:kdSheen .75s ease forwards}
+html:root body .profile-save-btn:hover,html:root body .auth-continue-btn.enabled:hover,html:root body .post-nexor-btn:hover{transform:translateY(-1px);box-shadow:var(--kd-btn-shadow-hover)!important}
+html:root body .msg-draft .md-send{box-shadow:var(--kd-btn-shadow);position:relative;overflow:hidden}
+/* secondary buttons: soft grey */
+html:root body .md-edit,html:root body .quick-replies button{background:#F1F2F4!important;color:#3C4043!important;border:0!important}
+html[data-theme="dark"] body .md-edit,html[data-theme="dark"] body .quick-replies button{background:#1E2027!important;color:#F5F5F7!important}
+html:root body .md-edit:hover,html:root body .quick-replies button:hover{background:#E4E6EB!important}
+html[data-theme="dark"] body .md-edit:hover,html[data-theme="dark"] body .quick-replies button:hover{background:#262932!important}
+
+/* ---- inputs: focus ring like domains search ---- */
+html:root body .chat-pill:focus-within,html:root body .fx-hc:focus-within,html:root body .profile-field input:focus{border-color:#D2DAE8!important;box-shadow:0 6px 20px -8px rgba(47,107,255,.2)!important;background:var(--card)!important}
+html:root body input[type=checkbox],html:root body input[type=radio]{accent-color:#2F6BFF}
+
+/* ---- bars: frosted white like the domains header ---- */
+html:not([data-theme="dark"]) body .chat-topbar,html:not([data-theme="dark"]) body .topbar-home{background:rgba(255,255,255,.84)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid #ECEEF2}
+html:not([data-theme="dark"]) body .nav-pill,html:not([data-theme="dark"]) body .home-bottom{background:rgba(255,255,255,.84)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid #ECEEF2}
+html:root body .fx-tab.on{background:#EDF3FF!important;color:#2F6BFF!important;font-weight:700}
+html[data-theme="dark"] body .fx-tab.on{background:rgba(79,168,255,.14)!important;color:#4FA8FF!important}
+html:root body .fx-tab i{transition:transform .3s var(--kd-spring)}
+html:root body .fx-tab.on i,html:root body .fx-tab:active i{transform:scale(1.15)}
+html:root body .bell-btn:hover i,html:root body .bell-btn:active i{animation:kdBell .7s ease}
+
+/* ---- overlays, sheets, modals ---- */
+html:root body .sheet-overlay{background:rgba(15,20,30,.48)!important;-webkit-backdrop-filter:blur(6px)!important;backdrop-filter:blur(6px)!important}
+html:root body .sheet-overlay:not(.hidden){animation:kdFadeUp .25s ease both}
+html:root body .model-sheet{border-radius:22px 22px 0 0!important;background:var(--card)!important;box-shadow:0 -28px 65px -18px rgba(0,0,0,.35);animation:kdSheetUp .45s var(--kd-out) both}
+html:root body .modal-box,html:root body .home-menu,html:root body .tyu-card{animation:kdModalSpring .5s var(--kd-spring) both}
+html:root body .kashish-toast{background:#18191C!important;color:#fff!important;border-radius:12px!important;font-weight:700;box-shadow:0 14px 30px -10px rgba(0,0,0,.35)}
+html[data-theme="dark"] body .kashish-toast{background:#F5F5F7!important;color:#18191C!important}
+
+/* ---- chat bubbles: user blue, bot soft; spring in ---- */
+html:root body .bubble.user{background:var(--accent)!important;color:#fff!important}
+html:root body .bubble.bot{background:var(--bubble-bot)!important;color:var(--ink)!important}
+html:root body .bubble-row{animation:kdFadeUp .38s var(--kd-out) both}
+
+/* ---- logo: float + hover wiggle, status pulses, spinners, badges ---- */
+.kd-logo{animation:kdFloat 4.5s ease-in-out infinite;transition:transform .35s var(--kd-spring),box-shadow .35s}
+.kd-logo:hover{transform:scale(1.08) rotate(-6deg);box-shadow:0 12px 26px -5px rgba(66,133,244,.55)}
+.ph-spinner,.spin-anim{display:inline-block;animation:kdSpin .9s linear infinite}
+.badge,.badge-count,.notif-dot,.dt-plus-badge{animation:kdBadgePop .36s var(--kd-spring)}
+html:root body .typing-bubble span,html:root body .typing-dot{animation-name:kdPulseDot}
+
+/* ---- tap ripple (JS adds .kd-ripple) ---- */
+.kd-ripple{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:rgba(255,255,255,.55);animation:kdRipple .7s ease-out forwards;pointer-events:none}
+
+/* ---- splash (gradient + bouncing logo) ---- */
+#kd-splash{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:linear-gradient(135deg,#2F6BFF,#8A5CF6 55%,#EA4335);transition:clip-path .8s cubic-bezier(.77,0,.18,1);clip-path:circle(150% at 50% 50%);pointer-events:none}
+#kd-splash.out{clip-path:circle(0% at 50% 50%)}
+#kd-splash .logo{width:84px;height:84px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;animation:kdSplashLogo 1s var(--kd-spring) both;box-shadow:0 20px 50px -10px rgba(0,0,0,.4)}
+#kd-splash b{color:#fff;font-size:26px;letter-spacing:-.02em;font-family:Manrope,system-ui,sans-serif;animation:kdFadeUp .8s .5s both}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}#kd-splash{display:none}}
+</style>
+<script id="kd-fx">
+(function(){
+  try{
+    // tap ripple on primary buttons
+    document.addEventListener('pointerdown',function(e){
+      var b=e.target.closest&&e.target.closest('.profile-save-btn,.auth-continue-btn.enabled,.post-nexor-btn,.fx-hs,.md-send');
+      if(!b)return; var r=b.getBoundingClientRect(),d=document.createElement('span');
+      d.className='kd-ripple';d.style.left=(e.clientX-r.left)+'px';d.style.top=(e.clientY-r.top)+'px';
+      if(getComputedStyle(b).position==='static')b.style.position='relative';
+      b.appendChild(d);setTimeout(function(){d.remove()},700);
+    },{passive:true});
+    // splash: gradient + bouncing logo, then circle-wipe out
+    if(!sessionStorage.getItem('kdSplash')){
+      sessionStorage.setItem('kdSplash','1');
+      var sp=document.createElement('div');sp.id='kd-splash';
+      sp.innerHTML='<div class="logo"><span class="kd-logo" style="width:56px;height:56px;margin:0;animation:none"><img class="app-logo-mark" data-app-logo alt=""></span></div><b>Kashish AI</b>';
+      document.body.appendChild(sp);
+      var src=document.querySelector('img.app-logo-mark[src]:not([src=""])');
+      if(src) sp.querySelector('img').src=src.src;
+      setTimeout(function(){sp.classList.add('out')},1300);
+      setTimeout(function(){sp.remove()},2200);
+    }
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
