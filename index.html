@@ -1016,7 +1016,7 @@ html[data-theme="dark"] .person-card.featured .pc-note{color:#c98a9c;}
 .msg-more-menu{position:fixed;z-index:60;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 30px -10px rgba(20,20,22,.35);min-width:170px;overflow:hidden;}
 .msg-more-menu button{display:flex;align-items:center;gap:9px;width:100%;padding:12px 14px;font-size:13.5px;font-weight:600;color:var(--ink);text-align:left;}
 .msg-more-menu button:active{background:var(--bubble-bot);}
-.msg-more-menu button.danger{color:#E5484D;}
+.msg-more-menu button.danger{color:#D93838;}
 .msg-more-backdrop{position:fixed;inset:0;z-index:59;}
 
 /* ---------------- long-press message menu (iOS-style liquid glass) ----------------
@@ -1051,8 +1051,8 @@ html[data-theme="dark"] .lp-menu{background:rgba(26,32,48,.68);border-color:rgba
 .lp-menu button i{font-size:17px;color:var(--ink-soft);flex-shrink:0;}
 .lp-menu button+button{border-top:1px solid rgba(120,120,128,.16);}
 .lp-menu button:active{background:rgba(120,120,128,.16);}
-.lp-menu button.danger{color:#E5484D;}
-.lp-menu button.danger i{color:#E5484D;}
+.lp-menu button.danger{color:#D93838;}
+.lp-menu button.danger i{color:#D93838;}
 .kashish-toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:rgba(20,20,22,.92);color:#fff;font-size:12.5px;font-weight:600;padding:9px 16px;border-radius:999px;z-index:70;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap;}
 .kashish-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .attach-preview img{width:38px;height:38px;object-fit:cover;border-radius:8px;flex-shrink:0;}
@@ -2361,7 +2361,7 @@ button,[onclick],a{-webkit-tap-highlight-color:transparent}
 .fx-who{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;opacity:.5;min-height:1em;margin-bottom:-8px}
 #screen-voice .voice-msg{font-size:21px;font-weight:700;max-width:340px;min-height:3.6em;max-height:9.6em;overflow-y:auto;-webkit-mask-image:linear-gradient(#000 82%,transparent);mask-image:linear-gradient(#000 82%,transparent);padding-bottom:6px}
 #screen-voice .voice-hint{font-size:13px;padding:6px 14px;border-radius:999px;background:rgba(127,127,127,.12)}
-#screen-voice .voice-controls .voice-ctrl:last-child{background:#FF3B30!important;color:#fff!important;border-color:transparent!important}
+#screen-voice .voice-controls .voice-ctrl:last-child{background:#D93838!important;color:#fff!important;border-color:transparent!important}
 @media (prefers-reduced-motion:reduce){#screen-voice .orb,.fx-ring{animation:none!important}}
 </style>
 <style id="fx-css7">
@@ -3304,11 +3304,11 @@ html[data-theme="dark"] .mb-card{background:linear-gradient(150deg,#1E2027,#141B
       <div class="chat-input-row">
         <div class="plus-menu hidden" id="plus-menu">
           <div class="plus-head"><span>Add</span></div>
-          <button type="button" class="plus-item" onclick="plusPick(function(){document.getElementById('camera-input').click()})"><span class="pi" style="color:#FF9F0A"><i class="ph-fill ph-camera"></i></span>Camera</button>
+          <button type="button" class="plus-item" onclick="plusPick(function(){document.getElementById('camera-input').click()})"><span class="pi" style="color:#D97706"><i class="ph-fill ph-camera"></i></span>Camera</button>
           <button type="button" class="plus-item" onclick="plusPick(function(){document.getElementById('image-input').click()})"><span class="pi" style="color:#30B0C7"><i class="ph-fill ph-paperclip"></i></span>Photos &amp; files</button>
           <button type="button" class="plus-item" onclick="plusPick(function(){plusPrefill('#imagine ')})"><span class="pi" style="color:#4FA8FF"><i class="ph-fill ph-image"></i></span>Create image</button>
           <button type="button" class="plus-item" onclick="plusPick(function(){document.getElementById('doc-input').click()})"><span class="pi" style="color:#8E6BFF"><i class="ph-fill ph-file-pdf"></i></span>Read PDF / document</button>
-          <button type="button" class="plus-item" onclick="plusPick(function(){plusPrefill('Find a video about ')})"><span class="pi" style="color:#FF453A"><i class="ph-fill ph-youtube-logo"></i></span>YouTube</button>
+          <button type="button" class="plus-item" onclick="plusPick(function(){plusPrefill('Find a video about ')})"><span class="pi" style="color:#FF6B6B"><i class="ph-fill ph-youtube-logo"></i></span>YouTube</button>
           <button type="button" class="plus-item" onclick="plusPick(function(){plusPrefill('/find ')})"><span class="pi" style="color:#2E9E6B"><i class="ph-fill ph-magnifying-glass"></i></span>Find product</button>
         </div>
         <div class="chat-pill">
@@ -4561,7 +4561,7 @@ html[data-theme="dark"] .mb-card{background:linear-gradient(150deg,#1E2027,#141B
            user sees is either real or absent — never faked. Calories are
            a rough, clearly-labeled estimate from steps × body weight. -->
       <div class="health-card">
-        <div class="health-card-title"><span class="metric-icon" style="background:#FF9F0A;"><i class="ph-fill ph-footprints"></i></span> Steps today</div>
+        <div class="health-card-title"><span class="metric-icon" style="background:#D97706;"><i class="ph-fill ph-footprints"></i></span> Steps today</div>
         <div class="water-row">
           <div class="water-count"><span id="steps-count-num">0</span><span> steps</span></div>
           <button class="breathe-btn" id="steps-toggle-btn" style="width:auto;padding:9px 16px;" onclick="toggleStepTracking()">Enable tracking</button>
@@ -4584,7 +4584,7 @@ html[data-theme="dark"] .mb-card{background:linear-gradient(150deg,#1E2027,#141B
            estimate (MET × weight(kg) × hours) — a widely used approximation,
            not a lab measurement, so it's clearly labeled as such. -->
       <div class="health-card">
-        <div class="health-card-title"><span class="metric-icon" style="background:#30D158;"><i class="ph-fill ph-barbell"></i></span> Log a workout</div>
+        <div class="health-card-title"><span class="metric-icon" style="background:#34A853;"><i class="ph-fill ph-barbell"></i></span> Log a workout</div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
           <div class="sidebar-search" style="flex:1;background:var(--bubble-bot);">
             <i class="ph ph-magnifying-glass"></i>
@@ -4634,7 +4634,7 @@ html[data-theme="dark"] .mb-card{background:linear-gradient(150deg,#1E2027,#141B
       <!-- Resting heart rate — manual log against the standard published
            clinical adult resting range (60–100 bpm, AHA), not invented. -->
       <div class="health-card">
-        <div class="health-card-title"><span class="metric-icon" style="background:#FF453A;"><i class="ph-fill ph-heartbeat"></i></span> Resting heart rate</div>
+        <div class="health-card-title"><span class="metric-icon" style="background:#FF6B6B;"><i class="ph-fill ph-heartbeat"></i></span> Resting heart rate</div>
         <div class="mini-field-row">
           <div class="mini-field"><label>BPM</label><input id="hr-input" type="number" placeholder="72"></div>
           <button class="circle-btn" onclick="logHeartRate()"><i class="ph ph-check"></i></button>
@@ -4693,7 +4693,7 @@ html[data-theme="dark"] .mb-card{background:linear-gradient(150deg,#1E2027,#141B
            never an assumed or rounded "typical" value. Macros (protein/
            carbs/fat) come from the same real record when present. -->
       <div class="health-card">
-        <div class="health-card-title"><span class="metric-icon" style="background:#34C759;"><i class="ph-fill ph-fork-knife"></i></span> Log a meal</div>
+        <div class="health-card-title"><span class="metric-icon" style="background:#129A56;"><i class="ph-fill ph-fork-knife"></i></span> Log a meal</div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
           <div class="sidebar-search" style="flex:1;background:var(--bubble-bot);">
             <i class="ph ph-magnifying-glass"></i>
@@ -4982,7 +4982,7 @@ html[data-theme="dark"] .mb-card{background:linear-gradient(150deg,#1E2027,#141B
 <script src="https://unpkg.com/dompurify@3.0.8/dist/purify.min.js"></script>
 <!-- Google Identity Services — OAuth popup used for the read-only Gmail connector -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>.soon-badge.connected{background:rgba(52,199,89,.16);color:#34C759}</style>
+<style>.soon-badge.connected{background:rgba(52,199,89,.16);color:#129A56}</style>
 <script>
       (function(){
         var irisFrames = [
@@ -7134,11 +7134,11 @@ function showBanScreen(){
   if(_banScreenShown) return; _banScreenShown=true;
   const st=document.createElement('style');
   st.textContent=`
-  #ban-screen{--bg:#f2f2f7;--card:#fff;--tx:#000;--tx2:rgba(60,60,67,.6);--sep:rgba(60,60,67,.18);--blue:#007aff;--red:#ff3b30;--green:#34c759;
+  #ban-screen{--bg:#f2f2f7;--card:#fff;--tx:#000;--tx2:rgba(60,60,67,.6);--sep:rgba(60,60,67,.18);--blue:#2F6BFF;--red:#D93838;--green:#129A56;
     position:fixed;inset:0;z-index:2147483647;background:var(--bg);color:var(--tx);display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:max(24px,env(safe-area-inset-top)) 24px max(24px,env(safe-area-inset-bottom));text-align:center;
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow:auto}
-  @media (prefers-color-scheme:dark){#ban-screen{--bg:#000;--card:#1c1c1e;--tx:#fff;--tx2:rgba(235,235,245,.6);--sep:rgba(84,84,88,.6);--blue:#0a84ff;--red:#ff453a;--green:#30d158}}
+  @media (prefers-color-scheme:dark){#ban-screen{--bg:#000;--card:#1c1c1e;--tx:#fff;--tx2:rgba(235,235,245,.6);--sep:rgba(84,84,88,.6);--blue:#4FA8FF;--red:#FF6B6B;--green:#34A853}}
   #ban-screen .b-ic{width:76px;height:76px;border-radius:50%;background:color-mix(in srgb,var(--red) 14%,transparent);display:flex;align-items:center;justify-content:center;margin-bottom:22px}
   #ban-screen h1{font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.4px;margin:0 0 10px}
   #ban-screen p{font-size:16px;line-height:1.4;color:var(--tx2);margin:0;max-width:300px}
@@ -21739,7 +21739,7 @@ html[data-theme="dark"] .ty-cd b{color:#fff}html[data-theme="dark"] .ty-cd span{
 /* ===== Kashi — iOS "Liquid Glass" v2 · minimal composer, blue accents =====
    Loads after everything else. Delete this block to go back. */
 :root{
-  --ios-blue:#0A84FF;
+  --ios-blue:#4FA8FF;
   --lg-blur:28px; --lg-sat:190%;
   --lg-fill:rgba(255,255,255,.42); --lg-fill-strong:rgba(255,255,255,.62);
   --lg-edge:rgba(255,255,255,.80); --lg-edge-dim:rgba(255,255,255,.40);
@@ -21819,7 +21819,7 @@ html[data-theme="dark"]{
   -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--lg-shadow)!important;font-weight:600!important;}
 .stop-gen .dot{border-color:var(--ink)!important;}.stop-gen .dot i{color:var(--ink)!important;}
 .confirm-sheet-btn.ok{background:linear-gradient(180deg,#3DA0FF,var(--ios-blue))!important;}
-.confirm-sheet-btn.ok.danger{background:#FF453A!important;}
+.confirm-sheet-btn.ok.danger{background:#FF6B6B!important;}
 .confirm-sheet-btn.cancel{background:var(--lg-fill-strong)!important;border:1px solid var(--lg-edge);}
 .effort-toggle{background:rgba(120,130,150,.16)!important;}
 .effort-toggle button.active{background:var(--lg-fill-strong)!important;color:var(--ink)!important;box-shadow:var(--lg-shadow);}
@@ -24879,7 +24879,7 @@ setTimeout(addButtons, 1500);
   Paste this block before </body> in index.html, replacing the old panel block.
 -->
 <style>
-#whb-overlay{ --whb-blue:#007AFF; --whb-green:#34C759; --whb-red:#FF3B30; --whb-orange:#FF9500; --whb-gray:#8E8E93; --whb-bg:#F2F2F7; --whb-card:#FFFFFF; --whb-sep:rgba(60,60,67,.29); --whb-text:#000; --whb-sub:#6E6E73; }
+#whb-overlay{ --whb-blue:#2F6BFF; --whb-green:#129A56; --whb-red:#D93838; --whb-orange:#D97706; --whb-gray:#8E8E93; --whb-bg:#F2F2F7; --whb-card:#FFFFFF; --whb-sep:rgba(60,60,67,.29); --whb-text:#000; --whb-sub:#6E6E73; }
 @media (prefers-color-scheme: dark){ #whb-overlay{ --whb-bg:#000; --whb-card:#1C1C1E; --whb-sep:rgba(84,84,88,.6); --whb-text:#fff; --whb-sub:#9B9BA1; } }
 #whb-overlay *{ box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",Helvetica,Arial,sans-serif; }
 #whb-overlay.hidden{ display:none; }
@@ -24962,7 +24962,7 @@ setTimeout(addButtons, 1500);
 @keyframes whbspin{ to{ transform:rotate(360deg); } }
 #whb-full{ position:fixed; inset:0; z-index:10100; background:var(--whb-bg,#000); display:flex; flex-direction:column; }
 #whb-full .bar{ padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px; display:flex; justify-content:space-between; align-items:center; color:#fff; background:#1C1C1E; font-family:-apple-system,Helvetica,Arial,sans-serif; font-size:15px; }
-#whb-full .bar button{ background:#007AFF; color:#fff; border:none; border-radius:8px; padding:7px 14px; font-size:14px; font-weight:600; }
+#whb-full .bar button{ background:#2F6BFF; color:#fff; border:none; border-radius:8px; padding:7px 14px; font-size:14px; font-weight:600; }
 #whb-full iframe{ flex:1; border:0; background:#fff; width:100%; }
 </style>
 
@@ -26477,5 +26477,41 @@ html[data-theme="dark"] #app{background:
   #0B0C10!important;}
 html[data-theme="dark"]{--lg-fill:rgba(30,32,39,.62);--lg-fill-strong:rgba(30,32,39,.88);}
 </style>
+
+<style id="kd-palette-2">
+/* ===== Domains: logo, text and icon colours ===== */
+:root{--ink-muted:#9699A1;--kd-logo:conic-gradient(from 215deg at 50% 50%,#34A853 0deg,#4285F4 95deg,#EA4335 195deg,#FBBC05 295deg,#34A853 360deg);}
+.kd-logo{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:30px;height:30px;border-radius:25%;background:var(--kd-logo);box-shadow:0 8px 20px -6px rgba(66,133,244,.4);overflow:hidden;margin-right:6px;vertical-align:middle;}
+.kd-logo .app-logo-mark,html[data-theme="dark"] .kd-logo .app-logo-mark{height:60%!important;width:60%!important;margin:0!important;object-fit:contain;filter:brightness(0) invert(1)!important;}
+.chat-topbar .kd-logo{width:26px;height:26px;}
+.dt-rail-avatar .kd-logo{width:36px;height:36px;margin:0;}
+/* text */
+::placeholder{color:#9699A1!important;opacity:1;}
+html[data-theme="dark"] ::placeholder{color:#75757F!important;}
+.greeting .hi{color:#9699A1!important;}
+.greeting .q{background:linear-gradient(90deg,#18191C 20%,#2F6BFF 45%,#8A5CF6 55%,#18191C 80%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:kdTextFlow 7s linear infinite;}
+html[data-theme="dark"] .greeting .q{background:linear-gradient(90deg,#F5F5F7 20%,#4FA8FF 45%,#8A5CF6 55%,#F5F5F7 80%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+@keyframes kdTextFlow{to{background-position:200% center}}
+.sidebar-brand,.home-menu-brand{font-weight:700;color:#3C4043;letter-spacing:-.02em;}
+html[data-theme="dark"] .sidebar-brand,html[data-theme="dark"] .home-menu-brand{color:#F5F5F7;}
+/* icons: same tones as domains (ink / soft / muted, blue when active) */
+i.ph,i.ph-bold,i.ph-fill{color:inherit;}
+.nav-item i,.tab-btn i,.bottom-nav i{color:#9699A1;}
+.active i,.on i,.tab-btn.active i,.nav-item.active i{color:#2F6BFF;}
+html[data-theme="dark"] .active i,html[data-theme="dark"] .on i{color:#4FA8FF;}
+</style>
+<script id="kd-logo-wrap">
+(function(){
+  function wrap(img){
+    if(!img || img.parentElement && img.parentElement.classList.contains('kd-logo')) return;
+    var w=document.createElement('span'); w.className='kd-logo';
+    img.parentNode.insertBefore(w,img); w.appendChild(img);
+  }
+  function run(){ try{ document.querySelectorAll('img.app-logo-mark').forEach(wrap); }catch(e){} }
+  run();
+  try{ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true}); }catch(e){}
+  document.addEventListener('DOMContentLoaded',run);
+})();
+</script>
 </body>
 </html>
