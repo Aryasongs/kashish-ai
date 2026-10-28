@@ -26101,7 +26101,8 @@ var FX=[
 ["Devices","iphone","iPhone app","device-mobile","showScreen('screen-iphone')"]
 ].map(function(a){return{g:a[0],k:a[1],l:a[2],i:a[3],a:a[4],c:a[5]||""}});
 var GR=["Talk","Create","Do","Explore","Devices"];
-function btn(f){return '<button class="fx-it '+f.c+'" onclick="fxGo(\''+f.k+'\')"><i class="ph-bold ph-'+f.i+'"></i>'+f.l+'</button>'}
+var KD_DESC={life:'Get calm help with everyday situations.',images:'Turn a few words into an image.',codex:'Write, run and fix code.',web:'Build a website in minutes.',domain:'Find and register your domain.',cowork:'Hand off bigger tasks.',bots:'Create your own AI helpers.',tasks:'Plan and tick off your day.',remind:'Never miss what matters.',bucket:'Save things you want to do.',lib:'Everything you saved, in one place.',space:'Explore planets and the sky.',weather:'Live weather for any city.',yt:'Find and summarise videos.',health:'Keep an eye on your numbers.',iris:'Connect your smart glasses.',iphone:'Get Kashish on your iPhone.'};
+function btn(f){return '<button class="fx-it '+f.c+'" onclick="fxGo(\''+f.k+'\')"><i class="ph-bold ph-'+f.i+'"></i><span class="t">'+f.l+'</span><span class="r"></span><span class="d">'+(KD_DESC[f.k]||'')+'</span></button>'}
 function groups(list){return GR.map(function(g){var L=list.filter(function(f){return f.g===g});return L.length?'<div class="fx-h">'+g+'</div><div class="fx-grid">'+L.map(btn).join('')+'</div>':''}).join('')}
 window.fxClose=function(){var t=document.getElementById('fx-tools');t&&t.classList.remove('on')};
 window.fxGo=function(k){var f=FX.find(function(x){return x.k===k});if(!f)return;try{window.closeHomeMenu&&closeHomeMenu()}catch(e){}fxClose();try{(new Function(f.a))()}catch(e){console.warn(e)}};
@@ -26639,6 +26640,71 @@ html:root body .typing-bubble span,html:root body .typing-dot{animation-name:kdP
     }
   }catch(e){}
 })();
+</script>
+
+<style id="kd-ui-4">
+/* ===== Clean "Domains" look: white canvas, soft tints, mesh-gradient icons ===== */
+:root{--kd-mesh:
+  radial-gradient(circle at 18% 20%,#FF4D4D 0%,rgba(255,77,77,0) 60%),
+  radial-gradient(circle at 85% 22%,#2F88FF 0%,rgba(47,136,255,0) 62%),
+  radial-gradient(circle at 20% 85%,#FFB800 0%,rgba(255,184,0,0) 65%),
+  radial-gradient(circle at 82% 82%,#19C37D 0%,rgba(25,195,125,0) 65%),#4A90E2;
+  --kd-logo:var(--kd-mesh);}
+html:root:not([data-theme="dark"]) body #app{background:
+  radial-gradient(520px circle at 96% 38%,rgba(209,231,255,.58) 0%,rgba(209,231,255,0) 72%),
+  radial-gradient(460px circle at 6% 98%,rgba(255,243,217,.55) 0%,rgba(255,243,217,0) 70%),#FFFFFF!important}
+html:root:not([data-theme="dark"]) body,html:root:not([data-theme="dark"]){background:#F0F0F0}
+.kd-logo{border-radius:22%;box-shadow:0 6px 16px -6px rgba(47,107,255,.35)}
+
+/* greeting: black line + light grey line */
+html:root body .greeting{padding:26px 22px 6px}
+html:root body .greeting .hi{font-size:30px!important;font-weight:500!important;letter-spacing:-.025em;line-height:1.2;color:#18191C!important}
+html:root body .greeting .q{font-size:30px!important;font-weight:300!important;letter-spacing:-.025em;line-height:1.22;color:#9A9CA3!important;background:none!important;-webkit-text-fill-color:#9A9CA3!important;animation:none!important}
+html[data-theme="dark"] body .greeting .hi{color:#F5F5F7!important}
+html[data-theme="dark"] body .greeting .q{color:#75757F!important;-webkit-text-fill-color:#75757F!important}
+.kd-hint{display:block;margin:18px 0 4px;font-size:13.5px;font-weight:500;color:#3B78FF;animation:kdFadeUp .55s var(--kd-out) .22s backwards}
+html[data-theme="dark"] .kd-hint{color:#4FA8FF}
+
+/* tool tiles = the four action cards, in a 2-col grid */
+html:root body .fx-h{font-size:11.5px;font-weight:700;letter-spacing:.08em;color:#9699A1;opacity:1;margin:26px 6px 12px}
+html:root body .fx-grid{grid-template-columns:1fr 1fr;gap:14px}
+@media(min-width:561px){html:root body .fx-grid{grid-template-columns:repeat(3,1fr)}}
+html:root body .fx-it{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start;gap:0!important;
+  padding:18px 16px 16px!important;border-radius:12px!important;text-align:left!important;min-height:168px;
+  background:transparent!important;border:1px solid transparent!important;box-shadow:none!important;
+  animation:kdCardCascade .6s var(--kd-out) backwards;transition:transform .32s var(--kd-smooth),box-shadow .32s,background .25s,border-color .25s!important}
+html:root body .fx-h:first-child + .fx-grid .fx-it:first-child{background:var(--kd-warm)!important;border-color:rgba(235,236,240,.75)!important;box-shadow:var(--kd-card-shadow)!important}
+html:root body .fx-it:hover,html:root body .fx-it:active{background:var(--kd-warm)!important;transform:translateY(-5px)!important;box-shadow:var(--kd-card-shadow-hover)!important;border-color:rgba(215,224,242,.9)!important}
+html:root body .fx-grid .fx-it:nth-child(2){animation-delay:.08s}html:root body .fx-grid .fx-it:nth-child(3){animation-delay:.14s}html:root body .fx-grid .fx-it:nth-child(4){animation-delay:.2s}html:root body .fx-grid .fx-it:nth-child(n+5){animation-delay:.26s}
+/* the icon: blurred mesh-gradient squircle with a white glyph */
+html:root body .fx-it i{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff!important;
+  background:var(--kd-mesh);margin-bottom:18px;box-shadow:0 8px 18px -8px rgba(47,107,255,.45);transition:transform .36s var(--kd-spring),box-shadow .3s}
+html:root body .fx-grid .fx-it:nth-child(4n+2) i{background:
+  radial-gradient(circle at 82% 20%,#FF4D4D 0%,rgba(255,77,77,0) 60%),radial-gradient(circle at 15% 22%,#2F88FF 0%,rgba(47,136,255,0) 62%),
+  radial-gradient(circle at 80% 85%,#FFB800 0%,rgba(255,184,0,0) 65%),radial-gradient(circle at 18% 82%,#19C37D 0%,rgba(25,195,125,0) 65%),#4A90E2}
+html:root body .fx-grid .fx-it:nth-child(4n+3) i{background:
+  radial-gradient(circle at 20% 82%,#FF4D4D 0%,rgba(255,77,77,0) 60%),radial-gradient(circle at 84% 78%,#2F88FF 0%,rgba(47,136,255,0) 62%),
+  radial-gradient(circle at 18% 18%,#FFB800 0%,rgba(255,184,0,0) 65%),radial-gradient(circle at 82% 20%,#19C37D 0%,rgba(25,195,125,0) 65%),#4A90E2}
+html:root body .fx-grid .fx-it:nth-child(4n+4) i{background:
+  radial-gradient(circle at 84% 80%,#FF4D4D 0%,rgba(255,77,77,0) 60%),radial-gradient(circle at 18% 80%,#2F88FF 0%,rgba(47,136,255,0) 62%),
+  radial-gradient(circle at 82% 18%,#FFB800 0%,rgba(255,184,0,0) 65%),radial-gradient(circle at 16% 20%,#19C37D 0%,rgba(25,195,125,0) 65%),#4A90E2}
+html:root body .fx-it:hover i,html:root body .fx-it:active i{transform:scale(1.09) rotate(-4deg);box-shadow:0 16px 30px -8px rgba(47,107,255,.48)}
+html:root body .fx-it .t{font-size:14.5px;font-weight:700;color:var(--ink);margin-bottom:12px}
+html:root body .fx-it .r{display:block;width:28px;height:1.5px;background:#E4E6EB;margin-bottom:12px;transition:width .32s var(--kd-smooth),background .32s}
+html:root body .fx-it:hover .r,html:root body .fx-it:active .r{width:48px;background:#2F6BFF}
+html:root body .fx-it .d{font-size:12px;line-height:1.55;font-weight:400;color:#9A9CA5}
+html[data-theme="dark"] body .fx-it .r{background:#2A2C33}
+
+/* flat, clean buttons everywhere (domains cards buttons) */
+html:root body .profile-save-btn,html:root body .auth-continue-btn.enabled,html:root body .post-nexor-btn{border-radius:8px!important}
+/* hide the old chip rows so the page stays clean */
+html:root body .quick-row{margin-top:6px}
+</style>
+<script id="kd-hint">
+(function(){try{
+  function add(){var g=document.querySelector('.greeting');if(g&&!g.querySelector('.kd-hint')){var h=document.createElement('span');h.className='kd-hint';h.textContent='Pick a tool below, or just ask anything to get started.';g.appendChild(h);}}
+  add();document.addEventListener('DOMContentLoaded',add);setTimeout(add,800);
+}catch(e){}})();
 </script>
 </body>
 </html>
