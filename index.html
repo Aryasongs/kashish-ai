@@ -2529,6 +2529,10 @@ body.guest-mode .iris-login-pill{display:inline-flex;}
 .msg-draft .md-edit{display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 20px 0 18px;border:1px solid var(--border);border-radius:999px;background:var(--card);font-size:16px;font-weight:500;color:var(--ink);}
 .msg-draft .md-edit i{font-size:19px;}
 .msg-draft .md-edit:active{opacity:.6;}
+.msg-draft .md-right{display:flex;align-items:center;gap:6px;}
+.msg-draft .md-send{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;cursor:pointer;}
+.msg-draft .md-send i{font-size:18px;}
+.msg-draft .md-send:active{opacity:.6;}
 .msg-draft .md-copy{color:#9a9aa3;font-size:22px;padding:8px 4px 8px 8px;display:flex;align-items:center;justify-content:center;}
 .msg-draft .md-copy:active{opacity:.6;}
 .msg-draft .md-body{font-size:16px;line-height:1.7;color:var(--ink);white-space:pre-wrap;word-break:break-word;padding:0 2px 0 18px;outline:none;}
@@ -8854,7 +8858,7 @@ function renderMarkdownSafe(text){
         const draftText = (codeEl.textContent || '').replace(/^\s*\n/, '').replace(/\s+$/, '');
         const card = document.createElement('div');
         card.className = 'msg-draft';
-        card.innerHTML = '<div class="md-head"><button type="button" class="md-edit"><i class="ph ph-pencil-simple-line"></i><span>Edit</span></button><button type="button" class="md-copy" aria-label="Copy message"><i class="ph ph-copy"></i></button></div><div class="md-body"></div>';
+        card.innerHTML = '<div class="md-head"><button type="button" class="md-edit"><i class="ph ph-pencil-simple-line"></i><span>Edit</span></button><span class="md-right"><button type="button" class="md-send" aria-label="Send message"><i class="ph-fill ph-paper-plane-tilt"></i><span>Send</span></button><button type="button" class="md-copy" aria-label="Copy message"><i class="ph ph-copy"></i></button></span></div><div class="md-body"></div>';
         card.querySelector('.md-body').textContent = draftText;
         pre.parentNode.replaceChild(card, pre);
         return;
@@ -9011,9 +9015,33 @@ function toggleDraftEdit(card){
   btn.querySelector('span').textContent = editing ? 'Done' : 'Edit';
   btn.querySelector('i').className = editing ? 'ph ph-check' : 'ph ph-pencil-simple-line';
 }
+// Send: opens the phone's share sheet (WhatsApp, Slack, SMS...) with the text;
+// where that isn't available, falls back to a WhatsApp link, then to Copy.
+async function sendDraftMessage(text){
+  if(!text){ showKashishToast('Nothing to send'); return; }
+  try{
+    if(navigator.share){ await navigator.share({ text: text }); return; }
+  }catch(err){
+    if(err && err.name === 'AbortError') return;
+  }
+  try{
+    const w = window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+    if(w) return;
+  }catch(err){}
+  try{ await navigator.clipboard.writeText(text); showKashishToast('Copied — paste it in your chat app'); }
+  catch(err){ showKashishToast('Could not open share — use Copy'); }
+}
 document.addEventListener('click', function(e){
   const editBtn = e.target.closest('.msg-draft .md-edit');
   if(editBtn){ toggleDraftEdit(editBtn.closest('.msg-draft')); return; }
+  const sendBtn = e.target.closest('.msg-draft .md-send');
+  if(sendBtn){
+    const card = sendBtn.closest('.msg-draft');
+    if(card.classList.contains('editing')) toggleDraftEdit(card);
+    const b = card.querySelector('.md-body');
+    sendDraftMessage((b.innerText || b.textContent || '').replace(/\n{3,}/g, '\n\n').trim());
+    return;
+  }
   const copyBtn = e.target.closest('.msg-draft .md-copy');
   if(copyBtn){
     const body = copyBtn.closest('.msg-draft').querySelector('.md-body');
@@ -18798,8 +18826,14 @@ function openEmailInGmail(to, subject, body){
         document.removeEventListener('visibilitychange', onHidden);
       }, 1200);
     }, 900);
+  } else if(platform === 'other'){
+    // Desktop: open Gmail's web compose in a new tab (mailto: often does nothing).
+    document.removeEventListener('visibilitychange', onHidden);
+    const gUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(to||'') + '&su=' + encodeURIComponent(subject||'') + '&body=' + encodeURIComponent(body||'');
+    const w = window.open(gUrl, '_blank');
+    if(!w){ window.location.href = mailtoUrl; }
   } else {
-    // Android and desktop: a plain mailto: is enough — Android routes it
+    // Android: a plain mailto: is enough — Android routes it
     // through the system "open with" chooser (Gmail shows up there if
     // installed), and desktop opens whatever default mail handler is set.
     window.location.href = mailtoUrl;
