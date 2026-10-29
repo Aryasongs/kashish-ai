@@ -26656,12 +26656,14 @@ html:root:not([data-theme="dark"]) body #app{background:
 html:root:not([data-theme="dark"]) body,html:root:not([data-theme="dark"]){background:#F0F0F0}
 .kd-logo{border-radius:22%;box-shadow:0 6px 16px -6px rgba(47,107,255,.35)}
 
-/* greeting: black line + light grey line */
+/* greeting: grey "Hello" + flowing gradient question (domains text colours) */
 html:root body .greeting{padding:26px 22px 6px}
-html:root body .greeting .hi{font-size:30px!important;font-weight:500!important;letter-spacing:-.025em;line-height:1.2;color:#18191C!important}
-html:root body .greeting .q{font-size:30px!important;font-weight:300!important;letter-spacing:-.025em;line-height:1.22;color:#9A9CA3!important;background:none!important;-webkit-text-fill-color:#9A9CA3!important;animation:none!important}
-html[data-theme="dark"] body .greeting .hi{color:#F5F5F7!important}
-html[data-theme="dark"] body .greeting .q{color:#75757F!important;-webkit-text-fill-color:#75757F!important}
+html:root body .greeting .hi{font-size:30px!important;font-weight:500!important;letter-spacing:-.025em;line-height:1.2;color:#9699A1!important}
+html:root body .greeting .q{font-size:30px!important;font-weight:600!important;letter-spacing:-.025em;line-height:1.22;
+  background:linear-gradient(90deg,#18191C 20%,#2F6BFF 45%,#8A5CF6 55%,#18191C 80%)!important;background-size:200% auto!important;
+  -webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;animation:kdTextFlow 7s linear infinite!important}
+html[data-theme="dark"] body .greeting .hi{color:#9699A1!important}
+html[data-theme="dark"] body .greeting .q{background:linear-gradient(90deg,#F5F5F7 20%,#4FA8FF 45%,#8A5CF6 55%,#F5F5F7 80%)!important;background-size:200% auto!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important}
 .kd-hint{display:block;margin:18px 0 4px;font-size:13.5px;font-weight:500;color:#3B78FF;animation:kdFadeUp .55s var(--kd-out) .22s backwards}
 html[data-theme="dark"] .kd-hint{color:#4FA8FF}
 
@@ -26706,5 +26708,55 @@ html:root body .quick-row{margin-top:6px}
   add();document.addEventListener('DOMContentLoaded',add);setTimeout(add,800);
 }catch(e){}})();
 </script>
+
+<style id="kd-ui-5">
+/* ===== Domains UI on EVERY screen: lists, rows, icons, inputs, buttons ===== */
+html:root body .chat-topbar{border-bottom:1px solid var(--border)}
+html:root body .chat-topbar .chat-title{font-weight:700;color:#2B2E33;letter-spacing:-.01em}
+html[data-theme="dark"] body .chat-topbar .chat-title{color:#F5F5F7}
+html:root body .circle-btn{background:#F1F3F6!important;color:#5F6368!important;border:0!important;box-shadow:none!important;transition:background .16s,color .16s,transform .2s var(--kd-spring)!important}
+html:root body .circle-btn:hover{background:#E5E7ED!important;color:var(--ink)!important}
+html[data-theme="dark"] body .circle-btn{background:#1E2027!important;color:#A7A7B0!important}
+
+/* section titles */
+html:root body .settings-section-title,html:root body .health-section-label{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9699A1;margin:24px 8px 10px}
+/* grouped lists = clean white cards */
+html:root body .settings-list,html:root body .legal-list,html:root body .health-card,html:root body .rings-card{background:var(--card)!important;border:1px solid var(--border)!important;border-radius:16px!important;box-shadow:var(--kd-card-shadow)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;animation:kdCardCascade .55s var(--kd-out) backwards}
+html:root body .rings-card{background:linear-gradient(135deg,#18191C 0%,#23262E 100%)!important;color:#fff!important;border-color:transparent!important}
+
+/* row icons = mesh-gradient squircles with white glyphs */
+html:root body .settings-row .ic,html:root body .legal-item .ic,html:root body .metric-icon{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;color:#fff!important;background:var(--kd-mesh)!important;box-shadow:0 6px 14px -6px rgba(47,107,255,.45);flex-shrink:0;transition:transform .36s var(--kd-spring)}
+html:root body .settings-row .ic i,html:root body .legal-item .ic i,html:root body .metric-icon i{color:#fff!important;font-size:19px}
+html:root body .settings-row:hover .ic{transform:scale(1.08) rotate(-4deg)}
+html:root body .settings-row:nth-child(4n+2) .ic{background:radial-gradient(circle at 82% 20%,#FF4D4D 0%,rgba(255,77,77,0) 60%),radial-gradient(circle at 15% 22%,#2F88FF 0%,rgba(47,136,255,0) 62%),radial-gradient(circle at 80% 85%,#FFB800 0%,rgba(255,184,0,0) 65%),radial-gradient(circle at 18% 82%,#19C37D 0%,rgba(25,195,125,0) 65%),#4A90E2!important}
+html:root body .settings-row:nth-child(4n+3) .ic{background:radial-gradient(circle at 20% 82%,#FF4D4D 0%,rgba(255,77,77,0) 60%),radial-gradient(circle at 84% 78%,#2F88FF 0%,rgba(47,136,255,0) 62%),radial-gradient(circle at 18% 18%,#FFB800 0%,rgba(255,184,0,0) 65%),radial-gradient(circle at 82% 20%,#19C37D 0%,rgba(25,195,125,0) 65%),#4A90E2!important}
+html:root body .settings-row:nth-child(4n+4) .ic{background:radial-gradient(circle at 84% 80%,#FF4D4D 0%,rgba(255,77,77,0) 60%),radial-gradient(circle at 18% 80%,#2F88FF 0%,rgba(47,136,255,0) 62%),radial-gradient(circle at 82% 18%,#FFB800 0%,rgba(255,184,0,0) 65%),radial-gradient(circle at 16% 20%,#19C37D 0%,rgba(25,195,125,0) 65%),#4A90E2!important}
+
+/* inputs */
+html:root body .settings-scroll input[type=text],html:root body .settings-scroll input[type=search],html:root body .settings-scroll input[type=email],html:root body .settings-scroll input[type=datetime-local],html:root body .settings-scroll input:not([type]),html:root body .settings-scroll textarea,html:root body .sidebar-search,html:root body .task-add-row input{
+  background:#F7F8FA!important;border:1px solid transparent!important;border-radius:999px!important;color:var(--ink);transition:all .2s ease!important}
+html[data-theme="dark"] body .settings-scroll input,html[data-theme="dark"] body .settings-scroll textarea,html[data-theme="dark"] body .sidebar-search{background:#1E2027!important}
+html:root body .settings-scroll input:focus,html:root body .settings-scroll textarea:focus,html:root body .sidebar-search:focus-within{background:var(--card)!important;border-color:#D2DAE8!important;box-shadow:0 6px 20px -8px rgba(47,107,255,.2)!important;outline:0}
+
+/* buttons: blue primary, grey secondary — no more black blobs */
+html:root body .task-add-btn,html:root body .breathe-btn,html:root body .water-btn.plus,html:root body .settings-scroll .btn-primary,html:root body .settings-scroll button.primary{
+  background:var(--accent)!important;color:#fff!important;border:0!important;box-shadow:var(--kd-btn-shadow)!important;border-radius:999px;transition:transform .2s var(--kd-spring),box-shadow .2s!important}
+html:root body .task-add-btn:hover,html:root body .breathe-btn:hover{transform:translateY(-1px);box-shadow:var(--kd-btn-shadow-hover)!important}
+html:root body .task-add-btn:active,html:root body .breathe-btn:active{transform:scale(.95)}
+html:root body .water-btn{background:#F1F2F4!important;color:#3C4043!important;border:0!important}
+html:root body .water-bar-fill{background:linear-gradient(90deg,#2F6BFF,#4FA8FF)!important}
+/* the black "Enable tracking"-style pills */
+html:root body .health-card button:not(.water-btn),html:root body .settings-scroll .pill-btn{background:var(--accent);color:#fff;border:0;box-shadow:var(--kd-btn-shadow)}
+/* toggles + segmented controls */
+html:root body .toggle.on,html:root body .switch.on,html:root body input:checked+.slider,html:root body .toggle input:checked+span{background:#2F6BFF!important}
+html:root body .theme-seg .on,html:root body .fx-tabs .on,html:root body .seg .on{background:var(--accent)!important;color:#fff!important;box-shadow:var(--kd-btn-shadow)}
+html:root body .accent-picker{gap:10px}
+/* empty states + upgrade page */
+html:root body .recent-empty{color:#9A9CA5}
+html:root body .plan-card,html:root body .pro-card{border-radius:16px!important;border:1px solid var(--border)!important;background:var(--card)!important;box-shadow:var(--kd-card-shadow)}
+html:root body .legal-item{transition:background .16s;animation:kdRowCascade .38s var(--kd-out) backwards}
+html:root body .legal-item:hover,html:root body .legal-item:active{background:#F7F8FA}
+html:root body .legal-item:nth-child(even) .ic{background:radial-gradient(circle at 82% 20%,#FF4D4D 0%,rgba(255,77,77,0) 60%),radial-gradient(circle at 15% 22%,#2F88FF 0%,rgba(47,136,255,0) 62%),radial-gradient(circle at 80% 85%,#FFB800 0%,rgba(255,184,0,0) 65%),radial-gradient(circle at 18% 82%,#19C37D 0%,rgba(25,195,125,0) 65%),#4A90E2!important}
+</style>
 </body>
 </html>
