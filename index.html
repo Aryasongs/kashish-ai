@@ -26429,8 +26429,6 @@ html:root body .fx-h{opacity:1!important;color:var(--dm-muted)}
 </style>
 <script id="dm-fixes">
 (function(){
- /* build stamp: a small "Build dm-2" chip for 4s on load, so you can tell the new file is really the one running */
- try{window.addEventListener('load',function(){var d=document.createElement('div');d.textContent='Build dm-2 · Domains UI';d.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:2147483647;background:#18191C;color:#fff;font:600 12px system-ui,sans-serif;padding:8px 14px;border-radius:999px;pointer-events:none;opacity:.92';document.body.appendChild(d);setTimeout(function(){d.remove()},4000)})}catch(e){}
  /* smoothness: drop the SVG-refraction glass class and cache markdown renders (renderChat re-parses every message on each send) */
  try{document.documentElement.classList.remove('lg-refract');new MutationObserver(function(){document.documentElement.classList.remove('lg-refract')}).observe(document.documentElement,{attributes:true,attributeFilter:['class']})}catch(e){}
  /* send lag: saveSessions() JSON.stringify'd EVERY chat (images included) synchronously on each send/reply. Coalesce to one write, flush when the page hides. */
@@ -26757,6 +26755,24 @@ html:root body .plan-card,html:root body .pro-card{border-radius:16px!important;
 html:root body .legal-item{transition:background .16s;animation:kdRowCascade .38s var(--kd-out) backwards}
 html:root body .legal-item:hover,html:root body .legal-item:active{background:#F7F8FA}
 html:root body .legal-item:nth-child(even) .ic{background:radial-gradient(circle at 82% 20%,#FF4D4D 0%,rgba(255,77,77,0) 60%),radial-gradient(circle at 15% 22%,#2F88FF 0%,rgba(47,136,255,0) 62%),radial-gradient(circle at 80% 85%,#FFB800 0%,rgba(255,184,0,0) 65%),radial-gradient(circle at 18% 82%,#19C37D 0%,rgba(25,195,125,0) 65%),#4A90E2!important}
+</style>
+
+<style id="kd-ui-6">
+/* chat: flat dark surfaces (no glass glare) */
+html[data-theme="dark"] body .circle-btn,html[data-theme="dark"] body .chat-pill,html[data-theme="dark"] body .model-pill,html[data-theme="dark"] body .mic-send-btn{background:#1E2027!important;border:1px solid #2A2C33!important;box-shadow:none!important}
+html[data-theme="dark"] body .circle-btn::before,html[data-theme="dark"] body .circle-btn::after,html[data-theme="dark"] body .chat-pill::before,html[data-theme="dark"] body .chat-pill::after,html[data-theme="dark"] body .model-pill::before,html[data-theme="dark"] body .model-pill::after,html[data-theme="dark"] body .mic-send-btn::before,html[data-theme="dark"] body .mic-send-btn::after{display:none!important}
+html[data-theme="dark"] body .chat-topbar{background:rgba(11,12,16,.84)!important;border-bottom:1px solid #2A2C33!important}
+html[data-theme="dark"] body .chat-input-wrap{background:transparent!important;border-top:0!important}
+/* light: composer + pills as clean white capsules */
+html:not([data-theme="dark"]) body .chat-pill,html:not([data-theme="dark"]) body .model-pill{background:#fff!important;border:1px solid #DCE2EC!important;box-shadow:0 12px 28px -16px rgba(25,65,165,.18)!important}
+html:not([data-theme="dark"]) body .chat-pill:focus-within{border-color:#2F6BFF!important}
+html:root body .msg-draft .md-send,html:root body .msg-draft .md-send i,html:root body .msg-draft .md-send span{color:#fff!important}
+/* chat extras: code blocks, draft card, tables in the same language */
+html:root body .msg-draft,html:root body .msg-code-block,html:root body .msg-file{border:1px solid var(--border)!important;border-radius:16px!important;background:var(--card)!important;box-shadow:var(--kd-card-shadow)}
+html:root body .msg-draft{animation:kdCardCascade .45s var(--kd-out) backwards}
+html:root body .bubble.bot table{border-collapse:collapse}html:root body .bubble.bot th{background:#F8FAFC;color:#9699A1;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+html[data-theme="dark"] body .bubble.bot th{background:#1E2027}
+html:root body .bubble.bot a{color:#2F6BFF}html[data-theme="dark"] body .bubble.bot a{color:#4FA8FF}
 </style>
 </body>
 </html>
