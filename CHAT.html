@@ -1570,10 +1570,28 @@ Object.assign(IC,{
   spk:'<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/>',
   chevd:'<path d="M6 9l6 6 6-6"/>'
 });
+/* TURN relay is REQUIRED for calls on mobile data / CGNAT (most Indian networks). Set CALL_ICE_URL to your own
+   Cloudflare worker that returns {iceServers:[...]} (see turn-worker.js). The public fallback below is best-effort only. */
+const CALL_ICE_URL='';
 const CALL_ICE=[
   {urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},
+  {urls:['turn:staticauth.openrelay.metered.ca:80','turn:staticauth.openrelay.metered.ca:443','turns:staticauth.openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'},
   {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}
 ];
+/* Free TURN (no card): paste values from your expressturn.com or metered.ca dashboard. Leave host empty to skip. */
+const MY_TURN={host:'free.expressturn.com',user:'000000002108715905',pass:'yegxrvAk+yhoSTJinbJ/aq7W5FI='};   // e.g. host:'relay1.expressturn.com'
+if(MY_TURN.host&&MY_TURN.user) CALL_ICE.unshift({urls:['turn:'+MY_TURN.host+':3478','turn:'+MY_TURN.host+':3478?transport=tcp'],username:MY_TURN.user,credential:MY_TURN.pass});
+let iceCache=null;
+async function getIce(){
+  if(!CALL_ICE_URL) return CALL_ICE;
+  if(iceCache&&Date.now()<iceCache.exp) return iceCache.v;
+  try{
+    const ctl=new AbortController(), tm=setTimeout(()=>ctl.abort(),4000);
+    const r=await fetch(CALL_ICE_URL,{cache:'no-store',signal:ctl.signal}); clearTimeout(tm);
+    const j=await r.json(); const v=[{urls:'stun:stun.l.google.com:19302'}].concat(j.iceServers||j);
+    iceCache={v,exp:Date.now()+30*60*1000}; return v;
+  }catch(e){ console.warn('ice fetch',e); return CALL_ICE; }
+}
 let call=null, incoming=null, callUI={}, tone=null, AC=null, wakeL=null;
 const callName=u=>(contacts[u]&&contacts[u].name)||'Unknown';
 const fmtDur=s=>{ s=Math.max(0,Math.round(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
@@ -1618,8 +1636,8 @@ function askNotif(){ try{ if('Notification' in window&&Notification.permission==
 function getWake(){ try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(l=>{ wakeL=l; }).catch(()=>{}); }catch(_){} }
 function relWake(){ try{ if(wakeL){ wakeL.release(); wakeL=null; } }catch(_){} }
 
-function makePC(c){
-  const pc=new RTCPeerConnection({iceServers:CALL_ICE,bundlePolicy:'max-bundle'}); c.pc=pc;
+function makePC(c,ice){
+  const pc=new RTCPeerConnection({iceServers:ice||CALL_ICE,bundlePolicy:'max-bundle'}); c.pc=pc;
   c.local.getTracks().forEach(t=>pc.addTrack(t,c.local));
   c.remote=new MediaStream();
   pc.ontrack=e=>{ (e.streams&&e.streams[0]?e.streams[0].getTracks():[e.track]).forEach(t=>c.remote.addTrack(t)); attachRemote(c); };
@@ -1650,7 +1668,7 @@ async function startCall(uid,v){
   if(call!==c){ c.local.getTracks().forEach(t=>t.stop()); return; }
   updateCallUI();
   try{
-    const pc=makePC(c); await pc.setLocalDescription(await pc.createOffer()); await iceDone(pc,3500); if(call!==c) return;
+    const pc=makePC(c,await getIce()); await pc.setLocalDescription(await pc.createOffer()); await iceDone(pc,3500); if(call!==c) return;
     const ok=await sendCall(uid,{k:'offer',id:c.id,v:v?1:0,sdp:pc.localDescription.sdp});
     if(!ok){ toast('Couldn’t reach them'); endCall(false,'abort'); return; }
   }catch(e){ console.warn(e); toast('Couldn’t start the call'); endCall(false,'abort'); return; }
@@ -1675,7 +1693,7 @@ async function acceptCall(){
   if(call!==c){ c.local.getTracks().forEach(t=>t.stop()); return; }
   updateCallUI();
   try{
-    const pc=makePC(c); await pc.setRemoteDescription({type:'offer',sdp:inc.sdp}); await pc.setLocalDescription(await pc.createAnswer()); await iceDone(pc,3500); if(call!==c) return;
+    const pc=makePC(c,await getIce()); await pc.setRemoteDescription({type:'offer',sdp:inc.sdp}); await pc.setLocalDescription(await pc.createAnswer()); await iceDone(pc,3500); if(call!==c) return;
     const ok=await sendCall(c.uid,{k:'answer',id:c.id,sdp:pc.localDescription.sdp}); if(!ok) throw new Error('send');
   }catch(e){ console.warn(e); toast('Couldn’t connect the call'); endCall(true,'abort'); return; }
   c.connT=setTimeout(()=>{ if(call===c&&!c.t0){ toast('Couldn’t connect'); hangup(); } },25000);
