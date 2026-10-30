@@ -181,6 +181,9 @@ html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100
 .ci::-webkit-scrollbar{display:none}
 .ci-top{padding:56px 26px 0;display:flex;justify-content:flex-end;flex:none}
 .ci-top button{color:var(--blue);font-weight:500;font-size:17px}
+.ci{overflow-y:auto!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;min-height:0;padding-bottom:max(40px,calc(env(safe-area-inset-bottom) + 24px))!important}
+.ci>*{flex-shrink:0}
+.ci-top{position:sticky;top:0;z-index:2;background:var(--card);padding-bottom:6px}
 .ci-hero{display:flex;flex-direction:column;align-items:center;padding:6px 24px 0;text-align:center}
 .ci-hero .av{cursor:zoom-in}
 .ci-hero h2{font:600 28px var(--head);color:var(--navy);margin:16px 0 2px;letter-spacing:-.3px;word-break:break-word}
@@ -415,6 +418,65 @@ html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100
 .rxbar button:active{transform:scale(1.6) translateY(-8px)}
 .rxbar button:hover{transform:scale(1.25) translateY(-4px)}
 @media (prefers-reduced-motion:reduce){.ae,.ae-in{animation:none}}
+/* pin / archive / link preview / location / voice speed */
+.row .pinm{font-size:13px;margin-left:6px;opacity:.7}
+.row.arch .name{font-size:16px}
+.row.arch .ico{width:76px;height:76px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-size:28px;flex:none}
+.lpc{display:block;margin:8px -14px -8px;border-radius:18px;overflow:hidden;background:rgba(127,127,127,.14);color:inherit;text-decoration:none;white-space:normal;-webkit-user-select:none}
+.lpc img{display:block;width:100%;max-height:170px;object-fit:cover}
+.lpc .lpt{padding:8px 12px 10px}.lpc b{display:block;font:600 14px/1.3 var(--head);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.lpc small{display:block;font-size:12px;opacity:.7;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bub a.ln{color:inherit;text-decoration:underline;text-underline-offset:2px;word-break:break-all}
+.locc{position:relative;width:240px;max-width:100%;cursor:pointer;border-radius:20px;overflow:hidden;background:var(--card)}
+.locc .map{position:relative;width:240px;max-width:100%;height:150px;overflow:hidden;background:#dfe6ee}
+.locc .map img{position:absolute;width:256px;height:256px;max-width:none;user-select:none;-webkit-user-drag:none}
+.locc .lpin{position:absolute;left:50%;top:50%;font-size:34px;line-height:1;transform:translate(-50%,-92%);filter:drop-shadow(0 3px 3px rgba(0,0,0,.35));animation:aeIn .5s cubic-bezier(.34,1.56,.64,1) both}
+.locc .lcap{padding:8px 12px;font:600 13px var(--head);color:var(--ink);display:flex;justify-content:space-between;gap:8px;align-items:center}
+.locc .lcap small{font-weight:400;opacity:.6;font-size:10px}
+.vspd{flex:none;min-width:38px;height:26px;padding:0 8px;border-radius:13px;background:rgba(127,127,127,.22);font:700 12px var(--head);color:inherit}
+/* ---- calls ---- */
+.cbtns{display:flex;gap:12px;margin-top:2px}
+.cbtns button{width:42px;height:42px;border-radius:50%;background:color-mix(in srgb,var(--blue) 14%,transparent);color:var(--blue);display:grid;place-items:center;transition:transform .15s}
+.cbtns button:active{transform:scale(.88)}
+.wpon .cbtns button{background:color-mix(in srgb,var(--card) 78%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#callBanner{position:fixed;top:max(10px,env(safe-area-inset-top));left:12px;right:12px;max-width:460px;margin:0 auto;z-index:130;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:30px;background:rgba(28,30,38,.88);-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);color:#fff;box-shadow:0 16px 44px rgba(0,0,0,.38);animation:cbIn .55s cubic-bezier(.34,1.4,.64,1) both}
+#callBanner .av{flex:none}
+#callBanner .ct{flex:1;min-width:0}
+#callBanner .ct b{display:block;font:600 16px var(--head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#callBanner .ct small{display:block;opacity:.7;font-size:13px;margin-top:1px}
+.cbtn{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none;transition:transform .12s}
+.cbtn:active{transform:scale(.88)}
+.cbtn.dec{background:#FF453A}.cbtn.dec svg{transform:rotate(135deg)}
+.cbtn.acc{background:#30D158;animation:cbShake 1.6s ease-in-out infinite}
+@keyframes cbIn{from{transform:translateY(-140%);opacity:0}to{transform:none;opacity:1}}
+@keyframes cbOut{to{transform:translateY(-140%);opacity:0}}
+@keyframes cbShake{0%,50%,100%{transform:rotate(0)}10%{transform:rotate(-16deg)}20%{transform:rotate(14deg)}30%{transform:rotate(-10deg)}40%{transform:rotate(6deg)}}
+#callScr{position:fixed;inset:0;z-index:125;color:#fff;display:flex;flex-direction:column;align-items:center;overflow:hidden;background:#0d1226;animation:cbFade .35s ease both}
+@keyframes cbFade{from{opacity:0;transform:scale(1.03)}to{opacity:1;transform:none}}
+#callScr .cbg{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 0%,#2a3b7a 0%,#161d3d 55%,#0d1226 100%)}
+#callScr .crv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s;background:#000}
+#callScr.vid.live .crv{opacity:1}
+#callScr .clv{position:absolute;top:max(70px,calc(env(safe-area-inset-top) + 56px));right:16px;width:108px;height:148px;object-fit:cover;border-radius:18px;transform:scaleX(-1);background:#222;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:2}
+#callScr.vid .clv{display:block}
+#callScr .ctop{position:relative;z-index:3;width:100%;display:flex;align-items:center;justify-content:center;padding:max(14px,env(safe-area-inset-top)) 16px 0;font:500 13px var(--head);opacity:.85;letter-spacing:.3px}
+#callScr .cmin{position:absolute;left:14px;top:max(10px,env(safe-area-inset-top));width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;color:#fff}
+#callScr .cmid{position:relative;z-index:3;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:0 24px;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+#callScr .cav{border-radius:50%;animation:cbPulse 2s ease-out infinite}
+#callScr.live .cav{animation:none}
+#callScr.vid.live .cav{display:none}
+@keyframes cbPulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.35)}100%{box-shadow:0 0 0 38px rgba(255,255,255,0)}}
+#callScr .cnm{font:600 30px var(--head)}
+#callScr .cst{font-size:17px;opacity:.8;font-variant-numeric:tabular-nums}
+#callScr.vid.live .cmid{flex:none;position:absolute;top:max(64px,calc(env(safe-area-inset-top) + 50px));left:16px;align-items:flex-start;text-align:left;padding:0}
+#callScr.vid.live .cnm{font-size:20px}#callScr.vid.live .cst{font-size:14px}
+#callScr .cctl{position:relative;z-index:3;display:flex;gap:20px;justify-content:center;padding:0 20px max(34px,calc(env(safe-area-inset-bottom) + 18px));flex-wrap:wrap}
+.cc{display:flex;flex-direction:column;align-items:center;gap:8px;color:#fff;font-size:12px;min-width:64px}
+.cc .cico{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.16);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);display:grid;place-items:center;transition:transform .15s,background .2s,color .2s}
+.cc:active .cico{transform:scale(.9)}
+.cc .cico svg{width:28px;height:28px}
+.cc.on .cico{background:#fff;color:#111}
+.cc.end .cico{background:#FF453A;color:#fff}.cc.end .cico svg{transform:rotate(135deg)}
+#callPill{position:fixed;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:124;background:#30D158;color:#fff;padding:8px 18px;border-radius:22px;font:600 14px var(--head);box-shadow:0 8px 22px rgba(0,0,0,.3);white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis;animation:cbIn .4s cubic-bezier(.34,1.4,.64,1) both}
 /* login footer: smaller + pinned to bottom */
 .solo{padding-bottom:0!important}
 .from{padding:8px 0 max(14px,env(safe-area-inset-bottom))!important;gap:3px!important}
@@ -960,6 +1022,7 @@ async function startApp(){
   setTab('chats'); renderChat();
 }
 function stopApp(){
+  try{ if(call) endCall(false,'abort'); stopIncoming(); }catch(_){}
   histMap={}; hsAsked=new Set(); clearTimeout(hsTimer); clearTimeout(hrT);
   Object.values(contactWatch).forEach(f=>f()); Object.values(groupWatch).forEach(f=>f()); groupWatch={}; profiles={}; ciOpen=null;
   watchers.forEach(f=>{ try{f();}catch(e){} }); watchers=[]; contacts={}; presence={}; threads={}; openUid=null; blockedAt={}; isAdmin=false; myMod=null; openReportCount=0; clearTimeout(modTimer); { const o=document.getElementById('modOverlay'); if(o) o.remove(); } document.body.classList.remove('chat-open');
@@ -1012,6 +1075,10 @@ async function onMsg(uid, key, rec){
     const fn=pollEls.get(item.p.ref); if(fn) fn();
     return;
   }
+  if(item.p && item.p.t==='call'){             // call signaling = hidden messages
+    (t.seen=t.seen||new Set()).add(key); try{ handleCallSignal(uid,item); }catch(e){ console.warn(e); }
+    return;
+  }
   if(item.p && item.p.t==='react'){            // reactions are hidden messages
     (t.seen=t.seen||new Set()).add(key); (t.hid=t.hid||[]).push(item); if(t.hid.length>500) t.hid.shift();
     const r=(t.reacts=t.reacts||{}), m=(r[item.p.ref]=r[item.p.ref]||{}), cur=m[rec.from], e=(typeof item.p.e==='string'&&item.p.e.length<=8)?item.p.e:null;
@@ -1048,11 +1115,13 @@ function previewOf(it,key){
   const p=it.p; if(!p) return '🔒 Encrypted message';
   const T=v=>(v==null||v==='null'||v==='undefined')?'':String(v);
   if(p.t==='sys') return T(p.text);
+  if(p.t==='calllog') return callLogText(it);
   const who = it.from===me.uid ? 'You: ' : (key&&isGroup(key) ? firstName(it.from)+': ' : '');
   if(p.t==='poll') return who+'📊 '+p.q;
   if(p.t==='img') return who+'📷 Photo';
   if(p.t==='gif') return who+'GIF';
   if(p.t==='voice') return who+'🎤 Voice message';
+  if(p.t==='loc') return who+'📍 Location';
   return who+(T(p.text)||'Message');
 }
 
@@ -1488,6 +1557,228 @@ function openContactInfo(uid){
   card.append(ci);
 }
 
+/* =====================================================================
+   Voice & video calls (WebRTC). Signaling travels as hidden end-to-end
+   encrypted messages (like polls/reactions), so no Firebase rule changes.
+   NOTE: for production reliability replace/add your own TURN server below.
+   ===================================================================== */
+Object.assign(IC,{
+  vidcam:'<path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
+  vidoff:'<path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/><path d="M1 1l22 22"/>',
+  cmic:'<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>',
+  cmicoff:'<path d="M1 1l22 22"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23M12 19v4M8 23h8"/>',
+  spk:'<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/>',
+  chevd:'<path d="M6 9l6 6 6-6"/>'
+});
+const CALL_ICE=[
+  {urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},
+  {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}
+];
+let call=null, incoming=null, callUI={}, tone=null, AC=null, wakeL=null;
+const callName=u=>(contacts[u]&&contacts[u].name)||'Unknown';
+const fmtDur=s=>{ s=Math.max(0,Math.round(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+
+/* ---- sound: synthesized (no audio files) ---- */
+function acx(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(_){} } return AC; }
+['pointerdown','touchend','keydown'].forEach(ev=>document.addEventListener(ev,()=>{ const a=acx(); if(a&&a.state==='suspended') a.resume().catch(()=>{}); },{passive:true}));
+function tnote(a,dest,f,t,d,v){
+  const o=a.createOscillator(), o2=a.createOscillator(), g=a.createGain(), g2=a.createGain();
+  o.type='sine'; o2.type='triangle'; o.frequency.value=f; o2.frequency.value=f*2; g2.gain.value=.22;
+  g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+.012); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g); o2.connect(g2); g2.connect(g); g.connect(dest); o.start(t); o2.start(t); o.stop(t+d+.05); o2.stop(t+d+.05);
+}
+function playTone(kind){
+  stopTone(); const a=acx(); if(!a) return;
+  const master=a.createGain(); master.gain.value=kind==='ring'?.55:.3; master.connect(a.destination);
+  const RING=[659.25,783.99,987.77,783.99,1174.66,987.77,783.99,987.77];
+  const cycle=()=>{
+    if(a.state==='suspended') a.resume().catch(()=>{});
+    const t=a.currentTime+.05;
+    if(kind==='ring'){ RING.forEach((f,i)=>tnote(a,master,f,t+i*.17,.95,.5)); RING.forEach((f,i)=>tnote(a,master,f,t+1.55+i*.17,.95,.5)); }
+    else { tnote(a,master,440,t,1,.3); tnote(a,master,480,t,1,.3); }
+  };
+  cycle(); const iv=setInterval(cycle,kind==='ring'?3700:4000);
+  let vib=null; if(kind==='ring'&&navigator.vibrate){ const v=()=>{ try{ navigator.vibrate([500,250,500]); }catch(_){} }; v(); vib=setInterval(v,2000); }
+  tone={master,iv,vib,a};
+}
+function stopTone(){
+  if(!tone) return; const T=tone; tone=null; clearInterval(T.iv); clearInterval(T.vib);
+  try{ navigator.vibrate&&navigator.vibrate(0); }catch(_){}
+  try{ T.master.gain.setTargetAtTime(0,T.a.currentTime,.05); setTimeout(()=>{ try{ T.master.disconnect(); }catch(_){} },500); }catch(_){}
+}
+function beep(kind){ const a=acx(); if(!a) return; const m=a.createGain(); m.gain.value=.3; m.connect(a.destination); const t=a.currentTime+.02;
+  if(kind==='end'){ tnote(a,m,523.25,t,.25,.4); tnote(a,m,392,t+.18,.35,.4); } else { tnote(a,m,880,t,.18,.35); tnote(a,m,1174.66,t+.12,.28,.35); }
+  setTimeout(()=>{ try{ m.disconnect(); }catch(_){} },900); }
+
+/* ---- signaling ---- */
+async function sendCall(uid,o){ try{ await sendPayload(uid,{t:'call',...o}); return true; }catch(e){ console.warn('call signal',e); return false; } }
+function iceDone(pc,ms){ return new Promise(res=>{ if(pc.iceGatheringState==='complete') return res(); const f=()=>{ if(pc.iceGatheringState==='complete'){ pc.removeEventListener('icegatheringstatechange',f); res(); } }; pc.addEventListener('icegatheringstatechange',f); setTimeout(res,ms); }); }
+const callMedia=v=>navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:v?{facingMode:'user',width:{ideal:640},height:{ideal:480}}:false});
+function askNotif(){ try{ if('Notification' in window&&Notification.permission==='default') Notification.requestPermission(); }catch(_){} }
+function getWake(){ try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(l=>{ wakeL=l; }).catch(()=>{}); }catch(_){} }
+function relWake(){ try{ if(wakeL){ wakeL.release(); wakeL=null; } }catch(_){} }
+
+function makePC(c){
+  const pc=new RTCPeerConnection({iceServers:CALL_ICE,bundlePolicy:'max-bundle'}); c.pc=pc;
+  c.local.getTracks().forEach(t=>pc.addTrack(t,c.local));
+  c.remote=new MediaStream();
+  pc.ontrack=e=>{ (e.streams&&e.streams[0]?e.streams[0].getTracks():[e.track]).forEach(t=>c.remote.addTrack(t)); attachRemote(c); };
+  pc.onconnectionstatechange=()=>{
+    if(call!==c) return; const s=pc.connectionState;
+    if(s==='connected'){ clearTimeout(c.dropT); clearTimeout(c.connT); if(!c.t0){ c.t0=Date.now(); stopTone(); beep('on'); setCallState('connected'); } }
+    else if(s==='disconnected'){ clearTimeout(c.dropT); c.dropT=setTimeout(()=>{ if(call===c&&pc.connectionState!=='connected'){ toast('Connection lost'); hangup(); } },7000); }
+    else if(s==='failed'){ toast('Call failed'); hangup(); }
+  };
+  return pc;
+}
+function attachRemote(c){
+  if(!c.aEl){ c.aEl=h('audio',{playsinline:''}); c.aEl.autoplay=true; document.body.append(c.aEl); }
+  c.aEl.srcObject=c.remote; c.aEl.play().catch(()=>{});
+  if(callUI.rv&&c.v){ callUI.rv.srcObject=c.remote; callUI.rv.play().catch(()=>{}); }
+  updateCallUI();
+}
+
+async function startCall(uid,v){
+  if(!me||!uid||isGroup(uid)) return;
+  if(isBlocked(uid)){ toast('Unblock this contact to call'); return; }
+  if(call||incoming){ toast('You’re already on a call'); return; }
+  if(!window.RTCPeerConnection||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ toast('Calls aren’t supported in this browser'); return; }
+  askNotif();
+  const c=call={id:Math.random().toString(36).slice(2,9)+Date.now().toString(36),uid,v:!!v,dir:'out',state:'calling',spk:!!v};
+  showCallScreen(); getWake();
+  try{ c.local=await callMedia(!!v); }catch(e){ endCall(false,'abort'); toast(v?'Allow camera & microphone to make video calls':'Allow microphone access to make calls'); return; }
+  if(call!==c){ c.local.getTracks().forEach(t=>t.stop()); return; }
+  updateCallUI();
+  try{
+    const pc=makePC(c); await pc.setLocalDescription(await pc.createOffer()); await iceDone(pc,3500); if(call!==c) return;
+    const ok=await sendCall(uid,{k:'offer',id:c.id,v:v?1:0,sdp:pc.localDescription.sdp});
+    if(!ok){ toast('Couldn’t reach them'); endCall(false,'abort'); return; }
+  }catch(e){ console.warn(e); toast('Couldn’t start the call'); endCall(false,'abort'); return; }
+  if(call!==c) return;
+  setCallState('ringing'); playTone('back');
+  c.ringT=setTimeout(()=>{ if(call===c&&!c.t0){ toast('No answer'); hangup(); } },45000);
+}
+function onIncoming(uid,p,ts){
+  incoming={id:p.id,uid,v:!!p.v,sdp:p.sdp,ts};
+  playTone('ring'); showBanner();
+  try{ if(document.hidden&&'Notification' in window&&Notification.permission==='granted'){ incoming.notif=new Notification(callName(uid),{body:'Incoming '+(p.v?'video':'voice')+' call',tag:'marsx-call',requireInteraction:true}); incoming.notif.onclick=()=>{ try{ window.focus(); }catch(_){} }; } }catch(_){}
+  const id=p.id; incoming.tm=setTimeout(()=>{ if(incoming&&incoming.id===id) stopIncoming(); },45000);
+}
+function stopIncoming(){
+  if(!incoming) return; clearTimeout(incoming.tm); try{ incoming.notif&&incoming.notif.close(); }catch(_){}
+  incoming=null; stopTone(); const b=document.getElementById('callBanner'); if(b){ b.style.animation='cbOut .25s ease forwards'; setTimeout(()=>b.remove(),250); }
+}
+async function acceptCall(){
+  const inc=incoming; if(!inc||call) return; askNotif();
+  const c=call={id:inc.id,uid:inc.uid,v:inc.v,dir:'in',state:'connecting',spk:inc.v}; stopIncoming(); showCallScreen(); getWake();
+  try{ c.local=await callMedia(c.v); }catch(e){ sendCall(c.uid,{k:'decline',id:c.id}); endCall(false,'abort'); toast('Allow microphone access to answer calls'); return; }
+  if(call!==c){ c.local.getTracks().forEach(t=>t.stop()); return; }
+  updateCallUI();
+  try{
+    const pc=makePC(c); await pc.setRemoteDescription({type:'offer',sdp:inc.sdp}); await pc.setLocalDescription(await pc.createAnswer()); await iceDone(pc,3500); if(call!==c) return;
+    const ok=await sendCall(c.uid,{k:'answer',id:c.id,sdp:pc.localDescription.sdp}); if(!ok) throw new Error('send');
+  }catch(e){ console.warn(e); toast('Couldn’t connect the call'); endCall(true,'abort'); return; }
+  c.connT=setTimeout(()=>{ if(call===c&&!c.t0){ toast('Couldn’t connect'); hangup(); } },25000);
+}
+function declineCall(){ const inc=incoming; if(!inc) return; sendCall(inc.uid,{k:'decline',id:inc.id}); stopIncoming(); }
+function hangup(){ endCall(true); }
+function endCall(notify,st){
+  const c=call; if(!c) return; call=null;
+  clearTimeout(c.ringT); clearTimeout(c.dropT); clearTimeout(c.connT); clearInterval(c.tick); stopTone();
+  try{ c.pc&&c.pc.close(); }catch(_){}
+  try{ c.local&&c.local.getTracks().forEach(t=>t.stop()); }catch(_){}
+  if(c.aEl){ c.aEl.srcObject=null; c.aEl.remove(); }
+  relWake(); hideCallUI();
+  if(st!=='abort'){
+    if(notify) sendCall(c.uid,{k:'end',id:c.id});
+    if(c.dir==='out'){ const dur=c.t0?Math.round((Date.now()-c.t0)/1000):0; const s=c.t0?'ended':(st==='declined'||st==='busy'?st:'missed'); sendPayload(c.uid,{t:'calllog',v:c.v?1:0,st:s,dur}).catch(()=>{}); }
+    beep('end');
+  }
+}
+function handleCallSignal(uid,it){
+  const p=it.p, mine=it.from===me.uid; if(!p||typeof p.id!=='string'||p.id.length>40) return;
+  if(mine){ if(incoming&&incoming.id===p.id&&(p.k==='answer'||p.k==='decline')) stopIncoming(); return; }   // answered on my other device
+  if(p.k==='offer'){
+    if(typeof p.sdp!=='string'||p.sdp.length>30000||Date.now()-it.ts>60000||isBlocked(uid)) return;
+    if(call||incoming){ sendCall(uid,{k:'busy',id:p.id}); return; }
+    onIncoming(uid,p,it.ts); return;
+  }
+  if(incoming&&incoming.id===p.id){ if(p.k==='end') stopIncoming(); return; }
+  const c=call; if(!c||c.id!==p.id||c.uid!==uid) return;
+  if(p.k==='answer'&&c.dir==='out'&&!c.answered&&typeof p.sdp==='string'){
+    c.answered=true; clearTimeout(c.ringT); stopTone(); setCallState('connecting');
+    c.connT=setTimeout(()=>{ if(call===c&&!c.t0){ toast('Couldn’t connect'); hangup(); } },25000);
+    c.pc.setRemoteDescription({type:'answer',sdp:p.sdp}).catch(()=>{ toast('Couldn’t connect'); hangup(); });
+  }
+  else if(p.k==='decline'&&c.dir==='out'){ toast('Call declined'); endCall(false,'declined'); }
+  else if(p.k==='busy'&&c.dir==='out'){ toast('They’re on another call'); endCall(false,'busy'); }
+  else if(p.k==='end'){ endCall(false); }
+}
+function callLogText(it){
+  const p=it.p||{}, out=it.from===me.uid, kind=p.v?'video':'voice', ic=p.v?'📹':'📞';
+  if(p.st==='ended') return ic+' '+(kind==='video'?'Video':'Voice')+' call · '+fmtDur(p.dur||0);
+  if(p.st==='declined') return out?ic+' Call declined':ic+' You declined a '+kind+' call';
+  if(p.st==='busy') return out?ic+' They were busy':ic+' Missed '+kind+' call';
+  return out?ic+' '+(kind==='video'?'Video':'Voice')+' call · No answer':ic+' Missed '+kind+' call';
+}
+
+/* ---- UI ---- */
+function showBanner(){
+  document.getElementById('callBanner')?.remove(); const inc=incoming; if(!inc) return; const c=contacts[inc.uid]||{name:'Unknown'};
+  document.body.append(h('div',{id:'callBanner',role:'alert'},
+    avatar(c,48,false),
+    h('div',{class:'ct'},h('b',{},c.name),h('small',{},'marsX '+(inc.v?'video':'audio')+'…')),
+    h('button',{class:'cbtn dec','aria-label':'Decline',onclick:declineCall},svg('phone')),
+    h('button',{class:'cbtn acc','aria-label':'Accept',onclick:acceptCall},svg(inc.v?'vidcam':'phone'))));
+}
+function showCallScreen(){
+  hideCallUI(); const c=call; if(!c) return; const ct=contacts[c.uid]||{name:'Unknown'};
+  const rv=h('video',{class:'crv',playsinline:''}); rv.muted=true; rv.autoplay=true;
+  const lv=h('video',{class:'clv',playsinline:''}); lv.muted=true; lv.autoplay=true;
+  const st=h('div',{class:'cst'});
+  const mk=(cls,ic,label,fn)=>{ const ico=h('div',{class:'cico'},svg(ic)); const b=h('button',{class:'cc '+cls,onclick:fn},ico,h('span',{},label)); b._i=ico; b._l=b.querySelector('span'); return b; };
+  const bm=mk('mute','cmic','Mute',toggleMute), bs=mk('spk','spk','Speaker',toggleSpeaker), bc=c.v?mk('cam','vidcam','Camera',toggleCam):null, be=mk('end','phone','End',hangup);
+  const scr=h('div',{id:'callScr',class:c.v?'vid':''},
+    h('div',{class:'cbg'}), rv, lv,
+    h('div',{class:'ctop'},h('button',{class:'cmin','aria-label':'Minimise',onclick:minimizeCall},svg('chevd')),h('span',{},'marsX '+(c.v?'video':'audio'))),
+    h('div',{class:'cmid'},h('div',{class:'cav'},avatar(ct,128,false)),h('div',{class:'cnm'},ct.name),st),
+    h('div',{class:'cctl'},bm,bs,bc,be));
+  document.body.append(scr); callUI={scr,st,rv,lv,bm,bs,bc,be,pill:null}; updateCallUI();
+}
+function hideCallUI(){ document.getElementById('callScr')?.remove(); document.getElementById('callPill')?.remove(); callUI={}; }
+function minimizeCall(){
+  if(!call||!callUI.scr) return; callUI.scr.style.display='none';
+  callUI.pill=h('button',{id:'callPill',onclick:()=>{ if(callUI.scr) callUI.scr.style.display=''; callUI.pill&&callUI.pill.remove(); callUI.pill=null; }});
+  document.body.append(callUI.pill); updateCallUI();
+}
+function setCallState(s){
+  const c=call; if(!c) return; c.state=s;
+  if(s==='connected'&&!c.tick) c.tick=setInterval(updateCallUI,1000);
+  updateCallUI();
+}
+function updateCallUI(){
+  const c=call; if(!c||!callUI.scr) return; const U=callUI;
+  const label=c.state==='connected'?fmtDur((Date.now()-c.t0)/1000):c.state==='ringing'?'Ringing…':c.state==='connecting'?'Connecting…':'Calling…';
+  U.st.textContent=label; U.scr.classList.toggle('live',c.state==='connected');
+  if(c.local&&U.lv&&U.lv.srcObject!==c.local&&c.v){ U.lv.srcObject=c.local; U.lv.play().catch(()=>{}); }
+  if(c.remote&&U.rv&&c.v&&U.rv.srcObject!==c.remote){ U.rv.srcObject=c.remote; U.rv.play().catch(()=>{}); }
+  const muted=!!c.muted; U.bm.classList.toggle('on',muted); U.bm._i.replaceChildren(svg(muted?'cmicoff':'cmic')); U.bm._l.textContent=muted?'Unmute':'Mute';
+  U.bs.classList.toggle('on',!!c.spk);
+  if(U.bc){ U.bc.classList.toggle('on',!!c.camOff); U.bc._i.replaceChildren(svg(c.camOff?'vidoff':'vidcam')); U.bc._l.textContent=c.camOff?'Camera on':'Camera off'; }
+  if(U.pill) U.pill.textContent='📞  '+callName(c.uid)+' · '+label;
+}
+function toggleMute(){ const c=call; if(!c||!c.local) return; c.muted=!c.muted; c.local.getAudioTracks().forEach(t=>{ t.enabled=!c.muted; }); updateCallUI(); }
+function toggleCam(){ const c=call; if(!c||!c.local) return; c.camOff=!c.camOff; c.local.getVideoTracks().forEach(t=>{ t.enabled=!c.camOff; }); updateCallUI(); }
+async function toggleSpeaker(){
+  const c=call; if(!c) return; c.spk=!c.spk; updateCallUI();
+  const el=c.aEl;
+  if(el&&el.setSinkId&&navigator.mediaDevices.enumerateDevices){
+    try{ const ds=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='audiooutput');
+      const pick=c.spk?ds.find(d=>/speaker/i.test(d.label)):ds.find(d=>/earpiece|receiver|handset|phone/i.test(d.label));
+      await el.setSinkId(pick?pick.deviceId:'default'); }catch(_){}
+  } else toast('On iPhone, switch speaker from the audio output button in Control Centre');
+}
+
 /* ---------------- GIFs (GIPHY) ---------------- */
 const GIPHY_API_KEY = 'UoGUQWJ5m26IyW6d3dFs2ocG519hn0oa';
 function safeGifUrl(u){ try{ const x=new URL(u); return x.protocol==='https:' && /(^|\.)giphy\.com$/i.test(x.hostname) ? x.href : null; }catch(_){ return null; } }
@@ -1507,7 +1798,23 @@ async function sendGif(uid, g, st){
   const url=safeGifUrl(g.full); if(!url) throw new Error('Bad GIF');
   await sendPayload(uid,{t:'gif',url,w:g.w,h:g.h,...(st?{st:1}:{}),...rqx()});
 }
-async function sendText(uid, text, fx){ text=text.trim(); if(!text) return; fx=fx||autoFx(text)||{}; await sendPayload(uid,{t:'text',text,...rqx(),...(PREF.get('fx')?fx:{})}); }
+const URL_RE=/https?:\/\/[^\s<>"']+/i;
+const safeHttp=u=>{ try{ const x=new URL(u); return (x.protocol==='https:'||x.protocol==='http:')?x.href:null; }catch(_){ return null; } };
+async function fetchPreview(u){
+  const ac=new AbortController(), tm=setTimeout(()=>ac.abort(),3000);
+  try{
+    const r=await fetch('https://api.microlink.io/?url='+encodeURIComponent(u),{signal:ac.signal}); if(!r.ok) return null;
+    const d=(await r.json()).data; if(!d||!d.title) return null;
+    const img=d.image&&d.image.url&&/^https:\/\//i.test(d.image.url)?d.image.url:(d.logo&&d.logo.url&&/^https:\/\//i.test(d.logo.url)?d.logo.url:'');
+    return { u, t:String(d.title).slice(0,120), ...(img&&img.length<500?{i:img}:{}), s:String(d.publisher||new URL(u).hostname).slice(0,60) };
+  }catch(_){ return null; } finally{ clearTimeout(tm); }
+}
+async function sendText(uid, text, fx){
+  text=text.trim(); if(!text) return; fx=fx||autoFx(text)||{};
+  let lp=null; const m=text.match(URL_RE);
+  if(m&&PREF.get('lp')){ const u=safeHttp(m[0].replace(/[).,!?;:]+$/,'')); if(u) lp=await fetchPreview(u); }
+  await sendPayload(uid,{t:'text',text,...(lp?{lp}:{}),...rqx(),...(PREF.get('fx')?fx:{})});
+}
 
 /* ---------------- list rendering ---------------- */
 function sortedContacts(){
@@ -1526,27 +1833,67 @@ function setTab(t){
   renderList();
 }
 function renderAll(){ renderList(); if(openUid) renderChatHeader(); }
+/* ---------- pin & archive (per device) ---------- */
+const LSJ={ get(k,d){ try{ const v=JSON.parse(localStorage.getItem(k)); return v==null?d:v; }catch(_){ return d; } }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(_){} } };
+let showArch=false;
+const getPins=()=>LSJ.get('pins:'+me.uid,[]), getArch=()=>LSJ.get('arch:'+me.uid,{});
+const isPinned=u=>getPins().includes(u);
+function isArchived(u){ const a=getArch()[u]; if(!a) return false; const l=threads[u]&&threads[u].last; return !(l&&l.from!==me.uid&&l.ts>a); }  // new incoming message un-archives
+function togglePin(u){ let p=getPins(); if(p.includes(u)) p=p.filter(x=>x!==u); else { if(p.length>=3){ toast('You can pin up to 3 chats'); return; } p.push(u); } LSJ.set('pins:'+me.uid,p); renderList(); toast(p.includes(u)?'Pinned':'Unpinned'); }
+function toggleArchive(u){ const a=getArch(); if(isArchived(u)) delete a[u]; else { a[u]=Date.now(); const p=getPins().filter(x=>x!==u); LSJ.set('pins:'+me.uid,p); } LSJ.set('arch:'+me.uid,a); if(!Object.keys(a).some(isArchived)) showArch=false; renderList(); toast(a[u]?'Chat archived':'Chat unarchived'); }
+function openListActions(uid){
+  const c=contacts[uid]; if(!c) return;
+  modal(h('div',{class:'sheet'}, h('h2',{},c.name),
+    h('button',{class:'item',onclick:()=>{ closeModal(); togglePin(uid); }}, h('span',{style:'font-size:20px'},'📌'), isPinned(uid)?'Unpin chat':'Pin chat'),
+    h('button',{class:'item',onclick:()=>{ closeModal(); toggleArchive(uid); }}, h('span',{style:'font-size:20px'},'🗄️'), isArchived(uid)?'Unarchive chat':'Archive chat'),
+    h('button',{class:'btn ghost',style:'margin-top:14px',onclick:closeModal},'Cancel')));
+}
 function renderList(){
   const body=$('#listBody'); if(!body||!me) return; const q=$('#sIn').value.trim().toLowerCase();
   const top = body.scrollTop; body.innerHTML='';
   if(tab==='chats'||tab==='contacts'){
-    const list = sortedContacts().filter(c=>(tab==='chats'||!c.isGroup) && (!q||c.name.toLowerCase().includes(q)||String(c.uidNum||'').includes(q)));
-    if(!list.length){
+    let list = sortedContacts().filter(c=>(tab==='chats'||!c.isGroup) && (!q||c.name.toLowerCase().includes(q)||String(c.uidNum||'').includes(q)));
+    if(tab==='chats'&&!q){
+      const al=list.filter(c=>isArchived(c.uid)); list=list.filter(c=>!isArchived(c.uid));
+      if(showArch&&al.length){
+        body.append(h('button',{class:'row arch',onclick:()=>{ showArch=false; renderList(); }},h('div',{class:'ico'},'←'),h('div',{class:'body'},h('div',{class:'top'},h('div',{class:'name'},'Archived chats')),h('div',{class:'prev'},h('div',{class:'txt'},'Tap to go back')))));
+        list=al;
+      } else {
+        showArch=false;
+        if(al.length){ const un=al.reduce((n,c)=>n+((threads[c.uid]&&threads[c.uid].unread)||0),0);
+          body.append(h('button',{class:'row arch',onclick:()=>{ showArch=true; renderList(); }},h('div',{class:'ico'},'🗄️'),h('div',{class:'body'},h('div',{class:'top'},h('div',{class:'name'},'Archived')),h('div',{class:'prev'},h('div',{class:'txt'},al.length+(al.length===1?' chat':' chats')),un?h('div',{class:'badge'},un>99?'99+':un):null)))); }
+        list=[...list.filter(c=>isPinned(c.uid)),...list.filter(c=>!isPinned(c.uid))];
+      }
+    }
+    if(!list.length&&!(tab==='chats'&&!q&&body.children.length)){
       body.append(h('div',{class:'empty'}, h('b',{}, q?'No results':'No chats yet'), q?'':'Tap the blue button to add a friend or create a group.'));
     }
     list.forEach(c=>{
       const t=threads[c.uid]||{}, last=t.last, on=presence[c.uid]&&presence[c.uid].online;
-      const row = h('button',{class:'row'+(openUid===c.uid?' active':''),onclick:()=>openChat(c.uid)},
+      let lpT=null, lpDone=false;
+      const row = h('button',{class:'row'+(openUid===c.uid?' active':''),onclick:()=>{ if(lpDone){ lpDone=false; return; } openChat(c.uid); },oncontextmenu:e=>{ if(tab!=='chats') return; e.preventDefault(); openListActions(c.uid); }},
         avatar(c, 76, on),
         h('div',{class:'body'},
-          h('div',{class:'top'}, h('div',{class:'name'},c.name), tab==='chats' ? h('div',{class:'time'}, last?relTime(last.ts):'') : null),
+          h('div',{class:'top'}, h('div',{class:'name'},c.name), tab==='chats' ? h('div',{class:'time'}, last?relTime(last.ts):'', isPinned(c.uid)?h('span',{class:'pinm'},'📌'):null) : null),
           h('div',{class:'prev'},
             h('div',{class:'txt'}, tab==='chats' ? (isBlocked(c.uid) ? '🚫 Blocked' : previewOf(last,c.uid)) : ((c.about&&c.about!=='null'&&c.about!=='undefined') ? c.about : 'UID '+c.uidNum)),
             tab==='chats' && t.unread ? h('div',{class:'badge'}, t.unread>99?'99+':t.unread) : null)));
+      if(tab==='chats'){
+        row.addEventListener('touchstart',()=>{ lpDone=false; lpT=setTimeout(()=>{ lpDone=true; try{ navigator.vibrate&&navigator.vibrate(12); }catch(_){} openListActions(c.uid); },520); },{passive:true});
+        ['touchend','touchmove','touchcancel'].forEach(ev=>row.addEventListener(ev,()=>clearTimeout(lpT),{passive:true}));
+      }
       body.append(row);
     });
   } else if(tab==='calls'){
-    body.append(h('div',{class:'empty'}, h('b',{},'Calls are coming soon'), 'Voice and video calls will show up here. Voice messages already work inside chats.'));
+    const logs=[]; Object.keys(threads).forEach(u=>{ const c=contacts[u]; if(!c||c.isGroup) return; ((threads[u]&&threads[u].items)||[]).forEach(i=>{ if(!i.locked&&i.p&&i.p.t==='calllog') logs.push({u,i}); }); });
+    logs.sort((a,b)=>b.i.ts-a.i.ts);
+    if(!logs.length) body.append(h('div',{class:'empty'}, h('b',{},'No calls yet'), 'Open a chat and tap the phone or video button to start a call.'));
+    logs.slice(0,60).forEach(({u,i})=>{
+      const c=contacts[u], p=i.p, out=i.from===me.uid, missed=!out&&p.st!=='ended';
+      body.append(h('button',{class:'row',onclick:()=>startCall(u,!!p.v)}, avatar(c,76,false),
+        h('div',{class:'body'},h('div',{class:'top'},h('div',{class:'name',style:missed?'color:#E5484D':''},c.name),h('div',{class:'time'},relTime(i.ts))),
+          h('div',{class:'prev'},h('div',{class:'txt'},(out?'↗ ':'↙ ')+callLogText(i).replace(/^\S+\s/,''))))));
+    });
   } else { renderSettings(body); }
   body.scrollTop = top;
 }
@@ -1571,7 +1918,7 @@ function renderSettings(body){
     h('div',{class:'sec'}, h('h3',{},'Privacy'),
       prefRow('Read receipts','Let people see when you’ve read their messages. If off, you won’t see theirs either.','rr',v=>{ if(v&&openUid) markRead(openUid); paintReceipt(); }),
       prefRow('Typing indicators','Show when you’re typing and see when others are.','ty',v=>{ if(!v){ $('#tbub')?.remove(); if(openUid) R(`typing/${chatCid(openUid)}/${me.uid}`).remove().catch(()=>{}); } })),
-    h('div',{class:'sec'}, h('h3',{},'Chat'), prefRow('Message effects','Animated emojis, bubble & screen effects.','fx')),
+    h('div',{class:'sec'}, h('h3',{},'Chat'), prefRow('Link previews','Fetch a title and image for links you send (the link is looked up via microlink.io).','lp'), prefRow('Message effects','Animated emojis, bubble & screen effects.','fx')),
     h('div',{class:'sec'}, h('h3',{},'Safety'),
       h('button',{class:'item',onclick:openBlockedList}, svg('ban'), h('span',{}, 'Blocked contacts', h('span',{class:'sub'}, Object.keys(blockedAt).length+' blocked'))),
       isAdmin ? h('button',{class:'item',onclick:openModPanel}, svg('shield'), h('span',{}, 'Moderation', h('span',{class:'sub'}, openReportCount+' open report'+(openReportCount===1?'':'s')))) : null),
@@ -1636,7 +1983,7 @@ function openChat(uid){
 function renderChatHeader(){
   const c=contacts[openUid]; const box=$('#chHeadMid'); if(!c||!box) return;
   const on=presence[openUid]&&presence[openUid].online;
-  box.innerHTML=''; box.append(avatar(c,70,on), h('div',{class:'nm'},c.name)); if(c.isGroup) box.append(h('div',{class:'gs'},Object.keys(c.members||{}).length+' members'));
+  box.innerHTML=''; box.append(avatar(c,70,on), h('div',{class:'nm'},c.name)); if(c.isGroup) box.append(h('div',{class:'gs'},Object.keys(c.members||{}).length+' members')); else if(!isBlocked(openUid)) box.append(h('div',{class:'cbtns'},h('button',{'aria-label':'Voice call',onclick:e=>{ e.stopPropagation(); startCall(openUid,false); }},svg('phone')),h('button',{'aria-label':'Video call',onclick:e=>{ e.stopPropagation(); startCall(openUid,true); }},svg('vidcam'))));
 }
 let typingUnsub=null, typingTimer=null, lastTypingSent=0;
 function renderChat(){
@@ -1745,6 +2092,7 @@ function renderChat(){
       h('button',{onclick:()=>{ closeMenu(); openGifPicker(); }},h('span',{style:'font:800 11px var(--head);border:1.5px solid currentColor;border-radius:5px;padding:2px 4px;color:var(--blue)'},'GIF'),'GIF'),
       h('button',{onclick:()=>{ closeMenu(); startRecording(); }},svg('mic'),'Voice message'),
       h('button',{onclick:()=>{ closeMenu(); openPollCreator(uid); }},svg('poll'),'Poll'),
+      h('button',{onclick:()=>{ closeMenu(); confirmShareLocation(uid); }},h('span',{style:'font-size:20px'},'📍'),'Location'),
       h('button',{onclick:()=>{ closeMenu(); fxSend(); }},h('span',{style:'font-size:20px'},'✨'),'Send with effect'),
       h('button',{onclick:()=>{ closeMenu(); sendText(uid,'👍'); }},h('span',{style:'font-size:20px'},'👍'),'Send a like')));
   };
@@ -1908,7 +2256,7 @@ function msgPreviewText(it){
   const p=it.p; if(!p||it.unsent) return 'Message unsent';
   if(p.t==='text') return String(p.text==null?'':p.text).slice(0,120);
   if(p.t==='img') return '📷 Photo'; if(p.t==='gif') return 'GIF';
-  if(p.t==='voice') return '🎤 Voice message'; if(p.t==='poll') return '📊 '+String(p.q||'').slice(0,100);
+  if(p.t==='voice') return '🎤 Voice message'; if(p.t==='loc') return '📍 Location'; if(p.t==='poll') return '📊 '+String(p.q||'').slice(0,100);
   return 'Message';
 }
 function setReply(uid,it){
@@ -2004,7 +2352,8 @@ function openForward(srcUid,it){
     let media=null; try{ if(p.t==='img'||p.t==='voice') media=await getMedia(srcUid,it); }catch(_){ toast('Could not read media'); closeModal(); return; }
     for(const u of sel){
       try{
-        if(p.t==='text') await sendPayload(u,{t:'text',text:p.text,fwd:1});
+        if(p.t==='text') await sendPayload(u,{t:'text',text:p.text,...(p.lp?{lp:p.lp}:{}),fwd:1});
+        else if(p.t==='loc') await sendPayload(u,{t:'loc',lat:p.lat,lng:p.lng,fwd:1});
         else if(p.t==='gif') await sendPayload(u,{t:'gif',url:p.url,w:p.w,h:p.h,fwd:1});
         else if(p.t==='img') await sendPayload(u,{t:'img',fwd:1},media);
         else if(p.t==='voice') await sendPayload(u,{t:'voice',dur:p.dur,wave:p.wave,fwd:1},media);
@@ -2061,7 +2410,7 @@ function bindMsgGestures(el,it,uid){
   el.addEventListener('touchend',end); el.addEventListener('touchcancel',end);
   // double-tap / double-click = ❤️ (not on photos, polls, voice)
   el.addEventListener('click',e=>{
-    if(e.target.closest('.rx,.rq,.play,.po,.pf,button,img:not(.ae)')) return;
+    if(e.target.closest('.rx,.rq,.play,.po,.pf,.lpc,.locc,a,button,img:not(.ae)')) return;
     const n=Date.now(); if(n-lastTap<320){ lastTap=0; const c=cur(); if(!c.unsent&&!c.locked){ const m=((threads[uid]?.reacts||{})[c.key]||{})[me.uid]; if(!m||m.e!=='❤️') sendReact(uid,c,'❤️'); } } else lastTap=n;
   });
 }
@@ -2192,7 +2541,7 @@ function appendMsg(it){
   const dayStr=new Date(it.ts).toDateString();
   const lastDay=[...box.querySelectorAll('[data-d]')].pop();
   if(!lastDay||lastDay.dataset.d!==dayStr){ const l=new Date(it.ts).toDateString()===new Date().toDateString()?'Today':new Date(it.ts).toLocaleDateString([], {weekday:'short',day:'numeric',month:'short'}); box.append(h('div',{class:'day','data-d':dayStr},l)); }
-  if(!it.locked && p && p.t==='sys'){ box.append(h('div',{class:'sysm','data-k':it.key},String(p.text||''))); const tb0=box.querySelector('#tbub'); if(tb0) box.append(tb0); if(near) box.scrollTop=box.scrollHeight; return; }
+  if(!it.locked && p && (p.t==='sys'||p.t==='calllog')){ box.append(h('div',{class:'sysm','data-k':it.key},p.t==='calllog'?callLogText(it):String(p.text||''))); const tb0=box.querySelector('#tbub'); if(tb0) box.append(tb0); if(near) box.scrollTop=box.scrollHeight; return; }
   const el=h('div',{class:'m '+(mine?'me':'them'),'data-k':it.key,'data-from':it.from});
   if(isGroup(uid) && !mine){
     const prev=[...box.querySelectorAll('.m[data-from]')].pop();
@@ -2203,7 +2552,7 @@ function appendMsg(it){
   else if(it.locked){ el.classList.add('locked'); bub.append('🔒 This message was sent before this device was linked, so it can\'t be decrypted here.'); }
   else if(p.t==='text'){
     if(/^\p{Extended_Pictographic}(️)?$/u.test(p.text.trim())){ el.classList.add('sticker'); }
-    if(el.classList.contains('sticker')) bub.append(animEmoji(p.text.trim(),104)); else bub.append(p.text);
+    if(el.classList.contains('sticker')) bub.append(animEmoji(p.text.trim(),104)); else { linkify(p.text).forEach(n=>bub.append(n)); const card=lpCard(p.lp); if(card) bub.append(card); }
   } else if(p.t==='img'){
     el.classList.add('img'); const im=h('img',{alt:'Photo',style:'min-width:160px;min-height:120px;background:rgba(127,127,127,.15)'}); bub.append(im);
     getMedia(uid,it).then(u=>{ im.src=u; im.style.minWidth=im.style.minHeight=''; im.onclick=()=>{ const v=h('div',{id:'viewer',onclick:()=>v.remove()},h('img',{src:u})); document.body.append(v); }; if(near) box.scrollTop=box.scrollHeight; }).catch(()=>{ bub.textContent='📷 Photo unavailable'; });
@@ -2215,6 +2564,8 @@ function appendMsg(it){
     el.classList.add('pollb'); bub.append(pollView(uid,it));
   } else if(p.t==='voice'){
     el.classList.add('voicem'); bub.append(voiceEl(uid,it,p));
+  } else if(p.t==='loc'){
+    el.classList.add('img'); bub.append(locView(p));
   }
   if(p && p.rq && typeof p.rq==='object' && !it.unsent){
     const q=p.rq, qk=String(q.k||''), qf=String(q.f||''), qx=String(q.x||'').slice(0,120);
@@ -2229,25 +2580,73 @@ function appendMsg(it){
   if(mine) paintReceipt();
   if(near) box.scrollTop=box.scrollHeight;
 }
+function linkify(text){
+  const out=[]; let last=0; const re=/https?:\/\/[^\s<>"']+/gi; let m;
+  while((m=re.exec(String(text)))){
+    let raw=m[0], trail=''; const t=raw.match(/[).,!?;:]+$/); if(t){ trail=t[0]; raw=raw.slice(0,-trail.length); }
+    const href=safeHttp(raw); if(!href) continue;
+    if(m.index>last) out.push(String(text).slice(last,m.index));
+    out.push(h('a',{class:'ln',href,target:'_blank',rel:'noopener noreferrer'},raw)); if(trail) out.push(trail);
+    last=m.index+m[0].length;
+  }
+  if(last<String(text).length) out.push(String(text).slice(last)); return out;
+}
+function lpCard(lp){
+  if(!lp||typeof lp!=='object') return null; const href=safeHttp(String(lp.u||'')); if(!href) return null;
+  const a=h('a',{class:'lpc',href,target:'_blank',rel:'noopener noreferrer'});
+  if(typeof lp.i==='string'&&/^https:\/\//i.test(lp.i)){ const im=h('img',{src:lp.i,alt:'',loading:'lazy',referrerpolicy:'no-referrer'}); im.onerror=()=>im.remove(); a.append(im); }
+  a.append(h('div',{class:'lpt'},h('b',{},String(lp.t||href).slice(0,120)),h('small',{},String(lp.s||'').slice(0,60)))); return a;
+}
+/* ---------- location messages ---------- */
+function locView(p){
+  const lat=Number(p.lat), lng=Number(p.lng); if(!isFinite(lat)||!isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180) return h('div',{style:'padding:10px 14px'},'📍 Location unavailable');
+  const z=15, n=Math.pow(2,z), W=240, H=150, rad=lat*Math.PI/180;
+  const px=(lng+180)/360*n*256, py=(1-Math.log(Math.tan(rad)+1/Math.cos(rad))/Math.PI)/2*n*256, left=px-W/2, top=py-H/2;
+  const map=h('div',{class:'map'});
+  for(let tx=Math.floor(left/256);tx<=Math.floor((left+W)/256);tx++) for(let ty=Math.floor(top/256);ty<=Math.floor((top+H)/256);ty++){
+    if(ty<0||ty>=n) continue; const wx=((tx%n)+n)%n;
+    map.append(h('img',{src:'https://tile.openstreetmap.org/'+z+'/'+wx+'/'+ty+'.png',alt:'',loading:'lazy',draggable:'false',style:'left:'+Math.round(tx*256-left)+'px;top:'+Math.round(ty*256-top)+'px'}));
+  }
+  map.append(h('div',{class:'lpin'},'📍'));
+  const card=h('div',{class:'locc',role:'link',onclick:e=>{ e.stopPropagation(); window.open('https://www.google.com/maps/search/?api=1&query='+lat+','+lng,'_blank','noopener'); }},map,h('div',{class:'lcap'},h('span',{},'📍 Shared location'),h('small',{},'© OpenStreetMap')));
+  return card;
+}
+function confirmShareLocation(uid){
+  const c=contacts[uid]; if(!c) return;
+  modal(h('div',{class:'sheet'},h('h2',{},'Share your location?'),
+    h('p',{},'Your current location will be sent to '+(isGroup(uid)?'this group':c.name.split(' ')[0])+', end-to-end encrypted.'),
+    h('button',{class:'btn',onclick:()=>{ closeModal(); shareLocation(uid); }},'Share current location'),
+    h('button',{class:'btn ghost',style:'margin-top:10px',onclick:closeModal},'Cancel')));
+}
+function shareLocation(uid){
+  if(!navigator.geolocation){ toast('Location isn’t supported on this device'); return; }
+  toast('Getting your location…');
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    try{ await sendPayload(uid,{t:'loc',lat:+pos.coords.latitude.toFixed(5),lng:+pos.coords.longitude.toFixed(5),...rqx()}); }catch(e){ toast('Could not send location'); }
+  },err=>{ toast(err&&err.code===1?'Allow location access to share it':'Couldn’t get your location'); },{enableHighAccuracy:true,timeout:12000,maximumAge:30000});
+}
+let VSPD=LSJ.get('vspd',1);
 let curAudio=null;
 function stopAllAudio(){ if(curAudio){ curAudio.a.pause(); curAudio.reset(); curAudio=null; } }
 function voiceEl(uid,it,p){
   const wave=h('div',{class:'wave'}); const bars=(p.wave&&p.wave.length?p.wave:Array.from({length:36},(_,i)=>.25+.6*Math.abs(Math.sin(i*.7)))).map(v=>h('i',{style:`height:${Math.max(6,Math.round(v*40))}px`})); wave.append(...bars);
   const dur=h('span',{class:'vdur'}, Math.floor(p.dur/60)+':'+String(p.dur%60).padStart(2,'0'));
   const btn=h('button',{class:'play','aria-label':'Play'},svg('play'));
+  const spd=h('button',{class:'vspd','aria-label':'Playback speed'},VSPD+'×');
   let a=null;
+  spd.onclick=e=>{ e.stopPropagation(); const L=[1,1.5,2]; VSPD=L[(L.indexOf(VSPD)+1)%L.length]; LSJ.set('vspd',VSPD); spd.textContent=VSPD+'×'; if(a) a.playbackRate=VSPD; };
   const reset=()=>{ btn.innerHTML=''; btn.append(svg('play')); bars.forEach(b=>b.classList.remove('p')); dur.textContent=Math.floor(p.dur/60)+':'+String(p.dur%60).padStart(2,'0'); };
   btn.onclick=async()=>{
     if(curAudio&&curAudio.a===a){ if(a.paused){ a.play(); btn.innerHTML=''; btn.append(svg('pause')); } else { a.pause(); btn.innerHTML=''; btn.append(svg('play')); } return; }
     stopAllAudio();
     try{
-      const url=await getMedia(uid,it); a=new Audio(url); curAudio={a,reset};
+      const url=await getMedia(uid,it); a=new Audio(url); a.playbackRate=VSPD; curAudio={a,reset};
       a.ontimeupdate=()=>{ const d=isFinite(a.duration)&&a.duration>0?a.duration:p.dur, f=a.currentTime/d; bars.forEach((b,i)=>b.classList.toggle('p',i/bars.length<f)); const r=Math.max(0,Math.round(d-a.currentTime)); dur.textContent=Math.floor(r/60)+':'+String(r%60).padStart(2,'0'); };
       a.onended=()=>{ reset(); curAudio=null; };
-      await a.play(); btn.innerHTML=''; btn.append(svg('pause'));
+      await a.play(); a.playbackRate=VSPD; btn.innerHTML=''; btn.append(svg('pause'));
     }catch(e){ toast('Could not play voice message'); }
   };
-  return h('div',{class:'voice'},wave,dur,btn);
+  return h('div',{class:'voice'},wave,dur,spd,btn);
 }
 
 /* =====================================================================
@@ -2368,12 +2767,16 @@ function openChatActions(uid){
   const c=contacts[uid]; if(!c) return; const b=isBlocked(uid);
   if(c.isGroup) return modal(h('div',{class:'sheet'}, h('h2',{},c.name),
     h('button',{class:'item',onclick:()=>{ closeModal(); openGroupInfo(uid); }}, svg('users'), 'Group info'),
+    h('button',{class:'item',onclick:()=>{ closeModal(); togglePin(uid); }}, h('span',{style:'font-size:20px'},'📌'), isPinned(uid)?'Unpin chat':'Pin chat'),
+    h('button',{class:'item',onclick:()=>{ closeModal(); toggleArchive(uid); }}, h('span',{style:'font-size:20px'},'🗄️'), isArchived(uid)?'Unarchive chat':'Archive chat'),
     h('button',{class:'item',onclick:()=>{ closeModal(); openWallpaper(uid); }}, svg('image'), 'Chat wallpaper'),
     h('button',{class:'item',onclick:()=>{ closeModal(); confirmClearChat(uid); }}, svg('trash'), 'Clear chat'),
     h('button',{class:'item danger',onclick:()=>{ closeModal(); leaveGroup(uid); }}, svg('logout'), 'Leave group'),
     h('button',{class:'btn ghost',style:'margin-top:14px',onclick:closeModal},'Cancel')));
   modal(h('div',{class:'sheet'}, h('h2',{},c.name),
     h('button',{class:'item',onclick:()=>{ closeModal(); openContactInfo(uid); }}, svg('user'), 'View profile'),
+    h('button',{class:'item',onclick:()=>{ closeModal(); togglePin(uid); }}, h('span',{style:'font-size:20px'},'📌'), isPinned(uid)?'Unpin chat':'Pin chat'),
+    h('button',{class:'item',onclick:()=>{ closeModal(); toggleArchive(uid); }}, h('span',{style:'font-size:20px'},'🗄️'), isArchived(uid)?'Unarchive chat':'Archive chat'),
     h('button',{class:'item',onclick:()=>{ closeModal(); openWallpaper(uid); }}, svg('image'), 'Chat wallpaper'),
     h('button',{class:'item',onclick:()=>{ closeModal(); confirmClearChat(uid); }}, svg('trash'), 'Clear chat'),
     h('button',{class:'item',onclick:()=>{ closeModal(); b ? unblockUser(uid) : confirmBlock(uid); }}, svg('ban'), b?'Unblock':'Block'),
