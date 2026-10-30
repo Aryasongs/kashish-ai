@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Messages</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -146,6 +146,56 @@ svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .emoji .egrid button{font-size:26px;height:42px;border-radius:12px;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;line-height:1}
 .emoji .egrid button:hover,.emoji .egrid button:active{background:var(--soft)}
 .emoji .eempty{grid-column:1/-1;color:var(--muted);text-align:center;padding:40px 0;font-size:14px}
+.gifp{position:absolute;left:20px;right:20px;bottom:104px;background:var(--card);border-radius:24px;box-shadow:0 14px 40px rgba(40,60,120,.22);z-index:5;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);padding:12px 12px 8px}
+.gifp .gs{width:100%;height:42px;border:0;border-radius:21px;background:var(--soft);padding:0 16px;outline:none;color:var(--ink);font-size:16px;margin-bottom:10px}
+.gifp .gg{column-count:2;column-gap:8px;height:300px;overflow-y:auto}
+.gifp .gi{break-inside:avoid;margin-bottom:8px;border-radius:12px;overflow:hidden;cursor:pointer;background:var(--soft)}
+.gifp .gi:active{transform:scale(.96)}
+.gifp .gi img{display:block;width:100%;height:auto}
+.gifp .ge{column-span:all;text-align:center;color:var(--muted);padding:40px 12px;font-size:14px}
+.gifp .gp{text-align:center;font-size:11px;color:var(--muted);padding-top:6px}
+.bub img.gifimg{cursor:default;max-width:240px;min-width:120px;background:rgba(127,127,127,.15)}
+/* no pinch / double-tap zoom */
+html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* chat wallpaper */
+.msgs.wp .day,.msgs.wp .e2e{background:color-mix(in srgb,var(--card) 80%,transparent);padding:4px 12px;border-radius:12px}
+.msgs.wp .m .ts{display:inline-block;background:color-mix(in srgb,var(--card) 80%,transparent);padding:2px 9px;border-radius:10px;font-size:12px;margin-top:4px}
+.wpseg{display:flex;background:var(--soft);border-radius:14px;padding:3px;margin:10px 0 14px}
+.wpseg button{flex:1;height:36px;border-radius:11px;color:var(--muted);font-weight:500;font-size:14px}
+.wpseg button.on{background:var(--card);color:var(--navy);box-shadow:0 2px 8px rgba(40,60,120,.12)}
+.wpgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.wpgrid button{aspect-ratio:3/4;border-radius:14px;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(127,127,127,.2);font-size:12px;color:var(--muted);display:grid;place-items:center;background-size:cover;background-position:center}
+.wpgrid button.sel{border-color:var(--blue)}
+.wpgrid button.def{background-color:var(--soft)}
+.wpgrid button svg{width:22px;height:22px}
+.chk{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:14px;margin:0 6px 14px}
+.chk input{width:18px;height:18px;accent-color:var(--blue)}
+.chead .mid{cursor:pointer}
+/* contact profile (iMessage-style, minimal) */
+.ci{position:absolute;inset:0;background:var(--card);z-index:8;display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none;padding-bottom:30px}
+.ci::-webkit-scrollbar{display:none}
+.ci-top{padding:56px 26px 0;display:flex;justify-content:flex-end;flex:none}
+.ci-top button{color:var(--blue);font-weight:500;font-size:17px}
+.ci-hero{display:flex;flex-direction:column;align-items:center;padding:6px 24px 0;text-align:center}
+.ci-hero .av{cursor:zoom-in}
+.ci-hero h2{font:600 28px var(--head);color:var(--navy);margin:16px 0 2px;letter-spacing:-.3px;word-break:break-word}
+.ci-hero .st{color:var(--muted);font-size:14.5px;min-height:20px}
+.ci-acts{display:flex;gap:10px;padding:22px 24px 4px}
+.ci-acts button{flex:1;background:var(--soft);border-radius:16px;padding:13px 4px 11px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--blue);font-size:12px;font-weight:500}
+.ci-acts button svg{width:22px;height:22px;color:var(--blue)}
+.ci-acts button.dg,.ci-acts button.dg svg{color:var(--danger)}
+.ci-group{background:var(--soft);border-radius:18px;margin:14px 24px 0;overflow:hidden}
+.ci-row{display:block;width:100%;text-align:left;padding:12px 16px;border-bottom:1px solid var(--line)}
+.ci-row:last-child{border-bottom:0}
+.ci-row small{display:block;color:var(--muted);font-size:12.5px;margin-bottom:2px}
+.ci-row span{color:var(--navy);font-size:16px;word-break:break-word;white-space:pre-wrap}
+.ci-row.ic{display:flex;align-items:center;gap:12px;color:var(--navy);font-size:15px}
+.ci-row.ic svg{width:20px;height:20px;color:var(--muted);flex:none}
+.ci-row.dg,.ci-row.dg svg{color:var(--danger)}
+.ci-h{margin:20px 30px 8px;font:500 12.5px var(--head);color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.ci-media{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px}
+.ci-media>div{aspect-ratio:1;background:rgba(127,127,127,.15);border-radius:8px;overflow:hidden;cursor:pointer}
+.ci-media img{width:100%;height:100%;object-fit:cover;display:block}
 .rec{display:flex;align-items:center;gap:14px;width:100%}
 .rec .t{flex:1;color:var(--danger);font-weight:600;display:flex;gap:8px;align-items:center}
 .rec .t::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--danger);animation:bl 1s infinite}
@@ -276,6 +326,7 @@ svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stro
     <input type="file" id="suFile" accept="image/*" class="hidden">
     <div class="field"><label>Name</label><input id="suName" maxlength="40" placeholder="Your name"></div>
     <div class="field"><label>Phone number (optional, so friends can add you)</label><input id="suPhone" type="tel" placeholder="+91 98765 43210"></div>
+    <label class="chk"><input type="checkbox" id="suPhonePub"> Show my phone number on my profile</label>
     <div class="field"><label>About</label><textarea id="suAbout" maxlength="120" placeholder="Hey there! I'm using Messages."></textarea></div>
     <div class="err" id="suErr"></div>
     <button class="btn" id="suSave">Continue</button>
@@ -624,7 +675,7 @@ function openSetup(edit){
   $('#suName').value = myProf ? myProf.name : (me.email||'').split('@')[0];
   $('#suAbout').value = myProf ? (myProf.about||'') : '';
   suPhoto = myProf ? myProf.photo||null : null;
-  $('#suPhone').value=''; $('#suErr').textContent='';
+  $('#suPhone').value=''; $('#suErr').textContent=''; $('#suPhonePub').checked=!!(myProf&&myProf.phonePub);
   R('private/'+me.uid+'/phone').once('value').then(s=>{ if(s.val()) $('#suPhone').value=s.val(); });
   renderSuAv();
 }
@@ -670,7 +721,8 @@ $('#suSave').onclick = async () => {
     let uidNum = myProf && myProf.uidNum;
     if(!uidNum) uidNum = await allocateUidNum();
     const upd = {};
-    upd['users/'+me.uid] = { name, about:$('#suAbout').value.trim(), photo:suPhoto||null, uidNum, created:(myProf&&myProf.created)||TS };
+    const pub = $('#suPhonePub').checked && phoneRaw;
+    upd['users/'+me.uid] = Object.assign({ name, about:$('#suAbout').value.trim(), photo:suPhoto||null, uidNum, created:(myProf&&myProf.created)||TS }, pub?{phonePub:phoneRaw}:{});
     upd['emailIndex/'+emailKey(me.email)] = me.uid;
     // phone index (hashed key); remove the old one if the number changed
     const oldPhone = (await R('private/'+me.uid+'/phone').once('value')).val();
@@ -678,7 +730,7 @@ $('#suSave').onclick = async () => {
     if(phoneRaw) upd['phoneIndex/'+await phoneKey(phoneRaw)] = me.uid;
     upd['private/'+me.uid+'/phone'] = phoneRaw||null;
     await R('').update(upd);
-    myProf = { uid:me.uid, name, about:$('#suAbout').value.trim(), photo:suPhoto||null, uidNum };
+    myProf = { uid:me.uid, name, about:$('#suAbout').value.trim(), photo:suPhoto||null, uidNum, phonePub:pub?phoneRaw:null };
     if(suEdit){ show('appStage'); renderAll(); toast('Profile updated'); }
     else await startApp();
   }catch(e){ err.textContent=e.message||String(e); }
@@ -778,6 +830,7 @@ function previewOf(it){
   if(it.locked) return '🔒 Encrypted message';
   const p=it.p, who = it.from===me.uid ? 'You: ' : '';
   if(p.t==='img') return who+'📷 Photo';
+  if(p.t==='gif') return who+'GIF';
   if(p.t==='voice') return who+'🎤 Voice message';
   return who+p.text;
 }
@@ -802,6 +855,114 @@ async function sendPayload(uid, payload, mediaDataUrl){
   const upd = {}; upd[`chats/${cid}/messages/${key}`] = rec;
   if(e.media){ rec.media = 1; upd[`chats/${cid}/media/${key}`] = e.media; }
   await R('').update(upd);
+}
+/* ---------------- no zoom ---------------- */
+['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('wheel',e=>{ if(e.ctrlKey) e.preventDefault(); },{passive:false});
+document.addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&['+','-','=','_','0'].includes(e.key)) e.preventDefault(); });
+
+/* ---------------- chat wallpaper (stored on this device) ---------------- */
+const WP=[
+  {n:'Sand',c:'#F1E8D8'},{n:'Sage',c:'#DCEADB'},{n:'Blush',c:'#F6E0E5'},{n:'Lavender',c:'#E4DFF5'},
+  {n:'Sky',c:'linear-gradient(160deg,#a1c4fd,#c2e9fb)'},{n:'Aurora',c:'linear-gradient(160deg,#84fab0,#8fd3f4)'},
+  {n:'Dusk',c:'linear-gradient(160deg,#a18cd1,#fbc2eb)'},{n:'Sunset',c:'linear-gradient(160deg,#ffd6a5,#ffadad)'},
+  {n:'Slate',c:'#1B2033'},{n:'Midnight',c:'linear-gradient(160deg,#1f2a5a,#0f1530)'}
+];
+function wpRead(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(_){ return null; } }
+function wpGet(uid){ const o=(uid&&wpRead('wp:'+uid))||wpRead('wp:all'); return o&&o.t!=='none'?o:null; }
+function wpApply(box,uid){
+  if(!box) return; const w=wpGet(uid); box.classList.toggle('wp',!!w); box.style.background='';
+  if(!w) return;
+  if(w.t==='img'){ box.style.backgroundImage='url("'+w.d+'")'; box.style.backgroundSize='cover'; box.style.backgroundPosition='center'; }
+  else box.style.background=w.c;
+}
+function openWallpaper(uid){
+  let scope = uid ? 'chat' : 'all';
+  const key=()=> scope==='chat' ? 'wp:'+uid : 'wp:all';
+  const seg=h('div',{class:'wpseg'}), grid=h('div',{class:'wpgrid'}), fi=h('input',{type:'file',accept:'image/*',class:'hidden'});
+  const save=v=>{
+    try{ if(v) localStorage.setItem(key(),JSON.stringify(v)); else localStorage.removeItem(key()); }catch(e){ toast('Could not save wallpaper (storage full)'); return; }
+    const box=$('#msgs'); if(box&&openUid) wpApply(box,openUid); draw();
+  };
+  const draw=()=>{
+    const c=wpRead(key());
+    seg.innerHTML=''; grid.innerHTML='';
+    if(uid){
+      [['chat','This chat'],['all','All chats']].forEach(([k,l])=>seg.append(h('button',{class:scope===k?'on':'',onclick:()=>{ scope=k; draw(); }},l)));
+    }
+    grid.append(h('button',{class:'def'+(c&&c.t==='none'?' sel':''),onclick:()=>save({t:'none'})},'None'));
+    WP.forEach(p=>{ const b=h('button',{class:c&&c.t==='c'&&c.c===p.c?'sel':'','aria-label':p.n,title:p.n,onclick:()=>save({t:'c',c:p.c})}); b.style.background=p.c; grid.append(b); });
+    const ph=h('button',{class:'def'+(c&&c.t==='img'?' sel':''),'aria-label':'Choose a photo',onclick:()=>fi.click()},svg('image'));
+    if(c&&c.t==='img'){ ph.style.backgroundImage='url("'+c.d+'")'; ph.innerHTML=''; }
+    grid.append(ph);
+  };
+  fi.onchange=async e=>{ const f=e.target.files[0]; e.target.value=''; if(!f) return; try{ save({t:'img',d:await resizeImage(f,1000,.72)}); }catch(_){ toast('Could not use that photo'); } };
+  draw();
+  modal(h('div',{class:'sheet'}, h('h2',{},'Chat wallpaper'),
+    h('p',{},uid?'Choose a background for this chat or for all chats. It is saved on this device only.':'Choose a background for all your chats. It is saved on this device only.'),
+    uid?seg:null, grid, fi,
+    h('button',{class:'btn ghost',onclick:()=>save(null)}, 'Reset'),
+    h('button',{class:'btn ghost',style:'margin-top:10px',onclick:closeModal},'Done')));
+}
+
+/* ---------------- contact profile ---------------- */
+function openContactInfo(uid){
+  const c=contacts[uid], card=$('#chatCard'); if(!c||!card) return;
+  card.querySelector('.ci')?.remove();
+  const blocked=isBlocked(uid), pr=presence[uid];
+  let status='';
+  if(blocked) status='Blocked';
+  else if(pr&&pr.online) status='Online';
+  else if(pr&&pr.last){ const r=relTime(pr.last); status='Last seen '+(r==='now'?'just now':/^\d+ (min|hours?|days?)$/.test(r)?r+' ago':r); }
+  const view=src=>{ const v=h('div',{id:'viewer',onclick:()=>v.remove()},h('img',{src})); document.body.append(v); };
+  const close=()=>ci.remove();
+  const av=avatar(c,124,pr&&pr.online&&!blocked); if(c.photo) av.onclick=()=>view(c.photo);
+  const act=(ic,label,fn,cls)=>h('button',{class:cls||'',onclick:fn},svg(ic),label);
+  const row=(label,val)=>h('div',{class:'ci-row'},h('small',{},label),h('span',{},val));
+  const info=h('div',{class:'ci-group'}, row('About', c.about||'Hey there! I’m using Messages.'));
+  if(c.phonePub) info.append(row('Phone number', c.phonePub));
+  if(c.uidNum) info.append(row('UID number', String(c.uidNum)));
+  if(c.created) info.append(row('Joined', new Date(c.created).toLocaleDateString([], {month:'long',year:'numeric'})));
+  const items=(threads[uid]?.items||[]).filter(i=>!i.locked&&i.p&&(i.p.t==='img'||i.p.t==='gif')).slice(-30).reverse();
+  const media=h('div',{class:'ci-media'});
+  items.forEach(it=>{
+    const im=h('img',{alt:'',loading:'lazy'}), cell=h('div',{},im); media.append(cell);
+    if(it.p.t==='gif'){ const u=safeGifUrl(it.p.url); if(u){ im.src=u; cell.onclick=()=>view(u); } else cell.remove(); }
+    else getMedia(uid,it).then(u=>{ im.src=u; cell.onclick=()=>view(u); }).catch(()=>cell.remove());
+  });
+  const ci=h('div',{class:'ci'},
+    h('div',{class:'ci-top'},h('button',{onclick:close},'Done')),
+    h('div',{class:'ci-hero'}, av, h('h2',{},c.name), h('div',{class:'st'},status)),
+    h('div',{class:'ci-acts'},
+      act('chat','Message',close),
+      act('image','Wallpaper',()=>openWallpaper(uid)),
+      blocked ? act('ban','Unblock',async()=>{ await unblockUser(uid); close(); }) : act('ban','Block',()=>{ close(); confirmBlock(uid); },'dg')),
+    info,
+    items.length ? h('div',{class:'ci-h'},'Photos & GIFs') : null, items.length ? h('div',{class:'ci-group'},media) : null,
+    h('div',{class:'ci-group'},
+      h('div',{class:'ci-row ic'},svg('lock'),'Messages are end-to-end encrypted'),
+      h('button',{class:'ci-row ic dg',onclick:()=>{ close(); openReport(uid); }},svg('flag'),'Report '+c.name.split(' ')[0])));
+  card.append(ci);
+}
+
+/* ---------------- GIFs (GIPHY) ---------------- */
+const GIPHY_API_KEY = 'UoGUQWJ5m26IyW6d3dFs2ocG519hn0oa';
+function safeGifUrl(u){ try{ const x=new URL(u); return x.protocol==='https:' && /(^|\.)giphy\.com$/i.test(x.hostname) ? x.href : null; }catch(_){ return null; } }
+async function fetchGifs(q){
+  const url = q
+    ? `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(q)}&limit=24&rating=pg-13`
+    : `https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=24&rating=pg-13`;
+  const res = await fetch(url); if(!res.ok) throw new Error('GIF request failed');
+  const data = await res.json();
+  return (data.data||[]).map(g=>{
+    const im=g.images||{}, thumb=(im.fixed_width_small||im.fixed_width||im.original||{}).url, full=(im.fixed_width||im.original||{}).url||thumb;
+    const f=im.fixed_width||im.original||{};
+    return thumb ? { thumb, full, w:+f.width||0, h:+f.height||0 } : null;
+  }).filter(Boolean);
+}
+async function sendGif(uid, g){
+  const url=safeGifUrl(g.full); if(!url) throw new Error('Bad GIF');
+  await sendPayload(uid,{t:'gif',url,w:g.w,h:g.h});
 }
 async function sendText(uid, text){ text=text.trim(); if(!text) return; await sendPayload(uid,{t:'text',text}); }
 
@@ -860,7 +1021,8 @@ function renderSettings(body){
     h('div',{class:'uidbox'}, h('div',{}, h('small',{},'Your UID number'), h('b',{}, p.uidNum||'…')),
       h('button',{class:'icon-btn',onclick:()=>{ navigator.clipboard&&navigator.clipboard.writeText(String(p.uidNum)); toast('UID copied'); }}, svg('copy'))),
     h('div',{class:'sec'},
-      h('button',{class:'item',onclick:()=>openSetup(true)}, svg('edit'), h('span',{}, 'Edit profile', h('span',{class:'sub'},'Name, photo, phone number, about'))),
+      h('button',{class:'item',onclick:()=>openSetup(true)}, svg('edit'), h('span',{}, 'Edit profile', h('span',{class:'sub'},'Name, photo, about, phone number'))),
+      h('button',{class:'item',onclick:()=>openWallpaper(null)}, svg('image'), h('span',{}, 'Chat wallpaper', h('span',{class:'sub'},'Background for all chats'))),
       h('button',{class:'item',onclick:openAddContact}, svg('user2'), h('span',{}, 'Add a friend', h('span',{class:'sub'},'By email, phone number or UID'))),
       h('button',{class:'item',onclick:scanOpen}, svg('qr'), h('span',{}, 'Link a device', h('span',{class:'sub'},'Scan the QR code shown on your laptop')))),
     h('div',{class:'sec'}, h('h3',{},'Safety'),
@@ -950,10 +1112,10 @@ function renderChat(){
   card.append(
     h('div',{class:'chead'},
       h('button',{class:'icon-btn','aria-label':'Back',onclick:closeChat},svg('back')),
-      h('div',{class:'mid',id:'chHeadMid'}),
+      h('div',{class:'mid',id:'chHeadMid',onclick:()=>openContactInfo(uid)}),
       h('button',{class:'icon-btn','aria-label':'More',onclick:()=>openChatActions(uid)},svg('more'))),
     msgs, typing, isBlocked(uid) ? blockBar(uid) : comp, fileIn);
-  renderChatHeader();
+  renderChatHeader(); wpApply(msgs,uid);
 
   msgs.append(h('div',{class:'e2e'},svg('lock'),'Messages are end-to-end encrypted. Only you and '+c.name+' can read them.'));
   (threads[uid]?.items||[]).forEach(appendMsg);
@@ -976,7 +1138,7 @@ function renderChat(){
 
   // emoji
   emBtn.onclick=()=>{
-    const ex=comp.querySelector('.emoji'); if(ex){ ex.remove(); return; } comp.querySelector('.menu')?.remove(); plus.classList.remove('open');
+    const ex=comp.querySelector('.emoji'); if(ex){ ex.remove(); return; } comp.querySelector('.gifp')?.remove(); comp.querySelector('.menu')?.remove(); plus.classList.remove('open');
     const CATS=[
       ['🕘','Recent',null],
       ['😀','Smileys','😀😃😄😁😆😅😂🤣🥲😊😇🙂🙃😉😌😍🥰😘😗😙😚😋😛😜🤪😝🤑🤗🤭🤫🤔🤐🤨😐😑😶😏😒🙄😬😮‍💨🤥😔😪🤤😴😷🤒🤕🤢🤮🤧🥵🥶🥴😵🤯🤠🥳🥸😎🤓🧐😕😟🙁☹️😮😯😲😳🥺😦😧😨😰😥😢😭😱😖😣😞😓😩😫🥱😤😡😠🤬😈👿💀☠️💩🤡👻👽🤖'],
@@ -1011,10 +1173,28 @@ function renderChat(){
     plus.classList.add('open');
     comp.append(h('div',{class:'menu'},
       h('button',{onclick:()=>{ closeMenu(); fileIn.click(); }},svg('image'),'Photo'),
+      h('button',{onclick:()=>{ closeMenu(); openGifPicker(); }},h('span',{style:'font:800 11px var(--head);border:1.5px solid currentColor;border-radius:5px;padding:2px 4px;color:var(--blue)'},'GIF'),'GIF'),
       h('button',{onclick:()=>{ closeMenu(); startRecording(); }},svg('mic'),'Voice message'),
       h('button',{onclick:()=>{ closeMenu(); sendText(uid,'👍'); }},h('span',{style:'font-size:20px'},'👍'),'Send a like')));
   };
   function closeMenu(){ comp.querySelector('.menu')?.remove(); plus.classList.remove('open'); }
+  function openGifPicker(){
+    comp.querySelector('.emoji')?.remove(); comp.querySelector('.gifp')?.remove();
+    const box=h('div',{class:'gifp'}), q=h('input',{class:'gs',placeholder:'Search GIFs',autocomplete:'off'}), grid=h('div',{class:'gg'});
+    box.append(q,grid,h('div',{class:'gp'},'Powered by GIPHY')); comp.append(box);
+    let seq=0, t=null;
+    const load=async term=>{
+      const my=++seq; grid.innerHTML=''; grid.append(h('div',{class:'ge'},'Loading…'));
+      try{
+        const items=await fetchGifs(term); if(my!==seq) return; grid.innerHTML='';
+        if(!items.length){ grid.append(h('div',{class:'ge'},'No GIFs found')); return; }
+        items.forEach(g=>grid.append(h('div',{class:'gi',onclick:async()=>{ box.remove(); try{ await sendGif(uid,g); }catch(e){ toast('Could not send GIF'); } }}, h('img',{src:g.thumb,loading:'lazy',alt:'',referrerpolicy:'no-referrer'}))));
+      }catch(e){ if(my!==seq) return; grid.innerHTML=''; grid.append(h('div',{class:'ge'},'Could not load GIFs. Check your connection.')); }
+    };
+    q.oninput=()=>{ clearTimeout(t); t=setTimeout(()=>load(q.value.trim()),350); };
+    load(''); setTimeout(()=>q.focus(),100);
+    setTimeout(()=>{ const off=ev=>{ if(!box.isConnected){ document.removeEventListener('pointerdown',off,true); return; } if(!box.contains(ev.target)){ box.remove(); document.removeEventListener('pointerdown',off,true); } }; document.addEventListener('pointerdown',off,true); },0);
+  }
   fileIn.onchange=async e=>{
     const f=e.target.files[0]; if(!f) return; e.target.value='';
     try{ const d=await resizeImage(f,1280,.82); await sendPayload(uid,{t:'img'},d); }catch(err){ toast('Could not send photo'); }
@@ -1073,6 +1253,10 @@ function appendMsg(it){
   } else if(p.t==='img'){
     el.classList.add('img'); const im=h('img',{alt:'Photo',style:'min-width:160px;min-height:120px;background:rgba(127,127,127,.15)'}); bub.append(im);
     getMedia(uid,it).then(u=>{ im.src=u; im.style.minWidth=im.style.minHeight=''; im.onclick=()=>{ const v=h('div',{id:'viewer',onclick:()=>v.remove()},h('img',{src:u})); document.body.append(v); }; if(near) box.scrollTop=box.scrollHeight; }).catch(()=>{ bub.textContent='📷 Photo unavailable'; });
+  } else if(p.t==='gif'){
+    el.classList.add('img'); const gu=safeGifUrl(p.url);
+    if(gu){ const im=h('img',{src:gu,alt:'GIF',class:'gifimg',loading:'lazy',referrerpolicy:'no-referrer'}); if(p.w&&p.h){ im.style.aspectRatio=p.w+'/'+p.h; } im.onload=()=>{ if(near) box.scrollTop=box.scrollHeight; }; im.onerror=()=>{ bub.textContent='GIF unavailable'; }; bub.append(im); }
+    else bub.textContent='GIF unavailable';
   } else if(p.t==='voice'){
     el.classList.add('voicem'); bub.append(voiceEl(uid,it,p));
   }
@@ -1218,6 +1402,8 @@ function confirmBlock(uid){
 function openChatActions(uid){
   const c=contacts[uid]; if(!c) return; const b=isBlocked(uid);
   modal(h('div',{class:'sheet'}, h('h2',{},c.name),
+    h('button',{class:'item',onclick:()=>{ closeModal(); openContactInfo(uid); }}, svg('user'), 'View profile'),
+    h('button',{class:'item',onclick:()=>{ closeModal(); openWallpaper(uid); }}, svg('image'), 'Chat wallpaper'),
     h('button',{class:'item',onclick:()=>{ closeModal(); b ? unblockUser(uid) : confirmBlock(uid); }}, svg('ban'), b?'Unblock':'Block'),
     h('button',{class:'item danger',onclick:()=>{ closeModal(); openReport(uid); }}, svg('flag'), 'Report'),
     h('button',{class:'btn ghost',style:'margin-top:14px',onclick:closeModal},'Cancel')));
@@ -1242,7 +1428,7 @@ async function submitReport(uid, reason, details, withEvidence, alsoBlock){
     (threads[uid]?.items||[]).filter(i=>!i.locked && i.p).slice(-10).forEach(i=>{
       const p=i.p;
       ev.push({ who:i.from===me.uid?'reporter':'reported', t:String(p.t||'text').slice(0,10),
-        text: p.t==='text' ? String(p.text).slice(0,500) : (p.t==='img' ? '[photo]' : '[voice message]'), ts:i.ts });
+        text: p.t==='text' ? String(p.text).slice(0,500) : (p.t==='img' ? '[photo]' : p.t==='gif' ? '[gif]' : '[voice message]'), ts:i.ts });
     });
   }
   const rec = { by:me.uid, against:uid, cid:cidOf(me.uid,uid), reason, ts:TS, status:'open' };
