@@ -405,17 +405,16 @@ html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100
 .ae{display:inline-block;width:var(--s);height:var(--s);object-fit:contain;vertical-align:middle;user-select:none;-webkit-user-drag:none}
 .bub img.ae{border-radius:0;cursor:default;max-width:none;max-height:none}
 .m.sticker .bub .ae{display:block}
-/* cute emoji animations (Twemoji) */
-.ae{transform-origin:50% 80%;animation-duration:1.8s;animation-iteration-count:infinite;animation-timing-function:ease-in-out;animation-delay:var(--d,0s);filter:drop-shadow(0 2px 3px rgba(0,0,0,.12))}
-.ae-bounce{animation-name:aeBounce}.ae-wiggle{animation-name:aeWiggle}.ae-pulse{animation-name:aePulse;transform-origin:50% 50%}
-.ae-float{animation-name:aeFloat;animation-duration:2.6s}.ae-swing{animation-name:aeSwing;transform-origin:50% 10%}.ae-pop{animation-name:aePop;transform-origin:50% 50%}
-@keyframes aeBounce{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-14%) scale(.94,1.08)}50%{transform:translateY(0) scale(1.1,.9)}65%{transform:translateY(-5%)}}
-@keyframes aeWiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(3deg)}}
-@keyframes aePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-@keyframes aeFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10%) rotate(3deg)}}
-@keyframes aeSwing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
-@keyframes aePop{0%,60%,100%{transform:scale(1)}70%{transform:scale(1.25) rotate(-6deg)}85%{transform:scale(.95) rotate(4deg)}}
-@media (prefers-reduced-motion:reduce){.ae{animation:none}}
+/* Instagram-style emoji animations: spring pop-in, big ones breathe */
+.ae{transform-origin:50% 60%;filter:drop-shadow(0 2px 4px rgba(0,0,0,.14));image-rendering:auto}
+.ae-in{animation:aeIn .55s cubic-bezier(.34,1.56,.64,1) both}
+.ae-in.ae-loop{animation:aeIn .55s cubic-bezier(.34,1.56,.64,1) both,aeBreathe 2.4s ease-in-out .6s infinite}
+@keyframes aeIn{0%{transform:scale(0) rotate(-25deg);opacity:0}55%{transform:scale(1.28) rotate(8deg);opacity:1}80%{transform:scale(.94) rotate(-3deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes aeBreathe{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.07) translateY(-4%)}}
+.rxbar button{transition:transform .18s cubic-bezier(.34,1.56,.64,1)}
+.rxbar button:active{transform:scale(1.6) translateY(-8px)}
+.rxbar button:hover{transform:scale(1.25) translateY(-4px)}
+@media (prefers-reduced-motion:reduce){.ae,.ae-in{animation:none}}
 /* login footer: smaller + pinned to bottom */
 .solo{padding-bottom:0!important}
 .from{padding:8px 0 max(14px,env(safe-area-inset-bottom))!important;gap:3px!important}
@@ -1817,19 +1816,21 @@ async function getMedia(uid,it){
    ===================================================================== */
 
 /* =====================================================================
-   Animated emoji (Twemoji + CSS animations) + iMessage-style effects
+   Animated emoji (Apple-style art + Instagram-style spring animations) + iMessage-style effects
    ===================================================================== */
 function animEmoji(e,size){
   const txt=()=>h('span',{style:`font-size:${Math.round(size*.82)}px;line-height:1;display:inline-block`},e);
   if(!PREF.get('fx')) return txt();
-  const cp=Array.from(e).map(c=>c.codePointAt(0).toString(16)), full=cp.join('-'), strip=cp.filter(x=>x!=='fe0f').join('-');
-  const urls=[strip]; if(full!==strip) urls.push(full);
-  const U=c=>'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/'+c+'.svg';
-  let hs=0; for(const ch of e) hs=(hs*31+ch.codePointAt(0))>>>0;
-  const AN=['bounce','wiggle','pulse','float','swing','pop'], an=AN[hs%AN.length];
-  let i=0; const im=h('img',{class:'ae ae-'+an,alt:e,draggable:'false',loading:'lazy',referrerpolicy:'no-referrer',style:'--s:'+size+'px;--d:'+((hs%7)*0.15).toFixed(2)+'s'});
-  im.onerror=()=>{ i++; if(i<urls.length) im.src=U(urls[i]); else if(im.parentNode) im.replaceWith(txt()); };
-  im.src=U(urls[0]); return im;
+  // Apple/iOS-style emoji art (same look Instagram shows on iPhone) + Instagram-style spring animations
+  const cp=Array.from(e).map(c=>c.codePointAt(0).toString(16).padStart(4,'0')), full=cp.join('-'), strip=cp.filter(x=>x!=='fe0f').join('-');
+  const urls=[full]; if(strip!==full) urls.push(strip);
+  const A=c=>'https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.1.2/img/apple/64/'+c+'.png';
+  const T=c=>'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/'+c.replace(/-fe0f/g,'')+'.svg';
+  const srcs=[...urls.map(A),T(full)];
+  const big=size>=60;
+  let i=0; const im=h('img',{class:'ae ae-in'+(big?' ae-loop':''),alt:e,draggable:'false',loading:'lazy',referrerpolicy:'no-referrer',style:'--s:'+size+'px'});
+  im.onerror=()=>{ i++; if(i<srcs.length) im.src=srcs[i]; else if(im.parentNode) im.replaceWith(txt()); };
+  im.src=srcs[0]; return im;
 }
 function floatReact(key,e){
   if(!PREF.get('fx')) return;
