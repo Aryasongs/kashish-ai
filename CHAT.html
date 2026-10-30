@@ -1637,7 +1637,7 @@ function openChat(uid){
 function renderChatHeader(){
   const c=contacts[openUid]; const box=$('#chHeadMid'); if(!c||!box) return;
   const on=presence[openUid]&&presence[openUid].online;
-  box.innerHTML=''; box.append(avatar(c,70,on), h('div',{class:'nm'},c.name), c.isGroup?h('div',{class:'gs'},Object.keys(c.members||{}).length+' members'):null);
+  box.innerHTML=''; box.append(avatar(c,70,on), h('div',{class:'nm'},c.name)); if(c.isGroup) box.append(h('div',{class:'gs'},Object.keys(c.members||{}).length+' members'));
 }
 let typingUnsub=null, typingTimer=null, lastTypingSent=0;
 function renderChat(){
