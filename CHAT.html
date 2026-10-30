@@ -405,6 +405,22 @@ html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100
 .ae{display:inline-block;width:var(--s);height:var(--s);object-fit:contain;vertical-align:middle;user-select:none;-webkit-user-drag:none}
 .bub img.ae{border-radius:0;cursor:default;max-width:none;max-height:none}
 .m.sticker .bub .ae{display:block}
+/* cute emoji animations (Twemoji) */
+.ae{transform-origin:50% 80%;animation-duration:1.8s;animation-iteration-count:infinite;animation-timing-function:ease-in-out;animation-delay:var(--d,0s);filter:drop-shadow(0 2px 3px rgba(0,0,0,.12))}
+.ae-bounce{animation-name:aeBounce}.ae-wiggle{animation-name:aeWiggle}.ae-pulse{animation-name:aePulse;transform-origin:50% 50%}
+.ae-float{animation-name:aeFloat;animation-duration:2.6s}.ae-swing{animation-name:aeSwing;transform-origin:50% 10%}.ae-pop{animation-name:aePop;transform-origin:50% 50%}
+@keyframes aeBounce{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-14%) scale(.94,1.08)}50%{transform:translateY(0) scale(1.1,.9)}65%{transform:translateY(-5%)}}
+@keyframes aeWiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(3deg)}}
+@keyframes aePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@keyframes aeFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10%) rotate(3deg)}}
+@keyframes aeSwing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+@keyframes aePop{0%,60%,100%{transform:scale(1)}70%{transform:scale(1.25) rotate(-6deg)}85%{transform:scale(.95) rotate(4deg)}}
+@media (prefers-reduced-motion:reduce){.ae{animation:none}}
+/* login footer: smaller + pinned to bottom */
+.solo{padding-bottom:0!important}
+.from{padding:8px 0 max(14px,env(safe-area-inset-bottom))!important;gap:3px!important}
+.from small{font-size:9.5px!important}
+.from .nxr{width:60px!important}
 .rx .ae{display:inline-block}
 .rxbar button .ae{display:block;margin:auto}
 .flt{position:fixed;z-index:72;pointer-events:none;animation:flt 1.3s ease-out forwards}
@@ -1030,14 +1046,15 @@ function previewOf(it,key){
   if(!it) return key&&isGroup(key) ? 'New group' : 'Say hello 👋';
   if(it.locked) return '🔒 Encrypted message';
   if(it.unsent) return (it.from===me.uid?'You: ':'')+'unsent a message';
-  const p=it.p;
-  if(p.t==='sys') return p.text;
+  const p=it.p; if(!p) return '🔒 Encrypted message';
+  const T=v=>(v==null||v==='null'||v==='undefined')?'':String(v);
+  if(p.t==='sys') return T(p.text);
   const who = it.from===me.uid ? 'You: ' : (key&&isGroup(key) ? firstName(it.from)+': ' : '');
   if(p.t==='poll') return who+'📊 '+p.q;
   if(p.t==='img') return who+'📷 Photo';
   if(p.t==='gif') return who+'GIF';
   if(p.t==='voice') return who+'🎤 Voice message';
-  return who+p.text;
+  return who+(T(p.text)||'Message');
 }
 
 /* ---------------- messages: send ---------------- */
@@ -1446,7 +1463,7 @@ function openContactInfo(uid){
   const av=avatar(c,124,pr&&pr.online&&!blocked); if(c.photo) av.onclick=()=>view(c.photo);
   const act=(ic,label,fn,cls)=>h('button',{class:cls||'',onclick:fn},svg(ic),label);
   const row=(label,val)=>h('div',{class:'ci-row'},h('small',{},label),h('span',{},val));
-  const info=h('div',{class:'ci-group'}, row('About', c.about||'Hey there! I’m using marsX.'));
+  const info=h('div',{class:'ci-group'}, row('About', (c.about&&c.about!=='null'&&c.about!=='undefined')?c.about:'Hey there! I’m using marsX.'));
   if(c.phonePub) info.append(row('Phone number', c.phonePub));
   if(c.uidNum) info.append(row('UID number', String(c.uidNum)));
   if(c.created) info.append(row('Joined', new Date(c.created).toLocaleDateString([], {month:'long',year:'numeric'})));
@@ -1525,7 +1542,7 @@ function renderList(){
         h('div',{class:'body'},
           h('div',{class:'top'}, h('div',{class:'name'},c.name), tab==='chats' ? h('div',{class:'time'}, last?relTime(last.ts):'') : null),
           h('div',{class:'prev'},
-            h('div',{class:'txt'}, tab==='chats' ? (isBlocked(c.uid) ? '🚫 Blocked' : previewOf(last,c.uid)) : (c.about || 'UID '+c.uidNum)),
+            h('div',{class:'txt'}, tab==='chats' ? (isBlocked(c.uid) ? '🚫 Blocked' : previewOf(last,c.uid)) : ((c.about&&c.about!=='null'&&c.about!=='undefined') ? c.about : 'UID '+c.uidNum)),
             tab==='chats' && t.unread ? h('div',{class:'badge'}, t.unread>99?'99+':t.unread) : null)));
       body.append(row);
     });
@@ -1800,15 +1817,17 @@ async function getMedia(uid,it){
    ===================================================================== */
 
 /* =====================================================================
-   Animated emoji (Google Noto Animated Emoji) + iMessage-style effects
+   Animated emoji (Twemoji + CSS animations) + iMessage-style effects
    ===================================================================== */
 function animEmoji(e,size){
   const txt=()=>h('span',{style:`font-size:${Math.round(size*.82)}px;line-height:1;display:inline-block`},e);
   if(!PREF.get('fx')) return txt();
-  const cp=Array.from(e).map(c=>c.codePointAt(0).toString(16)), a=cp.join('_'), b=cp.filter(x=>x!=='fe0f').join('_');
-  const urls=[a]; if(b&&b!==a) urls.push(b);
-  const U=c=>'https://fonts.gstatic.com/s/e/notoemoji/latest/'+c+'/512.webp';
-  let i=0; const im=h('img',{class:'ae',alt:e,draggable:'false',loading:'lazy',referrerpolicy:'no-referrer',style:'--s:'+size+'px'});
+  const cp=Array.from(e).map(c=>c.codePointAt(0).toString(16)), full=cp.join('-'), strip=cp.filter(x=>x!=='fe0f').join('-');
+  const urls=[strip]; if(full!==strip) urls.push(full);
+  const U=c=>'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/'+c+'.svg';
+  let hs=0; for(const ch of e) hs=(hs*31+ch.codePointAt(0))>>>0;
+  const AN=['bounce','wiggle','pulse','float','swing','pop'], an=AN[hs%AN.length];
+  let i=0; const im=h('img',{class:'ae ae-'+an,alt:e,draggable:'false',loading:'lazy',referrerpolicy:'no-referrer',style:'--s:'+size+'px;--d:'+((hs%7)*0.15).toFixed(2)+'s'});
   im.onerror=()=>{ i++; if(i<urls.length) im.src=U(urls[i]); else if(im.parentNode) im.replaceWith(txt()); };
   im.src=U(urls[0]); return im;
 }
@@ -1886,7 +1905,7 @@ const rqx=()=>{ const r=takeReply(); return r?{rq:r}:{}; };
 function takeReply(){ const r=replyTo; if(r){ replyTo=null; if(rbarEl) rbarEl.classList.add('hidden'); } return r; }
 function msgPreviewText(it){
   const p=it.p; if(!p||it.unsent) return 'Message unsent';
-  if(p.t==='text') return String(p.text).slice(0,120);
+  if(p.t==='text') return String(p.text==null?'':p.text).slice(0,120);
   if(p.t==='img') return '📷 Photo'; if(p.t==='gif') return 'GIF';
   if(p.t==='voice') return '🎤 Voice message'; if(p.t==='poll') return '📊 '+String(p.q||'').slice(0,100);
   return 'Message';
@@ -2050,7 +2069,7 @@ function bindMsgGestures(el,it,uid){
 const clrTs=cid=>{ try{ return +localStorage.getItem('clr:'+cid)||0; }catch(_){ return 0; } };
 function clearChat(uid){
   const cid=chatCid(uid), t=threads[uid];
-  const ts=Math.max(0,...(t?t.items.map(i=>i.ts):[0]));
+  const ts=Math.max(clrTs(cid),...(t?t.items.map(i=>i.ts):[0]));
   if(ts){ try{ localStorage.setItem('clr:'+cid,String(ts)); }catch(_){} }
   if(t){ t.items=[]; t.last=null; t.unread=0; t.votes={}; t.reacts={}; t.unsent=new Map(); }
   setLR(uid,Date.now());
@@ -2068,7 +2087,12 @@ function confirmDeleteContact(uid){
   modal(h('div',{class:'sheet'},h('h2',{},'Delete '+c.name+'?'),
     h('p',{},'This clears the whole chat from this device and removes them from your contacts. They can still add you again, and you can add them back any time with their email, phone or UID.'),
     h('button',{class:'btn',style:'background:var(--danger);box-shadow:none',onclick:async()=>{
-      try{ await R('contacts/'+me.uid+'/'+uid).remove(); }catch(e){ closeModal(); toast('Could not delete contact'); return; }
+      // mark the chat as cleared BEFORE removing the contact: removal tears down threads[uid] immediately,
+      // which used to leave nothing to compute the clear-timestamp from, so old messages came back on re-add.
+      const cid=chatCid(uid), prevClr=clrTs(cid);
+      const mx=Math.max(0,...((threads[uid]&&threads[uid].items)||[]).map(i=>i.ts));
+      try{ localStorage.setItem('clr:'+cid,String(Math.max(mx,Date.now()-5000))); }catch(_){}
+      try{ await R('contacts/'+me.uid+'/'+uid).remove(); }catch(e){ try{ localStorage.setItem('clr:'+cid,String(prevClr)); }catch(_){} closeModal(); toast('Could not delete contact'); return; }
       closeModal(); clearChat(uid); toast(c.name+' deleted');
     }},'Delete contact'),
     h('button',{class:'btn ghost',style:'margin-top:10px',onclick:closeModal},'Cancel')));
