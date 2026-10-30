@@ -3,7 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Messages</title>
+<title>marsX</title>
+<meta name="application-name" content="marsX">
+<meta name="apple-mobile-web-app-title" content="marsX">
+<meta property="og:title" content="marsX">
+<meta property="og:site_name" content="marsX">
+<meta name="description" content="marsX – private, end-to-end encrypted messaging.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -348,7 +353,7 @@ html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100
   <div class="phone"><div class="solo">
     <div class="logo" id="logoI"></div>
     <h1 id="authTitle">Welcome back</h1>
-    <p class="sub">Private messages, end-to-end encrypted. Sign in with your email.</p>
+    <p class="sub">Welcome to marsX. Private messages, end-to-end encrypted. Sign in with your email.</p>
     <div class="tabs" id="authTabs"><button id="tabIn" class="on">Sign in</button><button id="tabUp">Create account</button></div>
     <div id="otpStep" class="hidden">
       <p class="sub" id="otpSub" style="margin-top:0"></p>
@@ -382,7 +387,7 @@ html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100
     <div class="field"><label>Name</label><input id="suName" maxlength="40" placeholder="Your name"></div>
     <div class="field"><label>Phone number (optional, so friends can add you)</label><input id="suPhone" type="tel" placeholder="+91 98765 43210"></div>
     <label class="chk"><input type="checkbox" id="suPhonePub"> Show my phone number on my profile</label>
-    <div class="field"><label>About</label><textarea id="suAbout" maxlength="120" placeholder="Hey there! I'm using Messages."></textarea></div>
+    <div class="field"><label>About</label><textarea id="suAbout" maxlength="120" placeholder="Hey there! I'm using marsX."></textarea></div>
     <div class="err" id="suErr"></div>
     <button class="btn" id="suSave">Continue</button>
     <button class="btn ghost hidden" id="suCancel">Cancel</button>
@@ -393,7 +398,7 @@ html{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100
 <div class="stage hidden" id="appStage">
   <div class="phone" id="listCard">
     <div class="panel" id="tabChats">
-      <div class="panel-top"><h1 id="ptTitle">Messages</h1><button class="icon-btn" id="searchBtn" aria-label="Search"></button></div>
+      <div class="panel-top"><h1 id="ptTitle">marsX</h1><button class="icon-btn" id="searchBtn" aria-label="Search"></button></div>
       <div class="searchbar" id="sbar"><input id="sIn" placeholder="Search…"></div>
       <div class="scroll" id="listBody"></div>
     </div>
@@ -1313,7 +1318,7 @@ function openContactInfo(uid){
   const av=avatar(c,124,pr&&pr.online&&!blocked); if(c.photo) av.onclick=()=>view(c.photo);
   const act=(ic,label,fn,cls)=>h('button',{class:cls||'',onclick:fn},svg(ic),label);
   const row=(label,val)=>h('div',{class:'ci-row'},h('small',{},label),h('span',{},val));
-  const info=h('div',{class:'ci-group'}, row('About', c.about||'Hey there! I’m using Messages.'));
+  const info=h('div',{class:'ci-group'}, row('About', c.about||'Hey there! I’m using marsX.'));
   if(c.phonePub) info.append(row('Phone number', c.phonePub));
   if(c.uidNum) info.append(row('UID number', String(c.uidNum)));
   if(c.created) info.append(row('Joined', new Date(c.created).toLocaleDateString([], {month:'long',year:'numeric'})));
@@ -1370,7 +1375,7 @@ function sortedContacts(){
 function setTab(t){
   tab=t;
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
-  $('#ptTitle').textContent = {chats:'Messages',contacts:'Contacts',settings:'Settings',calls:'Calls'}[t];
+  $('#ptTitle').textContent = {chats:'marsX',contacts:'Contacts',settings:'Settings',calls:'Calls'}[t];
   $('#searchBtn').style.visibility = (t==='chats'||t==='contacts') ? 'visible':'hidden';
   $('#fab').classList.toggle('hidden', !(t==='chats'||t==='contacts'));
   $('#sbar').classList.remove('on'); $('#sIn').value='';
@@ -1716,7 +1721,7 @@ function devName(){ return deviceLabel(); }
 $('#qrBtn').onclick = async () => {
   const img=h('img',{alt:'QR'}), msg=h('div',{style:'text-align:center;font-size:13px;color:var(--muted);margin-top:10px'},'Generating QR code…');
   const m=modal(h('div',{class:'sheet'}, h('h2',{},'Log in with QR code'),
-    h('ol',{},h('li',{},'Open Messages on your phone'),h('li',{},'Go to Settings → ',h('b',{},'Link a device')),h('li',{},'Scan this code')),
+    h('ol',{},h('li',{},'Open marsX on your phone'),h('li',{},'Go to Settings → ',h('b',{},'Link a device')),h('li',{},'Scan this code')),
     h('div',{class:'qrimg'},img), msg, h('button',{class:'btn line',style:'margin-top:14px',onclick:()=>{ kq&&(kq.alive=false); closeModal(); }},'Cancel')));
   if(kq) kq.alive=false; const my=kq={alive:true};
   async function cycle(){
