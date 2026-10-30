@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Messages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E6EEFA; --card:#fff; --navy:#2D2A5E; --ink:#3A3860; --muted:#8C90A8; --soft:#F3F4FC;
+  --blue:#3B82F6; --blue-d:#2F6FE0; --line:#EDEFF7; --danger:#E5484D;
+  --head:'Poppins','Inter',system-ui,sans-serif; --body:'Inter',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0E1424;--card:#171D30;--navy:#ECEEFB;--ink:#D8DBF0;--muted:#8A90AD;--soft:#222a42;--line:#262E48}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);font-family:var(--body);color:var(--ink);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+input,textarea{font:inherit;color:inherit}
+.hidden{display:none!important}
+svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+.stage{min-height:100%;display:flex;align-items:center;justify-content:center;gap:56px;padding:32px}
+.phone{width:min(475px,100%);height:min(990px,calc(100vh - 64px));background:var(--card);border-radius:56px;box-shadow:0 30px 70px rgba(70,100,170,.10);position:relative;overflow:hidden;display:flex;flex-direction:column}
+
+/* ---------- left: list card ---------- */
+.panel{flex:1;min-height:0;display:flex;flex-direction:column;padding:0 32px}
+.panel-top{display:flex;align-items:center;justify-content:space-between;padding-top:82px;margin-bottom:18px}
+.panel-top h1{font:600 40px/1.1 var(--head);color:var(--navy);margin:0;letter-spacing:-.3px}
+.icon-btn{width:40px;height:40px;display:grid;place-items:center;color:var(--muted);border-radius:50%}
+.icon-btn:hover{background:var(--soft)}
+.searchbar{margin:0 0 6px;display:none}
+.searchbar.on{display:block}
+.searchbar input{width:100%;height:44px;border:0;border-radius:22px;background:var(--soft);padding:0 18px;outline:none}
+.scroll{flex:1;min-height:0;overflow-y:auto;margin:0 -32px;padding:0 32px 90px;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.row{display:flex;gap:16px;align-items:flex-start;padding:16px 0;cursor:pointer;width:100%;text-align:left}
+.row .body{flex:1;min-width:0}
+.row .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.row .name{font:500 18px/1.3 var(--head);color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .time{font-size:15px;color:var(--muted);white-space:nowrap}
+.row .prev{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:6px}
+.row .txt{color:var(--muted);font-size:16px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.badge{min-width:32px;height:32px;border-radius:10px;background:var(--blue);color:#fff;font:600 15px/32px var(--body);text-align:center;padding:0 8px;flex:none}
+.row.active .name{color:var(--blue)}
+.av{position:relative;flex:none;border-radius:50%;display:grid;place-items:center;color:#fff;font:600 20px var(--head)}
+.av img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.av .dot{position:absolute;right:1%;bottom:1%;width:22%;max-width:20px;min-width:12px;aspect-ratio:1;border-radius:50%;background:var(--blue);border:3px solid var(--card)}
+.empty{color:var(--muted);text-align:center;padding:60px 20px;line-height:1.6;font-size:15px}
+.empty b{display:block;color:var(--navy);font:600 18px var(--head);margin-bottom:6px}
+
+.fab{position:absolute;right:30px;bottom:132px;width:80px;height:80px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;box-shadow:0 14px 30px rgba(59,130,246,.45);z-index:3;transition:transform .15s}
+.fab:active{transform:scale(.94)}
+.fab svg{width:34px;height:34px;stroke-width:1.6}
+
+.nav{height:112px;flex:none;display:flex;justify-content:space-around;align-items:center;padding:0 38px 6px;background:var(--card)}
+.nav button{position:relative;width:48px;height:48px;display:grid;place-items:center;color:#9CA0B8}
+.nav button.on{color:var(--navy)}
+.nav button.on::after{content:"";position:absolute;bottom:-6px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--navy)}
+.nav svg{width:30px;height:30px}
+
+/* settings / contacts */
+.sec{margin-bottom:22px}
+.sec h3{font:500 13px var(--head);color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:0 0 10px}
+.me-card{display:flex;gap:16px;align-items:center;padding:6px 0 18px}
+.me-card .n{font:600 22px var(--head);color:var(--navy)}
+.me-card .e{color:var(--muted);font-size:14px;word-break:break-all}
+.uidbox{background:var(--soft);border-radius:20px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.uidbox small{display:block;color:var(--muted);font-size:12px}
+.uidbox b{font:600 24px var(--head);color:var(--navy);letter-spacing:1.5px}
+.item{display:flex;align-items:center;gap:14px;padding:14px 4px;width:100%;text-align:left;color:var(--navy);font-weight:500;border-bottom:1px solid var(--line)}
+.item svg{color:var(--muted)}
+.item .sub{display:block;color:var(--muted);font-weight:400;font-size:13px}
+.item.danger{color:var(--danger)}.item.danger svg{color:var(--danger)}
+.note{background:var(--soft);border-radius:18px;padding:14px 16px;font-size:13px;color:var(--muted);line-height:1.55;display:flex;gap:10px}
+.note svg{width:20px;height:20px;color:var(--blue);margin-top:1px}
+
+/* ---------- right: chat card ---------- */
+.chat-empty{flex:1;display:grid;place-items:center;text-align:center;color:var(--muted);padding:40px;line-height:1.6}
+.chat-empty .lk{width:84px;height:84px;border-radius:50%;background:var(--soft);display:grid;place-items:center;margin:0 auto 18px;color:var(--blue)}
+.chat-empty .lk svg{width:38px;height:38px}
+.chat-empty b{display:block;color:var(--navy);font:600 20px var(--head);margin-bottom:4px}
+.chead{padding:56px 32px 0;display:grid;grid-template-columns:48px 1fr 48px;align-items:start;flex:none}
+.chead .mid{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.chead .mid .nm{font:500 19px var(--head);color:var(--navy);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chead .icon-btn{color:var(--navy);margin-top:18px}
+.msgs{flex:1;min-height:0;overflow-y:auto;padding:26px 32px 10px;display:flex;flex-direction:column;gap:6px;scrollbar-width:none}
+.msgs::-webkit-scrollbar{display:none}
+.e2e{align-self:center;background:var(--soft);color:var(--muted);font-size:12px;padding:7px 14px;border-radius:14px;display:flex;gap:6px;align-items:center;text-align:center;margin-bottom:10px;max-width:92%}
+.e2e svg{width:14px;height:14px;flex:none}
+.day{align-self:center;color:var(--muted);font-size:12px;margin:8px 0}
+.m{display:flex;flex-direction:column;max-width:86%;margin-top:6px}
+.m.me{align-self:flex-end;align-items:flex-end}
+.m.them{align-self:flex-start;align-items:flex-start}
+.bub{padding:16px 30px 16px 30px;font-size:17px;line-height:1.45;word-break:break-word;white-space:pre-wrap;border-radius:32px}
+.m.me .bub{background:var(--blue);color:#fff;border-bottom-right-radius:0}
+.m.them .bub{background:var(--soft);color:var(--ink);border-bottom-left-radius:0}
+.m .ts{font-size:15px;color:var(--muted);margin-top:7px}
+.m.sticker .bub{background:none!important;padding:0;font-size:96px;line-height:1.1}
+.m.img .bub{padding:4px;border-radius:24px}
+.m.img.me .bub{border-bottom-right-radius:0}.m.img.them .bub{border-bottom-left-radius:0}
+.bub img{display:block;max-width:100%;max-height:300px;border-radius:20px;cursor:zoom-in}
+.m.locked .bub{font-style:italic;opacity:.8}
+.voice{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 22px;min-width:250px}
+.m.voicem .bub{padding:0}
+.wave{display:flex;align-items:center;gap:2px;height:44px;flex:1}
+.wave i{display:block;width:3px;border-radius:2px;background:#C9CBD8;min-height:3px}
+.wave i.p{background:var(--blue)}
+.m.me .wave i{background:rgba(255,255,255,.45)}.m.me .wave i.p{background:#fff}
+.vdur{font-size:16px;color:var(--navy);min-width:42px}
+.m.me .vdur{color:#fff}
+.play{width:58px;height:58px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;flex:none}
+.m.me .play{background:#fff;color:var(--blue)}
+.play svg{width:20px;height:20px;fill:currentColor;stroke:none}
+.typing{height:30px;padding:0 32px;color:var(--muted);font-size:16px;display:flex;align-items:center;gap:6px;flex:none}
+.typing .d{display:inline-flex;gap:3px}
+.typing .d i{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:bl 1.2s infinite}
+.typing .d i:nth-child(2){animation-delay:.2s}.typing .d i:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.composer{padding:8px 32px 38px;flex:none;position:relative}
+.pill{height:76px;border-radius:38px;background:var(--soft);display:flex;align-items:center;gap:14px;padding:0 20px 0 14px}
+.plus{width:50px;height:50px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;flex:none;transition:transform .2s}
+.plus.open{transform:rotate(45deg)}
+.plus svg{width:26px;height:26px;stroke-width:2.2}
+.pill input{flex:1;min-width:0;border:0;background:none;outline:none;font-size:18px;color:var(--navy)}
+.pill input::placeholder{color:#9A9EB8}
+.pill .em{color:var(--blue);width:36px;height:36px;display:grid;place-items:center}
+.pill .em svg{width:32px;height:32px;stroke-width:1.5}
+.sendb{width:46px;height:46px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;flex:none}
+.sendb svg{width:22px;height:22px}
+.menu{position:absolute;left:32px;bottom:122px;background:var(--card);border-radius:22px;box-shadow:0 14px 40px rgba(40,60,120,.18);padding:8px;z-index:5;min-width:190px}
+.menu button{display:flex;gap:12px;align-items:center;width:100%;padding:12px 14px;border-radius:14px;color:var(--navy);font-weight:500}
+.menu button:hover{background:var(--soft)}
+.menu svg{color:var(--blue)}
+.emoji{position:absolute;right:32px;bottom:122px;background:var(--card);border-radius:22px;box-shadow:0 14px 40px rgba(40,60,120,.18);padding:10px;z-index:5;width:min(330px,calc(100% - 64px));display:grid;grid-template-columns:repeat(8,1fr);gap:2px;max-height:230px;overflow:auto}
+.emoji button{font-size:24px;height:38px;border-radius:10px}.emoji button:hover{background:var(--soft)}
+.rec{display:flex;align-items:center;gap:14px;width:100%}
+.rec .t{flex:1;color:var(--danger);font-weight:600;display:flex;gap:8px;align-items:center}
+.rec .t::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--danger);animation:bl 1s infinite}
+.rec .x{color:var(--muted)}
+
+/* ---------- auth / setup ---------- */
+.solo{padding:64px 40px 40px;overflow-y:auto;flex:1;display:flex;flex-direction:column;scrollbar-width:none}
+.logo{width:76px;height:76px;border-radius:26px;background:var(--blue);color:#fff;display:grid;place-items:center;margin:0 0 26px;box-shadow:0 14px 30px rgba(59,130,246,.4)}
+.logo svg{width:38px;height:38px;stroke-width:1.5}
+.solo h1{font:600 36px/1.15 var(--head);color:var(--navy);margin:0 0 8px}
+.solo p.sub{color:var(--muted);margin:0 0 26px;line-height:1.55}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px 6px}
+.field input,.field textarea{width:100%;height:54px;border-radius:27px;border:2px solid transparent;background:var(--soft);padding:0 22px;outline:none;font-size:16px;color:var(--navy)}
+.field textarea{height:84px;padding:14px 22px;resize:none;border-radius:26px}
+.field input:focus,.field textarea:focus{border-color:var(--blue);background:var(--card)}
+.btn{height:56px;border-radius:28px;background:var(--blue);color:#fff;font:500 17px var(--head);width:100%;box-shadow:0 12px 24px rgba(59,130,246,.35);margin-top:6px}
+.btn:disabled{opacity:.6}
+.btn.ghost{background:var(--soft);color:var(--navy);box-shadow:none}
+.btn.line{background:none;box-shadow:none;border:2px solid var(--line);color:var(--navy)}
+.err{color:var(--danger);font-size:14px;min-height:20px;margin:2px 6px 8px}
+.tabs{display:flex;background:var(--soft);border-radius:27px;padding:4px;margin-bottom:22px}
+.tabs button{flex:1;height:44px;border-radius:23px;color:var(--muted);font-weight:500}
+.tabs button.on{background:var(--card);color:var(--navy);box-shadow:0 4px 14px rgba(40,60,120,.1)}
+.or{text-align:center;color:var(--muted);font-size:13px;margin:16px 0 4px}
+.link{color:var(--blue);font-weight:500;font-size:14px}
+.pick{display:flex;justify-content:center;margin-bottom:22px}
+.pick .av{cursor:pointer}
+.pick .cam{position:absolute;right:0;bottom:0;width:34px;height:34px;border-radius:50%;background:var(--blue);display:grid;place-items:center;border:3px solid var(--card)}
+.pick .cam svg{width:16px;height:16px}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(20,28,60,.45);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.sheet{background:var(--card);border-radius:36px;padding:30px;width:min(420px,100%);max-height:92vh;overflow:auto}
+.sheet h2{font:600 24px var(--head);color:var(--navy);margin:0 0 6px}
+.sheet p{color:var(--muted);margin:0 0 18px;line-height:1.5;font-size:14.5px}
+.sheet ol{color:var(--ink);line-height:1.8;padding-left:20px;font-size:14.5px;margin:0 0 14px}
+.qrimg{display:grid;place-items:center;margin:8px 0}
+.qrimg img{width:240px;height:240px;border-radius:18px;border:1px solid var(--line);background:#fff}
+.found{display:flex;gap:14px;align-items:center;background:var(--soft);border-radius:22px;padding:14px;margin:6px 0 14px}
+.found .n{font:500 17px var(--head);color:var(--navy)}.found .u{color:var(--muted);font-size:13px}
+.toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:#22264a;color:#fff;padding:13px 22px;border-radius:24px;z-index:99;font-size:14.5px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:90vw}
+#scan{position:fixed;inset:0;background:#000;z-index:80}
+#scan video{width:100%;height:100%;object-fit:cover}
+#scan .tt{position:absolute;top:0;left:0;right:0;padding:26px;color:#fff;font-weight:600;text-align:center;background:linear-gradient(#000a,transparent)}
+#scan button{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:13px 30px;border-radius:30px;font-weight:600}
+#viewer{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:80;display:grid;place-items:center;cursor:zoom-out}
+#viewer img{max-width:94vw;max-height:92vh;border-radius:12px}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .stage{padding:0;gap:0;display:block;height:100dvh;min-height:0}
+  .phone{width:100%;height:100dvh;border-radius:0;box-shadow:none}
+  body:not(.chat-open) #chatCard{display:none}
+  body.chat-open #listCard{display:none}
+  .panel-top{padding-top:max(46px,env(safe-area-inset-top))}
+  .chead{padding-top:max(34px,env(safe-area-inset-top))}
+  .nav{height:96px}
+  .fab{bottom:114px;width:68px;height:68px}
+}
+@media (max-width:420px){
+  .panel{padding:0 20px}.scroll{margin:0 -20px;padding:0 20px 90px}
+  .panel-top h1{font-size:34px}
+  .msgs{padding:20px 18px 8px}.composer{padding:6px 16px 22px}.chead{padding-left:18px;padding-right:18px}
+  .typing{padding:0 18px}
+  .bub{padding:14px 22px;font-size:16px}
+  .solo{padding:48px 24px 28px}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div class="stage hidden" id="authStage">
+  <div class="phone"><div class="solo">
+    <div class="logo" id="logoI"></div>
+    <h1 id="authTitle">Welcome back</h1>
+    <p class="sub">Private messages, end-to-end encrypted. Sign in with your email.</p>
+    <div class="tabs" id="authTabs"><button id="tabIn" class="on">Sign in</button><button id="tabUp">Create account</button></div>
+    <div id="otpStep" class="hidden">
+      <p class="sub" id="otpSub" style="margin-top:0"></p>
+      <div class="field"><label>6-digit code</label><input id="otpCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" style="text-align:center;letter-spacing:10px;font-size:22px"></div>
+      <div class="err" id="otpErr"></div>
+      <button class="btn" id="otpGo">Verify &amp; create account</button>
+      <div style="display:flex;justify-content:space-between;margin-top:14px">
+        <button class="link" id="otpBack">Change email</button>
+        <button class="link" id="otpResend" disabled>Resend code</button>
+      </div>
+    </div>
+    <div id="formStep">
+    <div class="field"><label>Email</label><input id="aEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+    <div class="field"><label>Password</label><input id="aPass" type="password" autocomplete="current-password" placeholder="At least 6 characters"></div>
+    <div class="field hidden" id="aPass2w"><label>Confirm password</label><input id="aPass2" type="password" autocomplete="new-password" placeholder="Repeat password"></div>
+    <div class="err" id="aErr"></div>
+    <button class="btn" id="aGo">Sign in</button>
+    <div style="text-align:center;margin-top:14px"><button class="link" id="aForgot">Forgot password?</button></div>
+    <div id="qrOpt"><div class="or">or</div><button class="btn line" id="qrBtn">Log in with QR code</button></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- PROFILE SETUP -->
+<div class="stage hidden" id="setupStage">
+  <div class="phone"><div class="solo">
+    <h1 id="suTitle">Set up your profile</h1>
+    <p class="sub" id="suSub">Add a name and photo. You'll get a unique UID number that friends can use to find you.</p>
+    <div class="pick"><div class="av" id="suAv" style="width:112px;height:112px"></div></div>
+    <input type="file" id="suFile" accept="image/*" class="hidden">
+    <div class="field"><label>Name</label><input id="suName" maxlength="40" placeholder="Your name"></div>
+    <div class="field"><label>Phone number (optional, so friends can add you)</label><input id="suPhone" type="tel" placeholder="+91 98765 43210"></div>
+    <div class="field"><label>About</label><textarea id="suAbout" maxlength="120" placeholder="Hey there! I'm using Messages."></textarea></div>
+    <div class="err" id="suErr"></div>
+    <button class="btn" id="suSave">Continue</button>
+    <button class="btn ghost hidden" id="suCancel">Cancel</button>
+  </div></div>
+</div>
+
+<!-- APP -->
+<div class="stage hidden" id="appStage">
+  <div class="phone" id="listCard">
+    <div class="panel" id="tabChats">
+      <div class="panel-top"><h1 id="ptTitle">Messages</h1><button class="icon-btn" id="searchBtn" aria-label="Search"></button></div>
+      <div class="searchbar" id="sbar"><input id="sIn" placeholder="Search…"></div>
+      <div class="scroll" id="listBody"></div>
+    </div>
+    <button class="fab" id="fab" aria-label="New chat"></button>
+    <nav class="nav">
+      <button data-tab="contacts" aria-label="Contacts"></button>
+      <button data-tab="settings" aria-label="Settings"></button>
+      <button data-tab="calls" aria-label="Calls"></button>
+      <button data-tab="chats" class="on" aria-label="Chats"></button>
+    </nav>
+  </div>
+  <div class="phone" id="chatCard"></div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+/* =====================================================================
+   CONFIG  (Firebase config copied from the Kashish AI project)
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey:"AIzaSyC30TcmMVhP_8HdFYS1WufRiZwSDYNMTF0",
+  authDomain:"pulse2-92372.firebaseapp.com",
+  databaseURL:"https://pulse2-92372-default-rtdb.firebaseio.com",
+  projectId:"pulse2-92372",
+  storageBucket:"pulse2-92372.firebasestorage.app",
+  messagingSenderId:"276235725177",
+  appId:"1:276235725177:web:0f4e0789fae80a435927a8"
+};
+// Cloudflare Worker that does the QR login hand-off (see qr-login-worker.js).
+// Default = the same worker Kashish AI already uses for the same Firebase project.
+const QR_WORKER = 'https://messenger-qr.sgursharn076.workers.dev';
+const QR_PREFIX = 'MSG-QR:';
+const OTP_WORKER = QR_WORKER; // OTP endpoints live on the same Worker (/otp/send, /otp/verify)
+const P = 'messenger/';           // everything lives under this node, so Kashish AI data is untouched
+
+/* =====================================================================
+   tiny helpers
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+const enc = new TextEncoder(), dec = new TextDecoder();
+function h(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  for(const k in (attrs||{})){
+    const v = attrs[k];
+    if(k==='class') e.className = v;
+    else if(k==='html') e.innerHTML = v;
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if(v!==false && v!=null) e.setAttribute(k, v);
+  }
+  kids.flat().forEach(c => { if(c==null||c===false) return; e.append(c.nodeType?c:document.createTextNode(c)); });
+  return e;
+}
+const IC = {
+  back:'<path d="M15 18l-6-6 6-6"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>',
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  user:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3.2"/><path d="M5.8 19c1.2-2.7 3.5-4 6.2-4s5 1.3 6.2 4"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  chat:'<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><circle cx="8.6" cy="11.8" r=".6"/><circle cx="12" cy="11.8" r=".6"/><circle cx="15.4" cy="11.8" r=".6"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  smile:'<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9.5h.01M15 9.5h.01"/>',
+  send:'<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>',
+  mic:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/>',
+  image:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
+  play:'<path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/>',
+  pause:'<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',
+  lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+  qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4"/>',
+  x:'<path d="M18 6L6 18M6 6l12 12"/>',
+  trash:'<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>',
+  edit:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  cam:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+  device:'<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  user2:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>'
+};
+const svg = (n, cls) => { const s = document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('class','i '+(cls||'')); s.innerHTML = IC[n]; return s; };
+const icon = (el, n) => { el.innerHTML=''; el.append(svg(n)); return el; };
+function toast(msg){ const t=h('div',{class:'toast'},msg); document.body.append(t); setTimeout(()=>t.remove(),3200); }
+function esc(s){ return String(s==null?'':s); }
+
+function b64(buf){ const u=new Uint8Array(buf); let s=''; for(let i=0;i<u.length;i+=0x8000) s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000)); return btoa(s); }
+function unb64(s){ const b=atob(s), u=new Uint8Array(b.length); for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; }
+const rand = n => crypto.getRandomValues(new Uint8Array(n));
+const hex = u => [...new Uint8Array(u)].map(x=>x.toString(16).padStart(2,'0')).join('');
+async function sha256hex(s){ return hex(await crypto.subtle.digest('SHA-256', enc.encode(s))); }
+
+const COLORS = ['#7C83FD','#F78FB3','#F6A04D','#4BC0A9','#5AA9F7','#B07CF0','#E86A6A','#45B26B'];
+function colorFor(id){ let n=0; for(const c of String(id)) n=(n*31+c.charCodeAt(0))>>>0; return COLORS[n%COLORS.length]; }
+function avatar(p, size, online){
+  const a = h('div',{class:'av',style:`width:${size}px;height:${size}px;background:${colorFor(p&&p.uid||p&&p.name||'x')};font-size:${Math.round(size*.36)}px`});
+  if(p && p.photo) a.append(h('img',{src:p.photo,alt:''}));
+  else a.append((p&&p.name||'?').trim().slice(0,1).toUpperCase());
+  if(online) a.append(h('span',{class:'dot'}));
+  return a;
+}
+function relTime(ts){
+  if(!ts) return '';
+  const d=(Date.now()-ts)/1000;
+  if(d<60) return 'now';
+  if(d<3600) return Math.floor(d/60)+' min';
+  if(d<86400){ const x=Math.floor(d/3600); return x+(x===1?' hour':' hours'); }
+  const x=Math.floor(d/86400); if(x<7) return x+(x===1?' day':' days');
+  return new Date(ts).toLocaleDateString([], {day:'numeric',month:'short'});
+}
+const clock = ts => new Date(ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false});
+const emailKey = e => e.trim().toLowerCase().replace(/\./g, ',');
+const phoneDigits = p => { let d=String(p||'').replace(/\D/g,''); if(d.length>10) d=d.slice(-10); return d; };
+const phoneKey = p => sha256hex('ph:'+phoneDigits(p));
+
+/* =====================================================================
+   E2EE  — per-device ECDH P-256 keys, per-message AES-GCM key,
+   message key wrapped separately for every device of both users.
+   Private keys are non-extractable and live only in this browser's IndexedDB.
+   ===================================================================== */
+const ECDH = {name:'ECDH', namedCurve:'P-256'};
+function idb(){
+  return new Promise((ok,no)=>{ const r=indexedDB.open('msgr-e2ee',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>ok(r.result); r.onerror=()=>no(r.error); });
+}
+async function idbGet(k){ const d=await idb(); return new Promise((ok,no)=>{ const r=d.transaction('kv').objectStore('kv').get(k); r.onsuccess=()=>ok(r.result); r.onerror=()=>no(r.error); }); }
+async function idbSet(k,v){ const d=await idb(); return new Promise((ok,no)=>{ const t=d.transaction('kv','readwrite'); t.objectStore('kv').put(v,k); t.oncomplete=()=>ok(); t.onerror=()=>no(t.error); }); }
+
+async function loadOrCreateDevice(uid){
+  let d = await idbGet('dev:'+uid);
+  if(!d){
+    const kp = await crypto.subtle.generateKey(ECDH, false, ['deriveKey']);       // private key: non-extractable
+    const pub = await crypto.subtle.exportKey('jwk', kp.publicKey);
+    d = { id: hex(rand(6)), priv: kp.privateKey, pub: JSON.stringify(pub) };
+    await idbSet('dev:'+uid, d);
+  }
+  return d;
+}
+async function importPub(jwkStr){ return crypto.subtle.importKey('jwk', JSON.parse(jwkStr), ECDH, false, []); }
+async function wrapKeyFor(myPriv, theirPubStr){
+  const pub = await importPub(theirPubStr);
+  return crypto.subtle.deriveKey({name:'ECDH', public:pub}, myPriv, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+}
+// bytes -> {iv, ct, keys:{deviceId:{i,c}}}
+async function e2eeEncrypt(bytes, myPriv, targets /* {devId: pubJwkString} */, mediaBytes){
+  const mk = await crypto.subtle.generateKey({name:'AES-GCM', length:256}, true, ['encrypt']);
+  const iv = rand(12);
+  const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, mk, bytes);
+  const raw = await crypto.subtle.exportKey('raw', mk);
+  const keys = {};
+  for(const [id,pub] of Object.entries(targets)){
+    try{
+      const sk = await wrapKeyFor(myPriv, pub), wiv = rand(12);
+      keys[id] = { i:b64(wiv), c:b64(await crypto.subtle.encrypt({name:'AES-GCM', iv:wiv}, sk, raw)) };
+    }catch(e){ console.warn('skip device', id, e); }
+  }
+  let media = null;
+  if(mediaBytes){ const miv = rand(12); media = { iv:b64(miv), ct:b64(await crypto.subtle.encrypt({name:'AES-GCM', iv:miv}, mk, mediaBytes)) }; }
+  return { iv:b64(iv), ct:b64(ct), keys, media };
+}
+async function e2eeUnwrap(rec, myDevId, myPriv, senderPubStr){
+  const w = rec.k && rec.k[myDevId]; if(!w) return null;
+  const sk = await wrapKeyFor(myPriv, senderPubStr);
+  const raw = await crypto.subtle.decrypt({name:'AES-GCM', iv:unb64(w.i)}, sk, unb64(w.c));
+  return crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']);
+}
+async function e2eeDecryptBody(rec, mk){ return crypto.subtle.decrypt({name:'AES-GCM', iv:unb64(rec.iv)}, mk, unb64(rec.ct)); }
+async function e2eeDecryptMedia(m, mk){ return crypto.subtle.decrypt({name:'AES-GCM', iv:unb64(m.iv)}, mk, unb64(m.ct)); }
+
+/* =====================================================================
+   Firebase
+   ===================================================================== */
+let auth, db;
+try{
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth(); db = firebase.database();
+}catch(e){ document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif">Firebase failed to load. Check your internet connection.</p>'; throw e; }
+const R = p => db.ref(P+p);
+const TS = firebase.database.ServerValue.TIMESTAMP;
+
+let me = null;           // firebase user
+let myProf = null;       // my profile
+let dev = null;          // this device {id, priv, pub}
+let contacts = {};       // uid -> profile
+let presence = {};       // uid -> {online,last}
+let threads = {};        // uid -> {items:[], last:{}, unread:n, chain:Promise}
+let watchers = [];       // unsubscribe fns
+const contactWatch = {};
+let openUid = null;
+let tab = 'chats';
+const pubCache = new Map();
+const cidOf = (a,b) => [a,b].sort().join('_');
+const lrKey = u => `lr:${me.uid}:${u}`;
+const getLR = u => +(localStorage.getItem(lrKey(u))||0);
+const setLR = (u,ts) => { try{ localStorage.setItem(lrKey(u), String(ts)); }catch(e){} };
+
+/* ---------------- screens ---------------- */
+function show(which){
+  ['authStage','setupStage','appStage'].forEach(id => $('#'+id).classList.toggle('hidden', id!==which));
+}
+icon($('#logoI'),'chat');
+icon($('#searchBtn'),'search');
+icon($('#fab'),'chat');
+document.querySelectorAll('.nav button').forEach(b=>{
+  icon(b, {contacts:'user',settings:'gear',calls:'phone',chats:'chat'}[b.dataset.tab]);
+  b.onclick = () => setTab(b.dataset.tab);
+});
+
+/* ---------------- auth ---------------- */
+let signUpMode = false;
+function setMode(up){
+  signUpMode = up;
+  $('#tabIn').classList.toggle('on',!up); $('#tabUp').classList.toggle('on',up);
+  $('#aPass2w').classList.toggle('hidden',!up);
+  $('#authTitle').textContent = up ? 'Create account' : 'Welcome back';
+  $('#aGo').textContent = up ? 'Create account' : 'Sign in';
+  $('#aForgot').classList.toggle('hidden',up);
+  $('#aErr').textContent='';
+}
+$('#tabIn').onclick=()=>setMode(false); $('#tabUp').onclick=()=>setMode(true);
+const MOBILE = /Android|iPhone|iPad|iPod|Mobile|Windows Phone/i.test(navigator.userAgent);
+if(MOBILE) $('#qrOpt').classList.add('hidden');
+function authErr(e){
+  const m = {'auth/invalid-email':'That email address looks wrong.','auth/user-not-found':'No account with this email.','auth/wrong-password':'Wrong password.','auth/invalid-credential':'Wrong email or password.','auth/email-already-in-use':'An account with this email already exists. Sign in instead.','auth/weak-password':'Password must be at least 6 characters.','auth/too-many-requests':'Too many attempts. Try again in a bit.','auth/network-request-failed':'Network error. Check your connection.','auth/operation-not-allowed':'Email/password sign-in is not enabled in Firebase Console.'};
+  return m[e.code] || e.message || 'Something went wrong';
+}
+$('#aGo').onclick = async () => {
+  const email=$('#aEmail').value.trim(), pass=$('#aPass').value, err=$('#aErr'); err.textContent='';
+  if(!email||!pass){ err.textContent='Enter email and password.'; return; }
+  if(signUpMode && pass!==$('#aPass2').value){ err.textContent='Passwords do not match.'; return; }
+  if(signUpMode && pass.length<6){ err.textContent='Password must be at least 6 characters.'; return; }
+  $('#aGo').disabled=true;
+  try{
+    if(signUpMode) await otpStart(email);          // first time: verify email with a code
+    else await auth.signInWithEmailAndPassword(email,pass); // after that: password
+  }
+  catch(e){ err.textContent=authErr(e); }
+  $('#aGo').disabled=false;
+};
+['#aEmail','#aPass','#aPass2'].forEach(s=>$(s).addEventListener('keydown',e=>{ if(e.key==='Enter') $('#aGo').click(); }));
+$('#aForgot').onclick = async () => {
+  const email=$('#aEmail').value.trim(); if(!email){ $('#aErr').textContent='Type your email first.'; return; }
+  try{ await auth.sendPasswordResetEmail(email); toast('Password reset email sent'); }catch(e){ $('#aErr').textContent=authErr(e); }
+};
+
+/* ---------------- email OTP (first-time sign-up) ---------------- */
+let otpBusy=false, otpEmail='', otpTimer=null;
+async function otpApi(path,body){
+  let r; try{ r=await fetch(OTP_WORKER+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); }
+  catch(e){ throw new Error('Network error. Check your connection.'); }
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.error||'Something went wrong. Try again.');
+  return j;
+}
+function otpCooldown(sec){
+  const b=$('#otpResend'); clearInterval(otpTimer); b.disabled=true;
+  const tick=()=>{ if(sec<=0){ clearInterval(otpTimer); b.disabled=false; b.textContent='Resend code'; } else { b.textContent='Resend in '+sec+'s'; sec--; } };
+  tick(); otpTimer=setInterval(tick,1000);
+}
+async function otpStart(email){
+  await otpApi('/otp/send',{email});
+  otpEmail=email;
+  $('#formStep').classList.add('hidden'); $('#authTabs').classList.add('hidden');
+  $('#otpStep').classList.remove('hidden');
+  $('#authTitle').textContent='Check your email';
+  $('#otpSub').textContent='We sent a 6-digit code to '+email+'. It expires in 10 minutes.';
+  $('#otpCode').value=''; $('#otpErr').textContent=''; otpCooldown(60);
+  setTimeout(()=>$('#otpCode').focus(),50);
+}
+function otpReset(){
+  clearInterval(otpTimer);
+  $('#otpStep').classList.add('hidden'); $('#formStep').classList.remove('hidden'); $('#authTabs').classList.remove('hidden');
+  setMode(signUpMode);
+}
+$('#otpBack').onclick=otpReset;
+$('#otpResend').onclick=async()=>{
+  $('#otpErr').textContent='';
+  try{ await otpApi('/otp/send',{email:otpEmail}); toast('New code sent'); otpCooldown(60); }
+  catch(e){ $('#otpErr').textContent=e.message; }
+};
+$('#otpCode').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/\D/g,'').slice(0,6); if(e.target.value.length===6) $('#otpGo').click(); });
+$('#otpGo').onclick=async()=>{
+  const code=$('#otpCode').value.trim(), err=$('#otpErr'); err.textContent='';
+  if(!/^\d{6}$/.test(code)){ err.textContent='Enter the 6-digit code.'; return; }
+  if(otpBusy) return; otpBusy=true; $('#otpGo').disabled=true;
+  const pass=$('#aPass').value;
+  try{
+    const {token}=await otpApi('/otp/verify',{email:otpEmail,code});
+    await auth.signInWithCustomToken(token);
+    // attach email + password so every later login is just email/password
+    try{ await auth.currentUser.linkWithCredential(firebase.auth.EmailAuthProvider.credential(otpEmail,pass)); }
+    catch(e){
+      if(e.code==='auth/email-already-in-use'||e.code==='auth/credential-already-in-use'){
+        try{ await auth.currentUser.delete(); }catch(_){ await auth.signOut(); }
+        otpBusy=false; otpReset(); setMode(false);
+        $('#aErr').textContent='An account with this email already exists. Sign in instead.'; return;
+      }
+      throw e;
+    }
+    otpBusy=false; otpReset(); setMode(false); ['#aPass','#aPass2','#otpCode'].forEach(x=>$(x).value='');
+    await onUser(auth.currentUser);   // continue into profile setup / app
+  }catch(e){
+    otpBusy=false;
+    if(auth.currentUser && !(auth.currentUser.providerData||[]).length){ try{ await auth.signOut(); }catch(_){} }
+    err.textContent=authErr(e);
+  }
+  $('#otpGo').disabled=false;
+};
+
+/* ---------------- profile setup / edit ---------------- */
+let suPhoto = null, suEdit = false;
+function renderSuAv(){ const a=$('#suAv'); a.innerHTML=''; a.replaceWith(Object.assign(avatar({uid:me.uid,name:$('#suName').value||(me.email||'?'),photo:suPhoto},112),{id:'suAv'})); $('#suAv').append(h('span',{class:'cam'},svg('cam'))); $('#suAv').onclick=()=>$('#suFile').click(); $('#suAv').style.position='relative'; }
+function openSetup(edit){
+  suEdit = edit; show('setupStage');
+  $('#suTitle').textContent = edit ? 'Edit profile' : 'Set up your profile';
+  $('#suSub').classList.toggle('hidden', edit);
+  $('#suCancel').classList.toggle('hidden', !edit);
+  $('#suName').value = myProf ? myProf.name : (me.email||'').split('@')[0];
+  $('#suAbout').value = myProf ? (myProf.about||'') : '';
+  suPhoto = myProf ? myProf.photo||null : null;
+  $('#suPhone').value=''; $('#suErr').textContent='';
+  R('private/'+me.uid+'/phone').once('value').then(s=>{ if(s.val()) $('#suPhone').value=s.val(); });
+  renderSuAv();
+}
+$('#suName').addEventListener('input',()=>{ if(!suPhoto) renderSuAv(); });
+$('#suFile').onchange = async e => {
+  const f=e.target.files[0]; if(!f) return;
+  suPhoto = await resizeImage(f, 256, .85); renderSuAv(); e.target.value='';
+};
+$('#suCancel').onclick = () => { show('appStage'); };
+function resizeImage(fileOrBlob, max, q){
+  return new Promise((ok,no)=>{
+    const url=URL.createObjectURL(fileOrBlob), img=new Image();
+    img.onload=()=>{ const s=Math.min(1,max/Math.max(img.width,img.height)); const c=document.createElement('canvas'); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s); c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url); ok(c.toDataURL('image/jpeg',q)); };
+    img.onerror=()=>{ URL.revokeObjectURL(url); no(new Error('Bad image')); }; img.src=url;
+  });
+}
+async function allocateUidNum(){
+  for(let i=0;i<8;i++){
+    const r = await R('counters/uid').transaction(v => (v||10000000)+1);
+    if(!r.committed) continue;
+    const n = r.snapshot.val();
+    const ix = await R('uidIndex/'+n).transaction(v => v===null ? me.uid : undefined);
+    if(ix.committed) return n;
+  }
+  throw new Error('Could not allocate a UID number, try again');
+}
+$('#suSave').onclick = async () => {
+  const name=$('#suName').value.trim(), err=$('#suErr'); err.textContent='';
+  if(!name){ err.textContent='Please enter your name.'; return; }
+  $('#suSave').disabled=true;
+  try{
+    const phoneRaw=$('#suPhone').value.trim();
+    if(phoneRaw && phoneDigits(phoneRaw).length<7) throw new Error('Phone number looks too short.');
+    let uidNum = myProf && myProf.uidNum;
+    if(!uidNum) uidNum = await allocateUidNum();
+    const upd = {};
+    upd['users/'+me.uid] = { name, about:$('#suAbout').value.trim(), photo:suPhoto||null, uidNum, created:(myProf&&myProf.created)||TS };
+    upd['emailIndex/'+emailKey(me.email)] = me.uid;
+    // phone index (hashed key); remove the old one if the number changed
+    const oldPhone = (await R('private/'+me.uid+'/phone').once('value')).val();
+    if(oldPhone && phoneDigits(oldPhone)!==phoneDigits(phoneRaw)) upd['phoneIndex/'+await phoneKey(oldPhone)] = null;
+    if(phoneRaw) upd['phoneIndex/'+await phoneKey(phoneRaw)] = me.uid;
+    upd['private/'+me.uid+'/phone'] = phoneRaw||null;
+    await R('').update(upd);
+    myProf = { uid:me.uid, name, about:$('#suAbout').value.trim(), photo:suPhoto||null, uidNum };
+    if(suEdit){ show('appStage'); renderAll(); toast('Profile updated'); }
+    else await startApp();
+  }catch(e){ err.textContent=e.message||String(e); }
+  $('#suSave').disabled=false;
+};
+
+/* ---------------- session ---------------- */
+async function onUser(user){
+  if(otpBusy && user) return;   // wait until the password is attached
+  stopApp();
+  me = user;
+  if(!user){ myProf=null; show('authStage'); return; }
+  try{
+    dev = await loadOrCreateDevice(user.uid);
+    const snap = await R('users/'+user.uid).once('value');
+    if(!snap.exists()){ myProf=null; openSetup(false); return; }
+    myProf = { uid:user.uid, ...snap.val() };
+    await startApp();
+  }catch(e){ console.error(e); toast('Error: '+(e.message||e)); show('authStage'); }
+}
+auth.onAuthStateChanged(onUser);
+
+async function startApp(){
+  // publish this device's public key (never the private key)
+  await R(`devices/${me.uid}/${dev.id}`).set({ pub:dev.pub, label:deviceLabel(), ts:TS });
+  show('appStage');
+  // presence
+  const pr = R('presence/'+me.uid);
+  const conn = db.ref('.info/connected');
+  const onc = conn.on('value', s => { if(s.val()){ pr.onDisconnect().set({online:false,last:TS}); pr.set({online:true,last:TS}); } });
+  watchers.push(()=>{ conn.off('value',onc); pr.set({online:false,last:TS}).catch(()=>{}); });
+  // my profile live
+  const mp = R('users/'+me.uid); const mf = mp.on('value', s=>{ if(s.exists()){ myProf={uid:me.uid,...s.val()}; if(tab==='settings') renderList(); } });
+  watchers.push(()=>mp.off('value',mf));
+  // contacts
+  const cr = R('contacts/'+me.uid);
+  const cf = cr.on('value', s => syncContacts(Object.keys(s.val()||{})));
+  watchers.push(()=>cr.off('value',cf));
+  setTab('chats'); renderChat();
+}
+function stopApp(){
+  Object.values(contactWatch).forEach(f=>f());
+  watchers.forEach(f=>{ try{f();}catch(e){} }); watchers=[]; contacts={}; presence={}; threads={}; openUid=null; document.body.classList.remove('chat-open');
+}
+function deviceLabel(){
+  const u=navigator.userAgent; let os='Device';
+  if(/Android/i.test(u)) os='Android'; else if(/iPhone|iPad/i.test(u)) os='iOS'; else if(/Windows/i.test(u)) os='Windows'; else if(/Mac/i.test(u)) os='Mac'; else if(/Linux/i.test(u)) os='Linux';
+  let br='Browser'; if(/Edg\//.test(u)) br='Edge'; else if(/OPR\//.test(u)) br='Opera'; else if(/Chrome\//.test(u)) br='Chrome'; else if(/Firefox\//.test(u)) br='Firefox'; else if(/Safari\//.test(u)) br='Safari';
+  return br+' on '+os;
+}
+
+function syncContacts(uids){
+  uids.forEach(uid => {
+    if(contactWatch[uid]) return;
+    const pr = R('users/'+uid), pf = pr.on('value', s=>{ if(s.exists()){ contacts[uid]={uid,...s.val()}; renderAll(); } });
+    const pp = R('presence/'+uid), ppf = pp.on('value', s=>{ presence[uid]=s.val()||{}; renderAll(); });
+    threads[uid] = threads[uid] || { items:[], last:null, unread:0, chain:Promise.resolve() };
+    const mr = R('chats/'+cidOf(me.uid,uid)+'/messages').limitToLast(60);
+    const mf = mr.on('child_added', s => { const t=threads[uid]; t.chain = t.chain.then(()=>onMsg(uid,s.key,s.val())).catch(e=>console.warn(e)); });
+    contactWatch[uid] = () => { pr.off('value',pf); pp.off('value',ppf); mr.off('child_added',mf); delete contactWatch[uid]; };
+  });
+  Object.keys(contactWatch).forEach(u=>{ if(!uids.includes(u)){ contactWatch[u](); delete contacts[u]; delete threads[u]; if(openUid===u) closeChat(); } });
+  renderAll();
+}
+
+/* ---------------- messages: receive ---------------- */
+async function senderPub(uid, devId){
+  const k = uid+'/'+devId; if(pubCache.has(k)) return pubCache.get(k);
+  const s = await R(`devices/${uid}/${devId}/pub`).once('value'); const v=s.val(); if(v) pubCache.set(k,v); return v;
+}
+async function onMsg(uid, key, rec){
+  const t = threads[uid]; if(!t || t.items.some(i=>i.key===key)) return;
+  const item = { key, from:rec.from, ts:rec.ts||Date.now(), rec, p:null, mk:null, locked:false };
+  try{
+    const spub = await senderPub(rec.from, rec.fd);
+    const mk = spub ? await e2eeUnwrap(rec, dev.id, dev.priv, spub) : null;
+    if(!mk) item.locked = true;
+    else { item.mk = mk; item.p = JSON.parse(dec.decode(await e2eeDecryptBody(rec, mk))); }
+  }catch(e){ item.locked = true; }
+  t.items.push(item); t.items.sort((a,b)=>a.ts-b.ts || (a.key<b.key?-1:1));
+  t.last = t.items[t.items.length-1];
+  const lr = getLR(uid);
+  t.unread = t.items.filter(i=>i.from!==me.uid && i.ts>lr).length;
+  if(openUid===uid){
+    if(document.visibilityState==='visible'){ setLR(uid, Math.max(Date.now(), item.ts)); t.unread=0; }
+    appendMsg(item);
+  }
+  renderList();
+}
+function previewOf(it){
+  if(!it) return 'Say hello 👋';
+  if(it.locked) return '🔒 Encrypted message';
+  const p=it.p, who = it.from===me.uid ? 'You: ' : '';
+  if(p.t==='img') return who+'📷 Photo';
+  if(p.t==='voice') return who+'🎤 Voice message';
+  return who+p.text;
+}
+
+/* ---------------- messages: send ---------------- */
+async function targetDevices(uid){
+  const out = {};
+  for(const u of [uid, me.uid]){
+    const s = await R('devices/'+u).once('value'); const v=s.val()||{};
+    for(const [id,d] of Object.entries(v)){ out[id]=d.pub; pubCache.set(u+'/'+id,d.pub); }
+  }
+  return out;
+}
+async function sendPayload(uid, payload, mediaDataUrl){
+  const targets = await targetDevices(uid);
+  const e = await e2eeEncrypt(enc.encode(JSON.stringify(payload)), dev.priv, targets, mediaDataUrl ? enc.encode(mediaDataUrl) : null);
+  const cid = cidOf(me.uid, uid), mref = R(`chats/${cid}/messages`).push(), key = mref.key;
+  const rec = { from:me.uid, fd:dev.id, ts:TS, iv:e.iv, ct:e.ct, k:e.keys };
+  const upd = {}; upd[`chats/${cid}/messages/${key}`] = rec;
+  if(e.media){ rec.media = 1; upd[`chats/${cid}/media/${key}`] = e.media; }
+  await R('').update(upd);
+}
+async function sendText(uid, text){ text=text.trim(); if(!text) return; await sendPayload(uid,{t:'text',text}); }
+
+/* ---------------- list rendering ---------------- */
+function sortedContacts(){
+  return Object.values(contacts).sort((a,b)=>{
+    const ta=threads[a.uid]&&threads[a.uid].last?threads[a.uid].last.ts:0, tb=threads[b.uid]&&threads[b.uid].last?threads[b.uid].last.ts:0;
+    return tb-ta || a.name.localeCompare(b.name);
+  });
+}
+function setTab(t){
+  tab=t;
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  $('#ptTitle').textContent = {chats:'Messages',contacts:'Contacts',settings:'Settings',calls:'Calls'}[t];
+  $('#searchBtn').style.visibility = (t==='chats'||t==='contacts') ? 'visible':'hidden';
+  $('#fab').classList.toggle('hidden', !(t==='chats'||t==='contacts'));
+  $('#sbar').classList.remove('on'); $('#sIn').value='';
+  renderList();
+}
+function renderAll(){ renderList(); if(openUid) renderChatHeader(); }
+function renderList(){
+  const body=$('#listBody'); if(!body||!me) return; const q=$('#sIn').value.trim().toLowerCase();
+  const top = body.scrollTop; body.innerHTML='';
+  if(tab==='chats'||tab==='contacts'){
+    const list = sortedContacts().filter(c=>!q||c.name.toLowerCase().includes(q)||String(c.uidNum).includes(q));
+    if(!list.length){
+      body.append(h('div',{class:'empty'}, h('b',{}, q?'No results':'No chats yet'), q?'':'Tap the blue button to add a friend using their email, phone number or UID number.'));
+    }
+    list.forEach(c=>{
+      const t=threads[c.uid]||{}, last=t.last, on=presence[c.uid]&&presence[c.uid].online;
+      const row = h('button',{class:'row'+(openUid===c.uid?' active':''),onclick:()=>openChat(c.uid)},
+        avatar(c, 76, on),
+        h('div',{class:'body'},
+          h('div',{class:'top'}, h('div',{class:'name'},c.name), tab==='chats' ? h('div',{class:'time'}, last?relTime(last.ts):'') : null),
+          h('div',{class:'prev'},
+            h('div',{class:'txt'}, tab==='chats' ? previewOf(last) : (c.about || 'UID '+c.uidNum)),
+            tab==='chats' && t.unread ? h('div',{class:'badge'}, t.unread>99?'99+':t.unread) : null)));
+      body.append(row);
+    });
+  } else if(tab==='calls'){
+    body.append(h('div',{class:'empty'}, h('b',{},'Calls are coming soon'), 'Voice and video calls will show up here. Voice messages already work inside chats.'));
+  } else { renderSettings(body); }
+  body.scrollTop = top;
+}
+$('#searchBtn').onclick = () => { const b=$('#sbar'); b.classList.toggle('on'); if(b.classList.contains('on')) $('#sIn').focus(); else { $('#sIn').value=''; renderList(); } };
+$('#sIn').oninput = renderList;
+$('#fab').onclick = openAddContact;
+setInterval(()=>{ if(me && (tab==='chats')) renderList(); }, 60000);
+
+/* ---------------- settings tab ---------------- */
+function renderSettings(body){
+  const p = myProf||{};
+  body.append(
+    h('div',{class:'me-card'}, avatar({uid:me.uid,name:p.name,photo:p.photo},72),
+      h('div',{}, h('div',{class:'n'},p.name||''), h('div',{class:'e'},me.email))),
+    h('div',{class:'uidbox'}, h('div',{}, h('small',{},'Your UID number'), h('b',{}, p.uidNum||'…')),
+      h('button',{class:'icon-btn',onclick:()=>{ navigator.clipboard&&navigator.clipboard.writeText(String(p.uidNum)); toast('UID copied'); }}, svg('copy'))),
+    h('div',{class:'sec'},
+      h('button',{class:'item',onclick:()=>openSetup(true)}, svg('edit'), h('span',{}, 'Edit profile', h('span',{class:'sub'},'Name, photo, phone number, about'))),
+      h('button',{class:'item',onclick:openAddContact}, svg('user2'), h('span',{}, 'Add a friend', h('span',{class:'sub'},'By email, phone number or UID'))),
+      h('button',{class:'item',onclick:scanOpen}, svg('qr'), h('span',{}, 'Link a device', h('span',{class:'sub'},'Scan the QR code shown on your laptop')))),
+    h('div',{class:'sec'}, h('h3',{},'Linked devices'), h('div',{id:'devList'}, h('div',{class:'empty',style:'padding:10px'},'Loading…'))),
+    h('div',{class:'note'}, svg('lock'), h('div',{}, 'Messages, photos and voice notes are end-to-end encrypted. Your private key is created on this device and never leaves it, so nobody — not even the server — can read your chats. A newly linked device can read new messages only.')),
+    h('div',{class:'sec',style:'margin-top:14px'}, h('button',{class:'item danger',onclick:()=>auth.signOut()}, svg('logout'), 'Log out'))
+  );
+  R('devices/'+me.uid).once('value').then(s=>{
+    const box=$('#devList'); if(!box) return; box.innerHTML=''; const v=s.val()||{};
+    Object.entries(v).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0)).forEach(([id,d])=>{
+      box.append(h('div',{class:'item'}, svg('device'), h('span',{style:'flex:1'}, d.label||'Device', h('span',{class:'sub'}, id===dev.id?'This device':'Linked '+new Date(d.ts||0).toLocaleDateString())),
+        id===dev.id?null:h('button',{class:'icon-btn',title:'Remove',onclick:async()=>{ if(confirm('Remove this device? It will stop receiving new messages.')){ await R(`devices/${me.uid}/${id}`).remove(); renderList(); } }}, svg('trash'))));
+    });
+  });
+}
+
+/* ---------------- add contact ---------------- */
+function modal(content){ const m=h('div',{class:'modal',onclick:e=>{ if(e.target===m) closeModal(); }}, content); $('#modalRoot').append(m); return m; }
+function closeModal(){ $('#modalRoot').innerHTML=''; }
+function openAddContact(){
+  const inp = h('input',{placeholder:'Email, phone number or UID number',autofocus:true,style:'width:100%;height:54px;border-radius:27px;border:2px solid transparent;background:var(--soft);padding:0 22px;outline:none;font-size:16px;color:var(--navy)'});
+  const res = h('div',{}), err = h('div',{class:'err'});
+  const go = h('button',{class:'btn'},'Find');
+  let foundUser=null;
+  async function find(){
+    err.textContent=''; res.innerHTML=''; foundUser=null; const v=inp.value.trim(); if(!v) return;
+    go.disabled=true;
+    try{
+      let uid=null;
+      if(v.includes('@')) uid=(await R('emailIndex/'+emailKey(v)).once('value')).val();
+      else{
+        const d=v.replace(/\D/g,'');
+        if(d.length===8||d.length===9) uid=(await R('uidIndex/'+d).once('value')).val();
+        if(!uid && d.length>=7) uid=(await R('phoneIndex/'+await phoneKey(v)).once('value')).val();
+      }
+      if(!uid){ err.textContent='No user found with that email / number.'; }
+      else if(uid===me.uid){ err.textContent="That's you 🙂"; }
+      else if(contacts[uid]){ err.textContent=contacts[uid].name+' is already in your contacts.'; }
+      else{
+        const u=(await R('users/'+uid).once('value')).val(); if(!u) throw new Error('User has no profile yet.');
+        foundUser={uid,...u};
+        res.append(h('div',{class:'found'}, avatar(foundUser,56), h('div',{}, h('div',{class:'n'},u.name), h('div',{class:'u'},'UID '+u.uidNum))),
+          h('button',{class:'btn',onclick:async()=>{ await R('').update({[`contacts/${me.uid}/${uid}`]:true,[`contacts/${uid}/${me.uid}`]:true}); contacts[uid]=foundUser; threads[uid]=threads[uid]||{items:[],last:null,unread:0,chain:Promise.resolve()}; closeModal(); toast(u.name+' added'); setTab('chats'); openChat(uid); }},'Add & chat'));
+      }
+    }catch(e){ err.textContent=e.message||String(e); }
+    go.disabled=false;
+  }
+  go.onclick=find; inp.addEventListener('keydown',e=>{ if(e.key==='Enter') find(); });
+  modal(h('div',{class:'sheet'}, h('h2',{},'Add a friend'), h('p',{},'Find someone with their email address, phone number or the unique UID number shown in their Settings.'),
+    inp, err, res, go, h('button',{class:'btn ghost',onclick:closeModal,style:'margin-top:10px'},'Close')));
+  setTimeout(()=>inp.focus(),50);
+}
+
+/* ---------------- chat view ---------------- */
+function closeChat(){ openUid=null; document.body.classList.remove('chat-open'); renderChat(); renderList(); }
+function openChat(uid){
+  openUid=uid; document.body.classList.add('chat-open');
+  const t=threads[uid]; if(t){ t.unread=0; setLR(uid, Date.now()); }
+  renderChat(); renderList();
+}
+function renderChatHeader(){
+  const c=contacts[openUid]; const box=$('#chHeadMid'); if(!c||!box) return;
+  const on=presence[openUid]&&presence[openUid].online;
+  box.innerHTML=''; box.append(avatar(c,70,on), h('div',{class:'nm'},c.name));
+}
+let typingUnsub=null, typingTimer=null, lastTypingSent=0;
+function renderChat(){
+  const card=$('#chatCard'); if(typingUnsub){ typingUnsub(); typingUnsub=null; } card.innerHTML=''; stopAllAudio();
+  if(!openUid||!contacts[openUid]){
+    card.append(h('div',{class:'chat-empty'}, h('div',{}, h('div',{class:'lk'},svg('lock')), h('b',{},'Your messages are private'), 'End-to-end encrypted. Select a chat or add a friend to start.')));
+    return;
+  }
+  const uid=openUid, c=contacts[uid], cid=cidOf(me.uid,uid);
+  const input = h('input',{placeholder:'Message...',autocomplete:'off',enterkeyhint:'send'});
+  const pill = h('div',{class:'pill'});
+  const plus = h('button',{class:'plus','aria-label':'Attach'},svg('plus'));
+  const emBtn = h('button',{class:'em','aria-label':'Emoji'},svg('smile'));
+  const sendBtn = h('button',{class:'sendb hidden','aria-label':'Send'},svg('send'));
+  pill.append(plus,input,sendBtn,emBtn);
+  const comp = h('div',{class:'composer'},pill);
+  const typing = h('div',{class:'typing'});
+  const msgs = h('div',{class:'msgs',id:'msgs'});
+  const fileIn = h('input',{type:'file',accept:'image/*',class:'hidden'});
+
+  card.append(
+    h('div',{class:'chead'},
+      h('button',{class:'icon-btn','aria-label':'Back',onclick:closeChat},svg('back')),
+      h('div',{class:'mid',id:'chHeadMid'}),
+      h('button',{class:'icon-btn','aria-label':'Call',onclick:()=>toast('Calls are coming soon')},svg('phone'))),
+    msgs, typing, comp, fileIn);
+  renderChatHeader();
+
+  msgs.append(h('div',{class:'e2e'},svg('lock'),'Messages are end-to-end encrypted. Only you and '+c.name+' can read them.'));
+  (threads[uid]?.items||[]).forEach(appendMsg);
+  msgs.scrollTop=msgs.scrollHeight;
+
+  // typing indicator
+  const tr=R(`typing/${cid}/${uid}`), tf=tr.on('value',s=>{ typing.innerHTML=''; if(s.val()){ typing.append(c.name.split(' ')[0]+' is typing', h('span',{class:'d'},h('i'),h('i'),h('i'))); msgs.scrollTop=msgs.scrollHeight; } });
+  typingUnsub=()=>tr.off('value',tf);
+  const myTyping=R(`typing/${cid}/${me.uid}`); myTyping.onDisconnect().remove();
+  input.addEventListener('input',()=>{
+    const has=input.value.trim().length>0; sendBtn.classList.toggle('hidden',!has);
+    if(Date.now()-lastTypingSent>2000){ lastTypingSent=Date.now(); myTyping.set(true); }
+    clearTimeout(typingTimer); typingTimer=setTimeout(()=>{ myTyping.remove(); lastTypingSent=0; },3000);
+  });
+  async function doSend(){
+    const v=input.value; if(!v.trim()) return; input.value=''; sendBtn.classList.add('hidden'); myTyping.remove(); lastTypingSent=0;
+    try{ await sendText(uid,v); }catch(e){ toast('Send failed: '+(e.message||e)); input.value=v; }
+  }
+  sendBtn.onclick=doSend; input.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); doSend(); } });
+
+  // emoji
+  emBtn.onclick=()=>{
+    const ex=comp.querySelector('.emoji'); if(ex){ ex.remove(); return; } comp.querySelector('.menu')?.remove(); plus.classList.remove('open');
+    const E='😀😂😍🥰😘😎🤩🥳😉😊🙂😇🤗🤔😅😭😢😡🤯😱🥺😴🙄😏👍👎👏🙌🙏💪👋🤝👌✌️🤞❤️🧡💛💚💙💜🖤💔🔥✨🎉🎂🍕☕🌹🌞🌙⭐🚀💯✅❌😎🤣😜🤪😋🫶🫡🤙👀🧠🎧📷🎬'.match(/\p{Extended_Pictographic}(️)?/gu)||[];
+    const box=h('div',{class:'emoji'}); E.forEach(e=>box.append(h('button',{onclick:()=>{ input.value+=e; input.dispatchEvent(new Event('input')); input.focus(); }},e)));
+    comp.append(box);
+  };
+  // attach menu
+  plus.onclick=()=>{
+    const ex=comp.querySelector('.menu'); if(ex){ ex.remove(); plus.classList.remove('open'); return; } comp.querySelector('.emoji')?.remove();
+    plus.classList.add('open');
+    comp.append(h('div',{class:'menu'},
+      h('button',{onclick:()=>{ closeMenu(); fileIn.click(); }},svg('image'),'Photo'),
+      h('button',{onclick:()=>{ closeMenu(); startRecording(); }},svg('mic'),'Voice message'),
+      h('button',{onclick:()=>{ closeMenu(); sendText(uid,'👍'); }},h('span',{style:'font-size:20px'},'👍'),'Send a like')));
+  };
+  function closeMenu(){ comp.querySelector('.menu')?.remove(); plus.classList.remove('open'); }
+  fileIn.onchange=async e=>{
+    const f=e.target.files[0]; if(!f) return; e.target.value='';
+    try{ const d=await resizeImage(f,1280,.82); await sendPayload(uid,{t:'img'},d); }catch(err){ toast('Could not send photo'); }
+  };
+
+  // voice recording
+  async function startRecording(){
+    if(!navigator.mediaDevices||!window.MediaRecorder){ toast('Voice recording is not supported here'); return; }
+    let stream; try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ toast('Microphone permission denied'); return; }
+    const mime=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'].find(m=>MediaRecorder.isTypeSupported(m))||'';
+    const rec=new MediaRecorder(stream,mime?{mimeType:mime,audioBitsPerSecond:32000}:{audioBitsPerSecond:32000}), chunks=[], levels=[];
+    const ac=new (window.AudioContext||window.webkitAudioContext)(), an=ac.createAnalyser(); an.fftSize=512; ac.createMediaStreamSource(stream).connect(an);
+    const buf=new Uint8Array(an.fftSize); const t0=Date.now(); let cancelled=false;
+    const sampler=setInterval(()=>{ an.getByteTimeDomainData(buf); let m=0; for(const v of buf) m=Math.max(m,Math.abs(v-128)); levels.push(m/128); },100);
+    rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+    const timeEl=h('span',{},'0:00'); const tick=setInterval(()=>{ const s=Math.floor((Date.now()-t0)/1000); timeEl.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); if(s>=120) stop(false); },250);
+    const old=[...pill.childNodes]; pill.innerHTML='';
+    const done=h('button',{class:'sendb',onclick:()=>stop(false)},svg('send')), x=h('button',{class:'icon-btn x',onclick:()=>stop(true)},svg('x'));
+    pill.append(x,h('div',{class:'rec'},h('div',{class:'t'},timeEl,' Recording…')),done);
+    function stop(cancel){ cancelled=cancel; clearInterval(tick); clearInterval(sampler); rec.stop(); stream.getTracks().forEach(t=>t.stop()); ac.close(); pill.innerHTML=''; old.forEach(n=>pill.append(n)); }
+    rec.onstop=async()=>{
+      if(cancelled||!chunks.length) return;
+      const blob=new Blob(chunks,{type:rec.mimeType||'audio/webm'}); const dur=Math.max(1,Math.round((Date.now()-t0)/1000));
+      const N=36, wave=[]; for(let i=0;i<N;i++){ const a=Math.floor(i*levels.length/N), b=Math.max(a+1,Math.floor((i+1)*levels.length/N)); let m=0; for(let j=a;j<b&&j<levels.length;j++) m=Math.max(m,levels[j]); wave.push(Math.round(Math.min(1,m*1.6)*100)/100); }
+      const dataUrl=await new Promise(ok=>{ const fr=new FileReader(); fr.onload=()=>ok(fr.result); fr.readAsDataURL(blob); });
+      try{ await sendPayload(uid,{t:'voice',dur,wave},dataUrl); }catch(e){ toast('Could not send voice message'); }
+    };
+    rec.start();
+  }
+  if(window.innerWidth>960) setTimeout(()=>input.focus(),50);
+}
+
+/* ---------------- bubbles ---------------- */
+const mediaCache = new Map();
+async function getMedia(uid,it){
+  if(mediaCache.has(it.key)) return mediaCache.get(it.key);
+  const s=await R(`chats/${cidOf(me.uid,uid)}/media/${it.key}`).once('value'); const m=s.val(); if(!m) throw new Error('missing');
+  const url=dec.decode(await e2eeDecryptMedia(m,it.mk)); mediaCache.set(it.key,url); return url;
+}
+let lastDayShown = '';
+function appendMsg(it){
+  const box=$('#msgs'); if(!box||!openUid) return; const uid=openUid;
+  if(it.from!==me.uid&&it.from!==uid) return;
+  if(box.querySelector(`[data-k="${it.key}"]`)) return;
+  const near = box.scrollHeight-box.scrollTop-box.clientHeight<140 || it.from===me.uid;
+  const mine=it.from===me.uid, p=it.p;
+  const dayStr=new Date(it.ts).toDateString();
+  const lastDay=[...box.querySelectorAll('[data-d]')].pop();
+  if(!lastDay||lastDay.dataset.d!==dayStr){ const l=new Date(it.ts).toDateString()===new Date().toDateString()?'Today':new Date(it.ts).toLocaleDateString([], {weekday:'short',day:'numeric',month:'short'}); box.append(h('div',{class:'day','data-d':dayStr},l)); }
+  const el=h('div',{class:'m '+(mine?'me':'them'),'data-k':it.key});
+  let bub=h('div',{class:'bub'});
+  if(it.locked){ el.classList.add('locked'); bub.append('🔒 This message was sent before this device was linked, so it can\'t be decrypted here.'); }
+  else if(p.t==='text'){
+    if(/^\p{Extended_Pictographic}(️)?$/u.test(p.text.trim())){ el.classList.add('sticker'); }
+    bub.append(p.text);
+  } else if(p.t==='img'){
+    el.classList.add('img'); const im=h('img',{alt:'Photo',style:'min-width:160px;min-height:120px;background:rgba(127,127,127,.15)'}); bub.append(im);
+    getMedia(uid,it).then(u=>{ im.src=u; im.style.minWidth=im.style.minHeight=''; im.onclick=()=>{ const v=h('div',{id:'viewer',onclick:()=>v.remove()},h('img',{src:u})); document.body.append(v); }; if(near) box.scrollTop=box.scrollHeight; }).catch(()=>{ bub.textContent='📷 Photo unavailable'; });
+  } else if(p.t==='voice'){
+    el.classList.add('voicem'); bub.append(voiceEl(uid,it,p));
+  }
+  el.append(bub, h('div',{class:'ts'},clock(it.ts)));
+  box.append(el);
+  if(near) box.scrollTop=box.scrollHeight;
+}
+let curAudio=null;
+function stopAllAudio(){ if(curAudio){ curAudio.a.pause(); curAudio.reset(); curAudio=null; } }
+function voiceEl(uid,it,p){
+  const wave=h('div',{class:'wave'}); const bars=(p.wave&&p.wave.length?p.wave:Array.from({length:36},(_,i)=>.25+.6*Math.abs(Math.sin(i*.7)))).map(v=>h('i',{style:`height:${Math.max(6,Math.round(v*40))}px`})); wave.append(...bars);
+  const dur=h('span',{class:'vdur'}, Math.floor(p.dur/60)+':'+String(p.dur%60).padStart(2,'0'));
+  const btn=h('button',{class:'play','aria-label':'Play'},svg('play'));
+  let a=null;
+  const reset=()=>{ btn.innerHTML=''; btn.append(svg('play')); bars.forEach(b=>b.classList.remove('p')); dur.textContent=Math.floor(p.dur/60)+':'+String(p.dur%60).padStart(2,'0'); };
+  btn.onclick=async()=>{
+    if(curAudio&&curAudio.a===a){ if(a.paused){ a.play(); btn.innerHTML=''; btn.append(svg('pause')); } else { a.pause(); btn.innerHTML=''; btn.append(svg('play')); } return; }
+    stopAllAudio();
+    try{
+      const url=await getMedia(uid,it); a=new Audio(url); curAudio={a,reset};
+      a.ontimeupdate=()=>{ const d=isFinite(a.duration)&&a.duration>0?a.duration:p.dur, f=a.currentTime/d; bars.forEach((b,i)=>b.classList.toggle('p',i/bars.length<f)); const r=Math.max(0,Math.round(d-a.currentTime)); dur.textContent=Math.floor(r/60)+':'+String(r%60).padStart(2,'0'); };
+      a.onended=()=>{ reset(); curAudio=null; };
+      await a.play(); btn.innerHTML=''; btn.append(svg('pause'));
+    }catch(e){ toast('Could not play voice message'); }
+  };
+  return h('div',{class:'voice'},wave,dur,btn);
+}
+
+/* =====================================================================
+   QR login  (laptop shows QR, phone scans it from Settings → Link a device)
+   ===================================================================== */
+let kq=null;
+function kqLoad(u){ return new Promise((ok,no)=>{ const e=document.createElement('script'); e.src=u; e.onload=ok; e.onerror=()=>no(new Error('load fail')); document.head.appendChild(e); }); }
+function qrImg(text){ const q=qrcode(0,'M'); q.addData(text); q.make(); return q.createDataURL(8,4); }
+function devName(){ return deviceLabel(); }
+$('#qrBtn').onclick = async () => {
+  const img=h('img',{alt:'QR'}), msg=h('div',{style:'text-align:center;font-size:13px;color:var(--muted);margin-top:10px'},'Generating QR code…');
+  const m=modal(h('div',{class:'sheet'}, h('h2',{},'Log in with QR code'),
+    h('ol',{},h('li',{},'Open Messages on your phone'),h('li',{},'Go to Settings → ',h('b',{},'Link a device')),h('li',{},'Scan this code')),
+    h('div',{class:'qrimg'},img), msg, h('button',{class:'btn line',style:'margin-top:14px',onclick:()=>{ kq&&(kq.alive=false); closeModal(); }},'Cancel')));
+  if(kq) kq.alive=false; const my=kq={alive:true};
+  async function cycle(){
+    msg.textContent='Generating QR code…';
+    try{
+      const r=await (await fetch(QR_WORKER+'/qr/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({label:devName()})})).json();
+      if(!r.sid) throw new Error('QR service unavailable');
+      img.src=qrImg(QR_PREFIX+r.sid); msg.textContent='Scan with your phone (valid for 2 minutes)';
+      const end=Date.now()+115000;
+      while(my.alive&&Date.now()<end){
+        await new Promise(x=>setTimeout(x,2000)); if(!my.alive) return;
+        const s=await (await fetch(QR_WORKER+'/qr/status?sid='+r.sid+'&poll='+r.poll)).json();
+        if(s.status==='approved'){ msg.textContent='Logging in…'; await auth.signInWithCustomToken(s.token); my.alive=false; closeModal(); return; }
+        if(s.status==='expired') break;
+      }
+      if(my.alive) cycle();
+    }catch(e){ console.error(e); msg.textContent='Error: '+(e.message||e)+' — close and try again'; }
+  }
+  cycle();
+};
+let ksc=null;
+async function jsqrEnsure(){
+  if(typeof jsQR!=='undefined') return true;
+  for(const u of ['https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js','https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js','https://unpkg.com/jsqr@1.4.0/dist/jsQR.js']){ try{ await kqLoad(u); if(typeof jsQR!=='undefined') return true; }catch(e){} }
+  return false;
+}
+async function scanOpen(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ toast('Camera needs https'); return; }
+  let det=null; if('BarcodeDetector' in window){ try{ det=new BarcodeDetector({formats:['qr_code']}); }catch(e){} }
+  if(!det && !(await jsqrEnsure())){ toast('Scanner failed to load'); return; }
+  let stream; try{ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); }catch(e){ toast('Camera error: '+(e.message||e)); return; }
+  const v=h('video',{playsinline:true,muted:true}); v.srcObject=stream;
+  const box=h('div',{id:'scan'},v,h('div',{class:'tt'},'Scan the QR code shown on your laptop'),h('button',{onclick:close},'Close')); document.body.append(box);
+  await v.play(); ksc={on:true};
+  function close(){ if(ksc) ksc.on=false; stream.getTracks().forEach(t=>t.stop()); box.remove(); }
+  const c=document.createElement('canvas'), x=c.getContext('2d',{willReadFrequently:true});
+  const found=t=>{ if(t&&t.startsWith(QR_PREFIX)){ close(); approveQr(t.slice(QR_PREFIX.length)); return true; } return false; };
+  const tick=async()=>{ if(!ksc||!ksc.on) return;
+    try{ if(v.videoWidth){
+      if(det){ const r=await det.detect(v); if(r&&r[0]&&found(r[0].rawValue)) return; }
+      else{ c.width=v.videoWidth; c.height=v.videoHeight; x.drawImage(v,0,0); const q=jsQR(x.getImageData(0,0,c.width,c.height).data,c.width,c.height); if(q&&found(q.data)) return; }
+    } }catch(e){}
+    requestAnimationFrame(tick); };
+  tick();
+}
+async function approveQr(sid){
+  try{
+    const info=await (await fetch(QR_WORKER+'/qr/info?sid='+encodeURIComponent(sid))).json();
+    if(info.error){ toast('QR code expired. Generate a new one on your laptop'); return; }
+    modal(h('div',{class:'sheet'}, h('h2',{},'Log in on '+info.label+'?'), h('p',{},'Only allow this if the device is yours. Old messages stay on the devices that already have them.'),
+      h('button',{class:'btn',onclick:async()=>{
+        try{ const tok=await auth.currentUser.getIdToken(true);
+          const r=await fetch(QR_WORKER+'/qr/approve',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:JSON.stringify({sid})});
+          closeModal(); toast(r.ok?'Device linked':'Link failed'); }catch(e){ closeModal(); toast('Link failed'); } }},'Allow'),
+      h('button',{class:'btn ghost',style:'margin-top:10px',onclick:closeModal},'Deny')));
+  }catch(e){ toast('Link failed'); }
+}
+
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&openUid&&threads[openUid]){ threads[openUid].unread=0; setLR(openUid,Date.now()); renderList(); } });
+if(!firebaseConfig.apiKey) document.body.textContent='Missing Firebase config';
+</script>
+</body>
+</html>
