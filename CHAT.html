@@ -47,8 +47,8 @@ svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .row .txt{color:var(--muted);font-size:16px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
 .badge{min-width:32px;height:32px;border-radius:10px;background:var(--blue);color:#fff;font:600 15px/32px var(--body);text-align:center;padding:0 8px;flex:none}
 .row.active .name{color:var(--blue)}
-.av{position:relative;flex:none;border-radius:50%;display:grid;place-items:center;color:#fff;font:600 20px var(--head)}
-.av img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.av{position:relative;flex:none;border-radius:50%;display:grid;place-items:center;color:#fff;font:600 20px var(--head);aspect-ratio:1}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;display:block}
 .av .dot{position:absolute;right:1%;bottom:1%;width:22%;max-width:20px;min-width:12px;aspect-ratio:1;border-radius:50%;background:var(--blue);border:3px solid var(--card)}
 .empty{color:var(--muted);text-align:center;padding:60px 20px;line-height:1.6;font-size:15px}
 .empty b{display:block;color:var(--navy);font:600 18px var(--head);margin-bottom:6px}
@@ -136,8 +136,16 @@ svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .menu button{display:flex;gap:12px;align-items:center;width:100%;padding:12px 14px;border-radius:14px;color:var(--navy);font-weight:500}
 .menu button:hover{background:var(--soft)}
 .menu svg{color:var(--blue)}
-.emoji{position:absolute;right:32px;bottom:122px;background:var(--card);border-radius:22px;box-shadow:0 14px 40px rgba(40,60,120,.18);padding:10px;z-index:5;width:min(330px,calc(100% - 64px));display:grid;grid-template-columns:repeat(8,1fr);gap:2px;max-height:230px;overflow:auto}
-.emoji button{font-size:24px;height:38px;border-radius:10px}.emoji button:hover{background:var(--soft)}
+.emoji{position:absolute;left:20px;right:20px;bottom:104px;background:var(--card);border-radius:24px;box-shadow:0 14px 40px rgba(40,60,120,.22);z-index:5;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line,#E4E7F5)}
+.emoji .etabs{display:flex;gap:2px;padding:8px 10px 0;border-bottom:1px solid var(--line,#E4E7F5)}
+.emoji .etabs button{flex:1;height:38px;font-size:20px;border-radius:10px 10px 0 0;opacity:.55;position:relative}
+.emoji .etabs button.on{opacity:1}
+.emoji .etabs button.on::after{content:"";position:absolute;left:20%;right:20%;bottom:-1px;height:3px;border-radius:3px;background:var(--blue)}
+.emoji .elabel{padding:10px 16px 2px;font:600 12px var(--head);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.emoji .egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));padding:6px 10px 12px;height:210px;overflow-y:auto;align-content:start}
+.emoji .egrid button{font-size:26px;height:42px;border-radius:12px;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;line-height:1}
+.emoji .egrid button:hover,.emoji .egrid button:active{background:var(--soft)}
+.emoji .eempty{grid-column:1/-1;color:var(--muted);text-align:center;padding:40px 0;font-size:14px}
 .rec{display:flex;align-items:center;gap:14px;width:100%}
 .rec .t{flex:1;color:var(--danger);font-weight:600;display:flex;gap:8px;align-items:center}
 .rec .t::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--danger);animation:bl 1s infinite}
@@ -206,6 +214,26 @@ svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stro
   .bub{padding:14px 22px;font-size:16px}
   .solo{padding:48px 24px 28px}
 }
+
+/* block / report / moderation */
+.blockbar{display:flex;gap:10px;justify-content:center;align-items:center;margin:0 24px 24px;padding:16px 20px;background:var(--soft);border-radius:24px;color:var(--muted);font-size:14px;flex:none}
+.item.rsn{border-radius:14px;border-bottom:0;padding:11px 14px}
+.item.rsn.sel{background:var(--soft);color:var(--blue);font-weight:600}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink);margin:10px 4px;line-height:1.45}
+.chk input{margin-top:3px;flex:none}
+.sheet.modsheet{width:min(560px,100%)}
+.modcard{background:var(--soft);border-radius:22px;padding:14px 16px;margin-bottom:14px}
+.modcard .mh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;color:var(--navy)}
+.modcard .time{font-size:13px;color:var(--muted)}
+.rep{padding:10px 0;border-top:1px solid var(--line)}
+.rep .rtop{display:flex;justify-content:space-between;color:var(--navy)}
+.rep .rby{font-size:13px;color:var(--muted)}
+.rep .rdet{font-size:14px;margin:6px 0;white-space:pre-wrap;word-break:break-word}
+.evbox{background:var(--card);border-radius:14px;padding:10px 12px;margin-top:8px;font-size:13.5px}
+.evbox .evnote{color:var(--muted);font-size:12px;margin-bottom:6px}
+.evbox .ev{padding:3px 0;word-break:break-word}.evbox .ev.reported b{color:var(--danger)}
+.btn.mini{height:38px;width:auto;padding:0 14px;font-size:14px;margin:8px 6px 0 0;box-shadow:none;border-radius:19px}
+#modOverlay{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px}
 </style>
 </head>
 <body>
@@ -340,7 +368,11 @@ const IC = {
   edit:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
   cam:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
   device:'<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
-  user2:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>'
+  user2:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>',
+  more:'<circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/>',
+  ban:'<circle cx="12" cy="12" r="10"/><path d="M4.9 4.9l14.2 14.2"/>',
+  flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
 };
 const svg = (n, cls) => { const s = document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('class','i '+(cls||'')); s.innerHTML = IC[n]; return s; };
 const icon = (el, n) => { el.innerHTML=''; el.append(svg(n)); return el; };
@@ -400,8 +432,13 @@ async function loadOrCreateDevice(uid){
 }
 async function importPub(jwkStr){ return crypto.subtle.importKey('jwk', JSON.parse(jwkStr), ECDH, false, []); }
 async function wrapKeyFor(myPriv, theirPubStr){
-  const pub = await importPub(theirPubStr);
-  return crypto.subtle.deriveKey({name:'ECDH', public:pub}, myPriv, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+  let m = wrapCache.get(myPriv); if(!m){ m = new Map(); wrapCache.set(myPriv, m); }
+  let p = m.get(theirPubStr);
+  if(!p){
+    p = importPub(theirPubStr).then(pub=>crypto.subtle.deriveKey({name:'ECDH', public:pub}, myPriv, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']));
+    m.set(theirPubStr, p); p.catch(()=>m.delete(theirPubStr));
+  }
+  return p;
 }
 // bytes -> {iv, ct, keys:{deviceId:{i,c}}}
 async function e2eeEncrypt(bytes, myPriv, targets /* {devId: pubJwkString} */, mediaBytes){
@@ -410,12 +447,12 @@ async function e2eeEncrypt(bytes, myPriv, targets /* {devId: pubJwkString} */, m
   const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, mk, bytes);
   const raw = await crypto.subtle.exportKey('raw', mk);
   const keys = {};
-  for(const [id,pub] of Object.entries(targets)){
+  await Promise.all(Object.entries(targets).map(async ([id,pub])=>{
     try{
       const sk = await wrapKeyFor(myPriv, pub), wiv = rand(12);
       keys[id] = { i:b64(wiv), c:b64(await crypto.subtle.encrypt({name:'AES-GCM', iv:wiv}, sk, raw)) };
     }catch(e){ console.warn('skip device', id, e); }
-  }
+  }));
   let media = null;
   if(mediaBytes){ const miv = rand(12); media = { iv:b64(miv), ct:b64(await crypto.subtle.encrypt({name:'AES-GCM', iv:miv}, mk, mediaBytes)) }; }
   return { iv:b64(iv), ct:b64(ct), keys, media };
@@ -436,7 +473,12 @@ let auth, db;
 try{
   firebase.initializeApp(firebaseConfig);
   auth = firebase.auth(); db = firebase.database();
-}catch(e){ document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif">Firebase failed to load. Check your internet connection.</p>'; throw e; }
+}catch(e){
+  const where = location.protocol+'//'+(location.host||'(no host)');
+  const why = (typeof firebase==='undefined') ? 'Firebase library did not load (blocked or offline).' : 'Firebase loaded but failed to start.';
+  document.body.innerHTML = '<div style="padding:30px;font-family:sans-serif;line-height:1.6"><p><b>Firebase failed to start.</b></p><p>'+why+'</p><p style="color:#c00">Error: '+String(e&&e.message||e).replace(/</g,'&lt;')+'</p><p style="color:#666;font-size:13px">Opened from: '+where+'</p></div>';
+  throw e;
+}
 const R = p => db.ref(P+p);
 const TS = firebase.database.ServerValue.TIMESTAMP;
 
@@ -451,6 +493,8 @@ const contactWatch = {};
 let openUid = null;
 let tab = 'chats';
 const pubCache = new Map();
+const devCache = {}, devOk = {}, wrapCache = new WeakMap(); // live device lists + derived keys (speed)
+let blockedAt = {}, isAdmin = false, myMod = null, modTimer = null, openReportCount = 0; // safety state
 const cidOf = (a,b) => [a,b].sort().join('_');
 const lrKey = u => `lr:${me.uid}:${u}`;
 const getLR = u => +(localStorage.getItem(lrKey(u))||0);
@@ -587,13 +631,22 @@ function openSetup(edit){
 $('#suName').addEventListener('input',()=>{ if(!suPhoto) renderSuAv(); });
 $('#suFile').onchange = async e => {
   const f=e.target.files[0]; if(!f) return;
-  suPhoto = await resizeImage(f, 256, .85); renderSuAv(); e.target.value='';
+  suPhoto = await resizeImage(f, 320, .88, true); renderSuAv(); e.target.value='';
 };
 $('#suCancel').onclick = () => { show('appStage'); };
-function resizeImage(fileOrBlob, max, q){
+function resizeImage(fileOrBlob, max, q, square){
   return new Promise((ok,no)=>{
     const url=URL.createObjectURL(fileOrBlob), img=new Image();
-    img.onload=()=>{ const s=Math.min(1,max/Math.max(img.width,img.height)); const c=document.createElement('canvas'); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s); c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url); ok(c.toDataURL('image/jpeg',q)); };
+    img.onload=()=>{
+      const c=document.createElement('canvas'), ctx=c.getContext('2d');
+      if(square){
+        const side=Math.min(img.width,img.height), sx=(img.width-side)/2, sy=(img.height-side)/2, out=Math.min(max,side);
+        c.width=c.height=out; ctx.drawImage(img,sx,sy,side,side,0,0,out,out);
+      } else {
+        const s=Math.min(1,max/Math.max(img.width,img.height)); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s); ctx.drawImage(img,0,0,c.width,c.height);
+      }
+      URL.revokeObjectURL(url); ok(c.toDataURL('image/jpeg',q));
+    };
     img.onerror=()=>{ URL.revokeObjectURL(url); no(new Error('Bad image')); }; img.src=url;
   });
 }
@@ -660,6 +713,8 @@ async function startApp(){
   // my profile live
   const mp = R('users/'+me.uid); const mf = mp.on('value', s=>{ if(s.exists()){ myProf={uid:me.uid,...s.val()}; if(tab==='settings') renderList(); } });
   watchers.push(()=>mp.off('value',mf));
+  { const dr=R('devices/'+me.uid), df=dr.on('value',devSnap(me.uid)); watchers.push(()=>{ dr.off('value',df); delete devCache[me.uid]; delete devOk[me.uid]; }); }
+  await startModWatch();
   // contacts
   const cr = R('contacts/'+me.uid);
   const cf = cr.on('value', s => syncContacts(Object.keys(s.val()||{})));
@@ -668,7 +723,7 @@ async function startApp(){
 }
 function stopApp(){
   Object.values(contactWatch).forEach(f=>f());
-  watchers.forEach(f=>{ try{f();}catch(e){} }); watchers=[]; contacts={}; presence={}; threads={}; openUid=null; document.body.classList.remove('chat-open');
+  watchers.forEach(f=>{ try{f();}catch(e){} }); watchers=[]; contacts={}; presence={}; threads={}; openUid=null; blockedAt={}; isAdmin=false; myMod=null; openReportCount=0; clearTimeout(modTimer); { const o=document.getElementById('modOverlay'); if(o) o.remove(); } document.body.classList.remove('chat-open');
 }
 function deviceLabel(){
   const u=navigator.userAgent; let os='Device';
@@ -682,10 +737,11 @@ function syncContacts(uids){
     if(contactWatch[uid]) return;
     const pr = R('users/'+uid), pf = pr.on('value', s=>{ if(s.exists()){ contacts[uid]={uid,...s.val()}; renderAll(); } });
     const pp = R('presence/'+uid), ppf = pp.on('value', s=>{ presence[uid]=s.val()||{}; renderAll(); });
+    const dr = R('devices/'+uid), df = dr.on('value', devSnap(uid));
     threads[uid] = threads[uid] || { items:[], last:null, unread:0, chain:Promise.resolve() };
     const mr = R('chats/'+cidOf(me.uid,uid)+'/messages').limitToLast(60);
     const mf = mr.on('child_added', s => { const t=threads[uid]; t.chain = t.chain.then(()=>onMsg(uid,s.key,s.val())).catch(e=>console.warn(e)); });
-    contactWatch[uid] = () => { pr.off('value',pf); pp.off('value',ppf); mr.off('child_added',mf); delete contactWatch[uid]; };
+    contactWatch[uid] = () => { pr.off('value',pf); pp.off('value',ppf); dr.off('value',df); delete devCache[uid]; delete devOk[uid]; mr.off('child_added',mf); delete contactWatch[uid]; };
   });
   Object.keys(contactWatch).forEach(u=>{ if(!uids.includes(u)){ contactWatch[u](); delete contacts[u]; delete threads[u]; if(openUid===u) closeChat(); } });
   renderAll();
@@ -694,11 +750,13 @@ function syncContacts(uids){
 /* ---------------- messages: receive ---------------- */
 async function senderPub(uid, devId){
   const k = uid+'/'+devId; if(pubCache.has(k)) return pubCache.get(k);
+  const dc = devCache[uid]; if(dc && dc[devId]){ pubCache.set(k, dc[devId]); return dc[devId]; }
   const s = await R(`devices/${uid}/${devId}/pub`).once('value'); const v=s.val(); if(v) pubCache.set(k,v); return v;
 }
 async function onMsg(uid, key, rec){
   const t = threads[uid]; if(!t || t.items.some(i=>i.key===key)) return;
   const item = { key, from:rec.from, ts:rec.ts||Date.now(), rec, p:null, mk:null, locked:false };
+  if(rec.from!==me.uid && blockedAt[rec.from] && item.ts>blockedAt[rec.from]) return;   // blocked: never shown
   try{
     const spub = await senderPub(rec.from, rec.fd);
     const mk = spub ? await e2eeUnwrap(rec, dev.id, dev.priv, spub) : null;
@@ -725,14 +783,17 @@ function previewOf(it){
 }
 
 /* ---------------- messages: send ---------------- */
-async function targetDevices(uid){
-  const out = {};
-  for(const u of [uid, me.uid]){
-    const s = await R('devices/'+u).once('value'); const v=s.val()||{};
-    for(const [id,d] of Object.entries(v)){ out[id]=d.pub; pubCache.set(u+'/'+id,d.pub); }
-  }
-  return out;
+async function devicesOf(u){
+  if(devOk[u]) return devCache[u] || {};            // live copy, zero network wait
+  const s = await R('devices/'+u).once('value'); const v=s.val()||{}, o={};
+  for(const [id,d] of Object.entries(v)){ o[id]=d.pub; pubCache.set(u+'/'+id,d.pub); }
+  return o;
 }
+async function targetDevices(uid){
+  const [a,b] = await Promise.all([devicesOf(uid), devicesOf(me.uid)]);
+  return Object.assign({}, a, b);
+}
+function devSnap(u){ return s=>{ const v=s.val()||{}, o={}; for(const [id,d] of Object.entries(v)) o[id]=d.pub; devCache[u]=o; devOk[u]=true; }; }
 async function sendPayload(uid, payload, mediaDataUrl){
   const targets = await targetDevices(uid);
   const e = await e2eeEncrypt(enc.encode(JSON.stringify(payload)), dev.priv, targets, mediaDataUrl ? enc.encode(mediaDataUrl) : null);
@@ -776,7 +837,7 @@ function renderList(){
         h('div',{class:'body'},
           h('div',{class:'top'}, h('div',{class:'name'},c.name), tab==='chats' ? h('div',{class:'time'}, last?relTime(last.ts):'') : null),
           h('div',{class:'prev'},
-            h('div',{class:'txt'}, tab==='chats' ? previewOf(last) : (c.about || 'UID '+c.uidNum)),
+            h('div',{class:'txt'}, tab==='chats' ? (isBlocked(c.uid) ? '🚫 Blocked' : previewOf(last)) : (c.about || 'UID '+c.uidNum)),
             tab==='chats' && t.unread ? h('div',{class:'badge'}, t.unread>99?'99+':t.unread) : null)));
       body.append(row);
     });
@@ -802,6 +863,9 @@ function renderSettings(body){
       h('button',{class:'item',onclick:()=>openSetup(true)}, svg('edit'), h('span',{}, 'Edit profile', h('span',{class:'sub'},'Name, photo, phone number, about'))),
       h('button',{class:'item',onclick:openAddContact}, svg('user2'), h('span',{}, 'Add a friend', h('span',{class:'sub'},'By email, phone number or UID'))),
       h('button',{class:'item',onclick:scanOpen}, svg('qr'), h('span',{}, 'Link a device', h('span',{class:'sub'},'Scan the QR code shown on your laptop')))),
+    h('div',{class:'sec'}, h('h3',{},'Safety'),
+      h('button',{class:'item',onclick:openBlockedList}, svg('ban'), h('span',{}, 'Blocked contacts', h('span',{class:'sub'}, Object.keys(blockedAt).length+' blocked'))),
+      isAdmin ? h('button',{class:'item',onclick:openModPanel}, svg('shield'), h('span',{}, 'Moderation', h('span',{class:'sub'}, openReportCount+' open report'+(openReportCount===1?'':'s')))) : null),
     h('div',{class:'sec'}, h('h3',{},'Linked devices'), h('div',{id:'devList'}, h('div',{class:'empty',style:'padding:10px'},'Loading…'))),
     h('div',{class:'note'}, svg('lock'), h('div',{}, 'Messages, photos and voice notes are end-to-end encrypted. Your private key is created on this device and never leaves it, so nobody — not even the server — can read your chats. A newly linked device can read new messages only.')),
     h('div',{class:'sec',style:'margin-top:14px'}, h('button',{class:'item danger',onclick:()=>auth.signOut()}, svg('logout'), 'Log out'))
@@ -887,8 +951,8 @@ function renderChat(){
     h('div',{class:'chead'},
       h('button',{class:'icon-btn','aria-label':'Back',onclick:closeChat},svg('back')),
       h('div',{class:'mid',id:'chHeadMid'}),
-      h('button',{class:'icon-btn','aria-label':'Call',onclick:()=>toast('Calls are coming soon')},svg('phone'))),
-    msgs, typing, comp, fileIn);
+      h('button',{class:'icon-btn','aria-label':'More',onclick:()=>openChatActions(uid)},svg('more'))),
+    msgs, typing, isBlocked(uid) ? blockBar(uid) : comp, fileIn);
   renderChatHeader();
 
   msgs.append(h('div',{class:'e2e'},svg('lock'),'Messages are end-to-end encrypted. Only you and '+c.name+' can read them.'));
@@ -906,16 +970,40 @@ function renderChat(){
   });
   async function doSend(){
     const v=input.value; if(!v.trim()) return; input.value=''; sendBtn.classList.add('hidden'); myTyping.remove(); lastTypingSent=0;
-    try{ await sendText(uid,v); }catch(e){ toast('Send failed: '+(e.message||e)); input.value=v; }
+    try{ await sendText(uid,v); }catch(e){ toast(/permission/i.test(String(e&&e.message||e)) ? 'Message couldn’t be delivered.' : 'Send failed: '+(e.message||e)); input.value=v; }
   }
   sendBtn.onclick=doSend; input.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); doSend(); } });
 
   // emoji
   emBtn.onclick=()=>{
     const ex=comp.querySelector('.emoji'); if(ex){ ex.remove(); return; } comp.querySelector('.menu')?.remove(); plus.classList.remove('open');
-    const E='😀😂😍🥰😘😎🤩🥳😉😊🙂😇🤗🤔😅😭😢😡🤯😱🥺😴🙄😏👍👎👏🙌🙏💪👋🤝👌✌️🤞❤️🧡💛💚💙💜🖤💔🔥✨🎉🎂🍕☕🌹🌞🌙⭐🚀💯✅❌😎🤣😜🤪😋🫶🫡🤙👀🧠🎧📷🎬'.match(/\p{Extended_Pictographic}(️)?/gu)||[];
-    const box=h('div',{class:'emoji'}); E.forEach(e=>box.append(h('button',{onclick:()=>{ input.value+=e; input.dispatchEvent(new Event('input')); input.focus(); }},e)));
-    comp.append(box);
+    const CATS=[
+      ['🕘','Recent',null],
+      ['😀','Smileys','😀😃😄😁😆😅😂🤣🥲😊😇🙂🙃😉😌😍🥰😘😗😙😚😋😛😜🤪😝🤑🤗🤭🤫🤔🤐🤨😐😑😶😏😒🙄😬😮‍💨🤥😔😪🤤😴😷🤒🤕🤢🤮🤧🥵🥶🥴😵🤯🤠🥳🥸😎🤓🧐😕😟🙁☹️😮😯😲😳🥺😦😧😨😰😥😢😭😱😖😣😞😓😩😫🥱😤😡😠🤬😈👿💀☠️💩🤡👻👽🤖'],
+      ['👋','People','👋🤚🖐️✋🖖👌🤌🤏✌️🤞🫰🤟🤘🤙👈👉👆👇☝️👍👎✊👊🤛🤜👏🙌🫶👐🤲🤝🙏✍️💅🤳💪🦾🧠👀👅👄💋'],
+      ['❤️','Hearts','❤️🧡💛💚💙💜🖤🤍🤎💔❤️‍🔥💕💞💓💗💖💘💝💟☮️✨⭐🌟💫🔥💯💢💥💦💤🎉🎊🎈🎁🏆🥇'],
+      ['🐶','Animals','🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐸🐵🙈🙉🙊🐔🐧🐦🦆🦅🦉🦇🐺🐗🐴🦄🐝🐛🦋🐌🐞🐢🐍🐙🦑🦐🦀🐠🐬🐳🦈🐘🦒🦓🐪🌸🌹🌻🌼🌷🌲🌴🍀🍁'],
+      ['🍕','Food','🍎🍊🍋🍌🍉🍇🍓🍒🍑🥭🍍🥥🥝🍅🥑🌽🥕🍞🧀🍳🥞🍔🍟🍕🌭🌮🌯🍝🍜🍣🍤🍦🍩🍪🎂🍰🍫🍬🍿☕🍵🥤🍺🍷🥂'],
+      ['⚽','Activity','⚽🏀🏈⚾🎾🏐🏏🏓🏸🥊🎮🎯🎲🎵🎶🎤🎧🎸🎹🎬📷📸🎨🚗✈️🚀🏖️🏔️🌙☀️🌈⚡❄️🌊']
+    ];
+    const seg=t=>{ try{ return Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(t),x=>x.segment); }catch(_){ return t.match(/\p{Extended_Pictographic}\uFE0F?(\u200D\p{Extended_Pictographic}\uFE0F?)*/gu)||[]; } };
+    let recent=[]; try{ recent=JSON.parse(localStorage.getItem('recentEmoji')||'[]'); }catch(_){}
+    const box=h('div',{class:'emoji'}), tabs=h('div',{class:'etabs'}), label=h('div',{class:'elabel'}), grid=h('div',{class:'egrid'});
+    const pick=e=>{
+      input.value+=e; input.dispatchEvent(new Event('input')); input.focus();
+      recent=[e,...recent.filter(x=>x!==e)].slice(0,24); try{ localStorage.setItem('recentEmoji',JSON.stringify(recent)); }catch(_){}
+    };
+    const show=i=>{
+      [...tabs.children].forEach((t,j)=>t.classList.toggle('on',j===i));
+      label.textContent=CATS[i][1]; grid.innerHTML=''; grid.scrollTop=0;
+      const list=i===0?recent:seg(CATS[i][2]);
+      if(!list.length) grid.append(h('div',{class:'eempty'},'Emojis you use will show up here'));
+      list.forEach(e=>grid.append(h('button',{type:'button',onclick:()=>pick(e)},e)));
+    };
+    CATS.forEach((c,i)=>tabs.append(h('button',{type:'button','aria-label':c[1],title:c[1],onclick:()=>show(i)},c[0])));
+    box.append(tabs,label,grid); comp.append(box);
+    show(recent.length?0:1);
+    setTimeout(()=>{ const off=ev=>{ if(!box.isConnected){ document.removeEventListener('pointerdown',off,true); return; } if(!box.contains(ev.target) && !emBtn.contains(ev.target)){ box.remove(); document.removeEventListener('pointerdown',off,true); } }; document.addEventListener('pointerdown',off,true); },0);
   };
   // attach menu
   plus.onclick=()=>{
@@ -1080,6 +1168,207 @@ async function approveQr(sid){
           closeModal(); toast(r.ok?'Device linked':'Link failed'); }catch(e){ closeModal(); toast('Link failed'); } }},'Allow'),
       h('button',{class:'btn ghost',style:'margin-top:10px',onclick:closeModal},'Deny')));
   }catch(e){ toast('Link failed'); }
+}
+
+
+/* =====================================================================
+   Block / Report / Moderation
+   ===================================================================== */
+const REASONS = ['Spam','Harassment or bullying','Hate speech','Threats or violence','Sexual content','Scam or fraud','Impersonation','Other'];
+const isBlocked = uid => !!blockedAt[uid];
+const blockBar = uid => h('div',{class:'blockbar'}, h('span',{},'You blocked this contact.'), h('button',{class:'link',onclick:()=>unblockUser(uid)},'Unblock'));
+const nameCache = {};
+async function nameOf(uid){
+  if(nameCache[uid]) return nameCache[uid];
+  let u=null; try{ u=(await R('users/'+uid).once('value')).val(); }catch(e){}
+  return nameCache[uid] = u ? (u.name||'User')+' · UID '+u.uidNum : 'User '+String(uid).slice(0,6);
+}
+
+async function startModWatch(){
+  const bref = R('blocks/'+me.uid);
+  await new Promise(res=>{
+    let first=true;
+    const f = bref.on('value', s=>{
+      const was = !!(openUid && blockedAt[openUid]); blockedAt = s.val()||{};
+      if(first){ first=false; res(); return; }
+      renderList(); if(openUid && was!==!!blockedAt[openUid]) renderChat();
+    }, ()=>{ if(first){ first=false; res(); } });
+    watchers.push(()=>bref.off('value',f));
+  });
+  try{ isAdmin = (await R('admins/'+me.uid).once('value')).val()===true; }catch(e){ isAdmin=false; }
+  const mref = R('moderation/'+me.uid), mf = mref.on('value', s=>applyMod(s.val()), ()=>{});
+  watchers.push(()=>mref.off('value',mf));
+  if(isAdmin){
+    const rq = R('reports').orderByChild('status').equalTo('open');
+    const rf = rq.on('value', s=>{ openReportCount=s.numChildren(); if(tab==='settings') renderList(); }, ()=>{});
+    watchers.push(()=>rq.off('value',rf));
+  }
+}
+
+/* ----- block ----- */
+async function blockUser(uid){ try{ await R('blocks/'+me.uid+'/'+uid).set(TS); toast('Blocked'); }catch(e){ toast('Could not block: '+(e.message||e)); } }
+async function unblockUser(uid){ try{ await R('blocks/'+me.uid+'/'+uid).remove(); toast('Unblocked'); }catch(e){ toast('Could not unblock: '+(e.message||e)); } }
+function confirmBlock(uid){
+  const c=contacts[uid]; if(!c) return;
+  modal(h('div',{class:'sheet'}, h('h2',{},'Block '+c.name+'?'),
+    h('p',{},'They won’t be able to message you or see when you’re online. They won’t be notified. You can unblock them any time.'),
+    h('button',{class:'btn',onclick:async()=>{ closeModal(); await blockUser(uid); }},'Block'),
+    h('button',{class:'btn ghost',style:'margin-top:10px',onclick:closeModal},'Cancel')));
+}
+function openChatActions(uid){
+  const c=contacts[uid]; if(!c) return; const b=isBlocked(uid);
+  modal(h('div',{class:'sheet'}, h('h2',{},c.name),
+    h('button',{class:'item',onclick:()=>{ closeModal(); b ? unblockUser(uid) : confirmBlock(uid); }}, svg('ban'), b?'Unblock':'Block'),
+    h('button',{class:'item danger',onclick:()=>{ closeModal(); openReport(uid); }}, svg('flag'), 'Report'),
+    h('button',{class:'btn ghost',style:'margin-top:14px',onclick:closeModal},'Cancel')));
+}
+function openBlockedList(){
+  const box=h('div',{class:'sheet'}, h('h2',{},'Blocked contacts'));
+  const ids=Object.keys(blockedAt);
+  if(!ids.length) box.append(h('p',{},'You haven’t blocked anyone.'));
+  ids.forEach(uid=>{ const c=contacts[uid];
+    box.append(h('div',{class:'item'}, avatar(c||{uid,name:'?'},40), h('span',{style:'flex:1'}, c?c.name:'Unknown user'),
+      h('button',{class:'link',onclick:async()=>{ await unblockUser(uid); openBlockedList(); }},'Unblock'))); });
+  box.append(h('button',{class:'btn ghost',style:'margin-top:14px',onclick:closeModal},'Close'));
+  closeModal(); modal(box);
+}
+
+/* ----- report ----- */
+async function submitReport(uid, reason, details, withEvidence, alsoBlock){
+  const day = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const rid = me.uid+'_'+uid+'_'+day;                       // one report per person per day
+  const ev = [];
+  if(withEvidence){
+    (threads[uid]?.items||[]).filter(i=>!i.locked && i.p).slice(-10).forEach(i=>{
+      const p=i.p;
+      ev.push({ who:i.from===me.uid?'reporter':'reported', t:String(p.t||'text').slice(0,10),
+        text: p.t==='text' ? String(p.text).slice(0,500) : (p.t==='img' ? '[photo]' : '[voice message]'), ts:i.ts });
+    });
+  }
+  const rec = { by:me.uid, against:uid, cid:cidOf(me.uid,uid), reason, ts:TS, status:'open' };
+  if(details) rec.details = details.slice(0,600);
+  if(ev.length) rec.evidence = ev;
+  await R('reports/'+rid).set(rec);
+  if(alsoBlock){ try{ await R('blocks/'+me.uid+'/'+uid).set(TS); }catch(e){} }
+}
+function openReport(uid){
+  const c=contacts[uid]; if(!c) return; let reason=null;
+  const err=h('div',{class:'err'});
+  const opts=REASONS.map(r=>{ const b=h('button',{class:'item rsn',type:'button'},r); b.onclick=()=>{ reason=r; opts.forEach(o=>o.classList.toggle('sel',o===b)); }; return b; });
+  const det=h('textarea',{maxlength:'600',placeholder:'Add details (optional)'});
+  const evC=h('input',{type:'checkbox',checked:true}), blkC=h('input',{type:'checkbox',checked:true});
+  const go=h('button',{class:'btn'},'Send report');
+  go.onclick=async()=>{
+    if(!reason){ err.textContent='Choose a reason.'; return; }
+    go.disabled=true; err.textContent='';
+    try{ await submitReport(uid,reason,det.value.trim(),evC.checked,blkC.checked); closeModal(); toast('Report sent. Thank you.'); }
+    catch(e){ err.textContent = /permission/i.test(String(e&&e.message||e)) ? 'You already reported this contact today. Our team will review it.' : (e.message||'Could not send the report.'); go.disabled=false; }
+  };
+  modal(h('div',{class:'sheet'}, h('h2',{},'Report '+c.name),
+    h('p',{},'Reports go to our moderators. The person you report won’t be told.'),
+    h('div',{},opts), h('div',{class:'field',style:'margin-top:12px'},det),
+    h('label',{class:'chk'},evC,h('span',{},'Include the last 10 messages from this chat so moderators can review them. Only these messages are shared; the rest stay private.')),
+    h('label',{class:'chk'},blkC,h('span',{},'Also block this contact')),
+    err, go, h('button',{class:'btn ghost',style:'margin-top:10px',onclick:closeModal},'Cancel')));
+}
+
+/* ----- what a restricted user sees ----- */
+function applyMod(m){
+  myMod=m; clearTimeout(modTimer); const now=Date.now();
+  const active = !!m && (m.status==='banned' || (m.status==='suspended' && (m.until||0)>now));
+  const old=document.getElementById('modOverlay'); if(old) old.remove();
+  if(active){
+    document.body.append(h('div',{id:'modOverlay'}, h('div',{class:'sheet',style:'text-align:center'},
+      h('div',{style:'color:var(--danger);margin-bottom:8px'},svg('lock')),
+      h('h2',{}, m.status==='banned' ? 'Account banned' : 'Account suspended'),
+      h('p',{}, m.status==='banned' ? 'Your account was banned for breaking our rules.' : 'Your account is suspended until '+new Date(m.until).toLocaleString()+'.'),
+      m.reason ? h('p',{},'Reason: '+m.reason) : null,
+      h('button',{class:'btn',onclick:()=>auth.signOut()},'Log out'))));
+    if(m.status==='suspended') modTimer=setTimeout(()=>applyMod(myMod), Math.min(m.until-now+500, 2147483000));
+  } else if(m && m.status==='warned' && !m.ack){
+    closeModal();
+    modal(h('div',{class:'sheet'}, h('h2',{},'Warning from moderators'),
+      h('p',{}, m.reason || 'Your account was reported for breaking our rules. Please follow the community guidelines.'),
+      h('button',{class:'btn',onclick:async()=>{ try{ await R('moderation/'+me.uid+'/ack').set(true); }catch(e){} closeModal(); }},'I understand')));
+  }
+}
+
+/* ----- moderator panel (only people listed under admins/ can open it) ----- */
+async function modAct(against, ids, action, note){
+  const now=Date.now(), upd={};
+  if(action!=='dismiss'){
+    const m={ status: action==='warn'?'warned' : action==='ban'?'banned' : 'suspended', reason:note||'', by:me.uid, ts:TS };
+    if(action==='suspend1') m.until=now+864e5;
+    if(action==='suspend7') m.until=now+7*864e5;
+    upd['moderation/'+against]=m;
+  }
+  ids.forEach(id=>{
+    upd['reports/'+id+'/status']= action==='dismiss' ? 'dismissed' : 'resolved';
+    upd['reports/'+id+'/action']=action; upd['reports/'+id+'/resolvedBy']=me.uid; upd['reports/'+id+'/resolvedAt']=TS;
+  });
+  upd['modLog/'+R('modLog').push().key]={ by:me.uid, against, action, note:note||'', ts:TS, reports:ids.length };
+  await R('').update(upd);
+}
+function openModPanel(){
+  if(!isAdmin) return;
+  const sheet=h('div',{class:'sheet modsheet'}); closeModal(); modal(sheet);
+  let view='open';
+  const tabsEl=()=>h('div',{class:'tabs'}, ['open','restricted'].map(v=>h('button',{class:view===v?'on':'',onclick:()=>{ view=v; render(); }}, v==='open'?'Open reports':'Restricted users')));
+
+  async function reportEl(r){
+    const who=await nameOf(r.by), ev=r.evidence?Object.values(r.evidence):[];
+    const evBox=h('div',{class:'evbox hidden'}, h('div',{class:'evnote'},'Provided by the reporter. Chats are end-to-end encrypted, so this can’t be independently verified.'),
+      ev.map(e=>h('div',{class:'ev '+e.who}, h('b',{}, e.who==='reported'?'Reported: ':'Reporter: '), e.text)));
+    return h('div',{class:'rep'}, h('div',{class:'rtop'}, h('b',{},r.reason), h('span',{class:'time'}, relTime(r.ts))),
+      h('div',{class:'rby'},'by '+who), r.details?h('div',{class:'rdet'},r.details):null,
+      ev.length?h('button',{class:'link',onclick:()=>evBox.classList.toggle('hidden')},'Messages ('+ev.length+')'):null, evBox);
+  }
+  function actionRow(against, rs){
+    const ids=rs.map(r=>r.id), top=rs[0].reason, row=h('div',{});
+    const act=(label,action,ask)=>h('button',{class:'btn line mini',onclick:async()=>{
+      let note='';
+      if(ask){ const n=prompt('Reason shown to the user:', top); if(n===null) return; note=n; }
+      else if(!confirm(label+'?')) return;
+      try{ await modAct(against,ids,action,note); toast('Done'); render(); }catch(e){ toast('Failed: '+(e.message||e)); }
+    }}, label);
+    row.append(act('Dismiss','dismiss',false), act('Warn','warn',true), act('Suspend 24h','suspend1',true), act('Suspend 7d','suspend7',true), act('Ban','ban',true));
+    return row;
+  }
+  async function openView(){
+    const s=await R('reports').orderByChild('status').equalTo('open').limitToFirst(100).once('value'); const groups={};
+    s.forEach(c=>{ const r={id:c.key,...c.val()}; (groups[r.against]=groups[r.against]||[]).push(r); });
+    const ids=Object.keys(groups);
+    if(!ids.length) return h('div',{class:'empty'}, h('b',{},'All clear'), 'No open reports.');
+    ids.sort((a,b)=>groups[b].length-groups[a].length);
+    const wrap=h('div',{});
+    for(const against of ids){
+      const rs=groups[against].sort((a,b)=>(b.ts||0)-(a.ts||0));
+      const card=h('div',{class:'modcard'}, h('div',{class:'mh'}, h('b',{}, await nameOf(against)), h('span',{class:'badge'}, rs.length)));
+      for(const r of rs) card.append(await reportEl(r));
+      card.append(actionRow(against,rs)); wrap.append(card);
+    }
+    return wrap;
+  }
+  async function restrictedView(){
+    const v=(await R('moderation').once('value')).val()||{}, ids=Object.keys(v);
+    if(!ids.length) return h('div',{class:'empty'}, h('b',{},'Nobody restricted'), 'Warned, suspended and banned users show up here.');
+    const wrap=h('div',{});
+    for(const uid of ids){
+      const m=v[uid], name=await nameOf(uid);
+      wrap.append(h('div',{class:'modcard'}, h('div',{class:'mh'}, h('b',{},name), h('span',{class:'time'}, m.status+(m.until?' until '+new Date(m.until).toLocaleString():''))),
+        m.reason?h('div',{class:'rdet'},m.reason):null,
+        h('button',{class:'btn line mini',onclick:async()=>{ if(!confirm('Lift the restriction on '+name+'?')) return;
+          try{ await R('').update({['moderation/'+uid]:null, ['modLog/'+R('modLog').push().key]:{by:me.uid,against:uid,action:'lift',note:'',ts:TS}}); render(); }catch(e){ toast('Failed: '+(e.message||e)); } }},'Lift')));
+    }
+    return wrap;
+  }
+  async function render(){
+    sheet.innerHTML=''; sheet.append(h('h2',{},'Moderation'), tabsEl(), h('div',{class:'empty'},'Loading…'));
+    try{ const body = view==='open' ? await openView() : await restrictedView(); sheet.children[2].replaceWith(body); }
+    catch(e){ sheet.children[2].replaceWith(h('div',{class:'err'},'Could not load: '+(e.message||e))); }
+    sheet.append(h('button',{class:'btn ghost',style:'margin-top:14px',onclick:closeModal},'Close'));
+  }
+  render();
 }
 
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&openUid&&threads[openUid]){ threads[openUid].unread=0; setLR(openUid,Date.now()); renderList(); } });
