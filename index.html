@@ -2901,6 +2901,7 @@ html[data-theme="dark"] .mb-card{background:linear-gradient(150deg,#1E2027,#141B
             <span class="kl-btn-label">Continue with email or username</span>
           </button>
           <button class="kl-btn kl-email kqr-login-btn" type="button" onclick="kqrStart()"><i class="ph ph-qr-code"></i><span class="kl-btn-label">Log in with QR code</span></button>
+          <button class="kl-btn kl-email" type="button" onclick="mxStart()"><i class="ph ph-chat-circle-dots" aria-hidden="true"></i><span class="kl-btn-label">Continue with marsX</span></button>
           <div class="kl-err" id="kl-err" role="alert" aria-live="polite"></div>
         </div>
 
@@ -3811,6 +3812,19 @@ html[data-theme="dark"] .mb-card{background:linear-gradient(150deg,#1E2027,#141B
 
   
 <!-- QR login (laptop shows QR) -->
+<div id="mx-modal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px">
+ <div style="background:#fff;color:#111;border-radius:20px;max-width:420px;width:100%;padding:24px;text-align:left;font-family:inherit">
+  <div style="font-size:19px;font-weight:800;margin-bottom:6px">Continue with marsX</div>
+  <div id="mx-s1"><p style="font-size:14px;color:#666;margin:0 0 12px">Enter your marsX UID. We will send a 6-digit code to your marsX app.</p>
+   <input id="mx-uid" inputmode="numeric" maxlength="20" placeholder="marsX UID number" autocomplete="username" style="width:100%;height:46px;border:1px solid #ddd;border-radius:12px;padding:0 14px;font-size:17px;box-sizing:border-box">
+   <button id="mx-b1" onclick="mxSend()" style="width:100%;margin-top:12px;padding:13px;border-radius:999px;border:0;background:#2F6BFF;color:#fff;font-weight:800">Send code</button></div>
+  <div id="mx-s2" style="display:none"><p style="font-size:14px;color:#666;margin:0 0 12px">Check your chat with Kashish AI in marsX. The code expires in 5 minutes.</p>
+   <input id="mx-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" style="width:100%;height:46px;border:1px solid #ddd;border-radius:12px;padding:0 14px;font-size:17px;letter-spacing:3px;box-sizing:border-box">
+   <button id="mx-b2" onclick="mxVerify()" style="width:100%;margin-top:12px;padding:13px;border-radius:999px;border:0;background:#2F6BFF;color:#fff;font-weight:800">Verify and sign in</button></div>
+  <div id="mx-err" style="color:#dc2626;font-size:13px;min-height:18px;margin-top:8px" role="alert"></div>
+  <button onclick="mxClose()" style="width:100%;margin-top:6px;padding:12px;border-radius:999px;border:1.5px solid #ddd;background:#fff;font-weight:800">Cancel</button>
+ </div></div>
+
 <div id="kqr-modal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px">
  <div style="background:#fff;color:#111;border-radius:20px;max-width:420px;width:100%;padding:24px;text-align:left;font-family:inherit">
   <div style="font-size:19px;font-weight:800;margin-bottom:10px">Log in with QR code</div>
@@ -7004,14 +7018,15 @@ async function authGoogle(){
 async function ensureOAuthProfile(user){
   if(!user || !firebaseReady) return;
   const providers = (user.providerData || []).map(p => p && p.providerId);
-  if(providers.indexOf('google.com') === -1) return;
+  const isMarsx = String(user.uid||'').indexOf('marsx_') === 0;
+  if(providers.indexOf('google.com') === -1 && !isMarsx) return;
   const ref = db.ref('users/'+user.uid);
   const snap = await ref.once('value');
   if(snap.exists()) return;
   const email = user.email || '';
-  const name = (user.displayName || email.split('@')[0] || 'Kashish user').trim();
+  const name = (user.displayName || email.split('@')[0] || (isMarsx ? 'marsX user' : 'Kashish user')).trim();
   if(isAyushName(name) || isAyushName(email)) return; // ban gate in onAuthStateChanged handles it
-  let base = (email.split('@')[0] || name).replace(/[^a-zA-Z0-9_]/g,'').toLowerCase().slice(0,16);
+  let base = (isMarsx ? 'marsx'+user.uid.slice(6) : (email.split('@')[0] || name)).replace(/[^a-zA-Z0-9_]/g,'').toLowerCase().slice(0,16);
   if(base.length < 3) base = 'user' + base;
   let handle = null;
   for(let i=0; i<8 && !handle; i++){
@@ -22917,6 +22932,28 @@ function kqrNotice(msg){
   k.onclick=()=>d.remove();b.appendChild(t);b.appendChild(k);d.appendChild(b);document.body.appendChild(d);
 }
 
+/* ---- marsX UID + OTP login (worker: kashish-auth, same-origin /auth/*) ---- */
+let _mxRid='';
+function mxEl(i){return document.getElementById(i);}
+function mxPost(u,b){return fetch(u,{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json().catch(()=>({ok:false}))).catch(()=>({ok:false,message:'Network error. Try again.'}));}
+function mxStart(){mxEl('mx-s1').style.display='block';mxEl('mx-s2').style.display='none';mxEl('mx-err').textContent='';mxEl('mx-uid').value='';mxEl('mx-code').value='';document.body.appendChild(mxEl('mx-modal'));mxEl('mx-modal').style.display='flex';setTimeout(()=>mxEl('mx-uid').focus(),50);}
+function mxClose(){mxEl('mx-modal').style.display='none';}
+async function mxSend(){
+  const u=mxEl('mx-uid').value.trim(),b=mxEl('mx-b1');mxEl('mx-err').textContent='';
+  if(!/^\d{4,20}$/.test(u)){mxEl('mx-err').textContent='Enter your marsX UID number (digits only).';return;}
+  b.disabled=true;const d=await mxPost('/auth/otp/request',{uid:u});b.disabled=false;
+  if(d.ok){_mxRid=d.request_id;mxEl('mx-s1').style.display='none';mxEl('mx-s2').style.display='block';mxEl('mx-code').focus();}
+  else mxEl('mx-err').textContent=d.message||'Something went wrong.';
+}
+async function mxVerify(){
+  const c=mxEl('mx-code').value.trim(),b=mxEl('mx-b2');mxEl('mx-err').textContent='';
+  if(!/^\d{6}$/.test(c)){mxEl('mx-err').textContent='Enter the 6-digit code.';return;}
+  b.disabled=true;const d=await mxPost('/auth/otp/verify',{request_id:_mxRid,code:c});
+  if(!d.ok){b.disabled=false;mxEl('mx-err').textContent=d.message||'Wrong or expired code.';return;}
+  if(!d.firebase_token){b.disabled=false;mxEl('mx-err').textContent='Sign-in is not fully set up yet. Please try another method.';return;}
+  try{await auth.signInWithCustomToken(d.firebase_token);mxClose();}
+  catch(e){b.disabled=false;mxEl('mx-err').textContent='Could not sign in: '+(e&&e.message?e.message:e);}
+}
 const QR_WORKER='https://kashish-qr.sgursharn076.workers.dev'; // deploy qr-login-worker.js, put its URL here
 const kdevId=(()=>{let d=localStorage.getItem('k_dev_id');if(!d){d='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,9);localStorage.setItem('k_dev_id',d);}return d;})();
 function kdevName(){const u=navigator.userAgent;
