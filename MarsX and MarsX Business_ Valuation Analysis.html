@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MarsX and MarsX Business: Valuation Analysis</title>
+<style>
+:root{--bg:#fff;--fg:#000;--mut:#6b6b6b;--line:#e6e6e6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--fg:#fff;--mut:#9a9a9a;--line:#262626;color-scheme:dark}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 "Helvetica Neue",Helvetica,Arial,sans-serif}
+.w{max-width:780px;margin:0 auto;padding:0 24px}
+nav{padding:22px 0;border-bottom:1px solid var(--line);font-size:14px;display:flex;justify-content:space-between}
+nav b{font-weight:600}nav span{color:var(--mut)}
+.hero{padding:64px 0 36px}.tag{font-size:13px;color:var(--mut);letter-spacing:.5px}
+h1{font:400 clamp(32px,5.8vw,52px)/1.12 Georgia,"Times New Roman",serif;margin:12px 0 18px;letter-spacing:-.5px}
+.lead{font-size:19px;color:var(--mut);margin:0}.by{font-size:13px;color:var(--mut);margin-top:22px}
+h2{font:400 26px/1.25 Georgia,serif;margin:52px 0 12px}
+p{margin:0 0 16px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-top:1px solid var(--fg);border-bottom:1px solid var(--line);margin:30px 0}
+.kpi div{padding:16px 0}.kpi small{display:block;color:var(--mut);font-size:13px}.kpi strong{font:400 32px Georgia,serif}
+.fig{border-top:1px solid var(--fg);margin:22px 0 8px;padding-top:10px}
+.fig h3{margin:0;font:600 14px "Helvetica Neue",Arial,sans-serif}.fig .c{font-size:13px;color:var(--mut);margin:2px 0 10px}
+.sc{overflow-x:auto}.sc svg{display:block;width:100%;min-width:540px;height:auto;color:var(--fg)}
+.read{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:10px;font-size:14px;color:var(--mut)}.read b{color:var(--fg)}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin:12px 0 18px}
+.ctl label{display:flex;justify-content:space-between;font-size:14px}.ctl b{font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--fg);margin:8px 0 0}
+.row{display:grid;grid-template-columns:130px 1fr 70px;gap:10px;align-items:center;font-size:14px;padding:5px 0}
+.row i{display:block;height:10px;background:var(--fg)}.row .tr{background:var(--line)}.row span:last-child{text-align:right;font-variant-numeric:tabular-nums;color:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}th{text-align:left;font-weight:500;color:var(--mut);font-size:13px;padding:0 0 8px;border-bottom:1px solid var(--line)}
+td{padding:10px 0;border-bottom:1px solid var(--line);vertical-align:top}td+td,th+th{padding-left:14px}
+.tw{overflow-x:auto}.note{font-size:13px;color:var(--mut)}
+footer{margin:64px 0 0;padding:20px 0 28px;border-top:1px solid var(--line);font-size:12.5px;color:var(--mut)}
+</style></head><body><div class="w">
+<nav><b>Nexor Technologies</b><span>Analysis · November 2026</span></nav>
+<div class="hero"><div class="tag">ANALYSIS</div>
+<h1>Two products, one valuation story: what MarsX and MarsX Business mean for Nexor</h1>
+<p class="lead">Nexor is valued at $151 million. By 2030, the company expects MarsX alone to contribute $30 million of that value.</p>
+<div class="by">Based on the company’s figures and the public pages marsx.kashishai.com and marsxbusiness.kashishai.com</div></div>
+
+<div class="kpi"><div><small>Nexor valuation</small><strong>$151M</strong></div><div><small>MarsX target, 2030</small><strong>$30M</strong></div><div><small>Target vs today</small><strong id="k1">–</strong></div><div><small>Investors</small><strong>16</strong></div></div>
+
+<p>Nexor Technologies started on the Stanford University campus and today runs three products. Two of them, MarsX and MarsX Business, are credited by the company with driving its valuation growth. The charts below show where the valuation has been, what the 2030 target requires, and who has backed the company.</p>
+
+<h2>1. The valuation path</h2>
+<p>Nexor began 2023 at a low valuation, rose sharply through 2025 and climbed much higher in 2026. October 2026 brought a steep fall, followed by a recovery to $151 million in November.</p>
+<div class="fig"><h3>Figure 1. Nexor valuation, 2023–2026</h3><div class="c">USD millions. Points between the stated milestones are illustrative. Tap a point for its value.</div>
+<div class="sc"><svg id="f1" viewBox="0 0 760 300"></svg></div><div class="read"><span id="r1l">Tap a point</span><b id="r1v">Nov 2026 · $151M</b></div></div>
+
+<h2>2. Scenario analyzer: what does $30M by 2030 require?</h2>
+<p>Nexor has not published MarsX’s contribution today, so the starting point below is your assumption. Move the sliders to see the yearly growth needed to reach the target.</p>
+<div class="fig"><h3>Figure 2. MarsX contribution path, 2026–2030</h3><div class="c">Compound growth from your assumed 2026 value to the 2030 target.</div>
+<div class="ctl"><div><label>Assumed 2026 contribution <b id="v1"></b></label><input id="s1" type="range" min="1" max="25" step="0.5" value="8"></div>
+<div><label>2030 target <b id="v2"></b></label><input id="s2" type="range" min="10" max="60" step="1" value="30"></div></div>
+<div class="sc"><svg id="f2" viewBox="0 0 760 280"></svg></div>
+<div class="read"><span>Required growth per year</span><b id="cg">–</b></div></div>
+
+<div class="fig"><h3>Figure 3. Required yearly growth by starting point</h3><div class="c">To reach the target in the slider above by 2030.</div><div id="f3"></div></div>
+
+<h2>3. How big is the target?</h2>
+<p>Measured against today’s valuation, the MarsX target is a large but not dominant share. Use the second slider to test other targets.</p>
+<div class="fig"><h3>Figure 4. MarsX target as a share of $151M</h3><div class="c">Share of today’s valuation.</div><div id="f4"></div></div>
+
+<h2>4. The two products compared</h2>
+<div class="tw"><table><thead><tr><th></th><th>MarsX</th><th>MarsX Business</th></tr></thead><tbody>
+<tr><td>Who it serves</td><td>Everyday users</td><td>Registered businesses</td></tr>
+<tr><td>What it does</td><td>Encrypted chat, voice and video calls, groups</td><td>OTPs, order updates and alerts through an API</td></tr>
+<tr><td>Trust feature</td><td>End-to-end encryption, no ads, no tracking</td><td>Verified business name and badge</td></tr>
+<tr><td>Sign-up</td><td>Email address, no phone number</td><td>Reviewed application</td></tr>
+<tr><td>Price</td><td>Free</td><td>Free for approved businesses</td></tr></tbody></table></div>
+<p style="margin-top:16px">The two fit together. MarsX brings people who value privacy, and MarsX Business gives companies a verified way to reach them. Both products are free, so the 2030 target rests on growth in reach rather than on fees.</p>
+
+<h2>5. Who backs Nexor</h2>
+<p>Sixteen investors have put in a combined $7.41 million. Dozera Group alone accounts for about 40%.</p>
+<div class="fig"><h3>Figure 5. Investment by investor</h3><div class="c">Bar length is relative to the largest investment.</div><div id="f5"></div></div>
+<div class="kpi"><div><small>Top investor</small><strong id="t1">–</strong></div><div><small>Top 3 share</small><strong id="t3">–</strong></div><div><small>Average investment</small><strong id="t4">–</strong></div></div>
+
+<h2>What to watch</h2>
+<p>Three things will decide whether the 2030 target is reached: how fast MarsX adds users, how quickly MarsX Business opens onboarding to companies, and how Nexor recovers from the volatility of October 2026.</p>
+<footer>The 2030 figure is a company projection, not a guarantee. The starting contribution, the path between milestones and the valuation points between the stated milestones are illustrative. This is not investment advice.</footer>
+</div>
+<script>
+var $=function(i){return document.getElementById(i)};
+function line(el,lb,v,max,fmt,opt){opt=opt||{};var W=760,H=+el.getAttribute("viewBox").split(" ")[3],L=54,R=24,T=22,B=34,o="";
+var X=function(i){return L+i*(W-L-R)/(v.length-1)},Y=function(a){return T+(1-a/max)*(H-T-B)};
+for(var k=0;k<=4;k++){var g=max*k/4;o+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(g)+'" y2="'+Y(g)+'" stroke="currentColor" opacity=".1"/><text x="'+(L-8)+'" y="'+(Y(g)+4)+'" text-anchor="end" font-size="11.5" fill="currentColor" opacity=".55" font-family="Arial">'+fmt(g)+'</text>'}
+lb.forEach(function(a,i){if(!opt.every||i%opt.every==0||i==lb.length-1)o+='<text x="'+X(i)+'" y="'+(H-10)+'" text-anchor="middle" font-size="11.5" fill="currentColor" opacity=".7" font-family="Arial">'+a+'</text>'});
+o+='<polyline fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" points="'+v.map(function(a,i){return X(i)+","+Y(a)}).join(" ")+'"/>';
+v.forEach(function(a,i){o+='<circle cx="'+X(i)+'" cy="'+Y(a)+'" r="4" fill="var(--bg)" stroke="currentColor" stroke-width="2"/><circle data-i="'+i+'" cx="'+X(i)+'" cy="'+Y(a)+'" r="15" fill="transparent" style="cursor:pointer"/>'});
+(opt.marks||[]).forEach(function(m){o+='<text x="'+(X(m[0])+(m[2]||0))+'" y="'+(Y(v[m[0]])+(m[3]||-12))+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor" font-family="Arial">'+m[1]+'</text>'});
+el.innerHTML=o}
+var d=[["Q1 '23",4],["Q3 '23",6],["Q1 '24",8],["Q3 '24",11],["Q1 '25",18],["Q2 '25",32],["Q3 '25",55],["Q4 '25",80],["Q1 '26",105],["Q2 '26",140],["Sep '26",178],["Oct '26",62],["Nov '26",151]];
+line($("f1"),d.map(function(a){return a[0]}),d.map(function(a){return a[1]}),200,function(x){return"$"+x+"M"},{every:2,marks:[[10,"Peak $178M"],[11,"Oct $62M",14,24],[12,"$151M",-6]]});
+function pick(e){var i=e.target.getAttribute("data-i");if(i!==null){$("r1l").textContent=d[i][0];$("r1v").textContent=d[i][0]+" · $"+d[i][1]+"M"}}
+$("f1").addEventListener("pointerover",pick);$("f1").addEventListener("click",pick);
+var V=151;
+function bars(el,rows,fmt,max){el.innerHTML=rows.map(function(r){return'<div class="row"><span>'+r[0]+'</span><div style="background:var(--line)"><i style="width:'+(r[1]/max*100).toFixed(1)+'%"></i></div><span>'+fmt(r[1])+'</span></div>'}).join("")}
+function calc(){var a=+$("s1").value,b=+$("s2").value;$("v1").textContent="$"+a+"M";$("v2").textContent="$"+b+"M";
+var g=Math.pow(b/a,.25)-1,p=[],y=["2026","2027","2028","2029","2030"];for(var i=0;i<5;i++)p.push(a*Math.pow(1+g,i));
+line($("f2"),y,p,Math.max(30,Math.ceil(b/10)*10),function(x){return"$"+Math.round(x)+"M"},{marks:[[4,"$"+b+"M",-14,-12],[0,"$"+a+"M",14,-12]]});
+$("cg").textContent=(g*100).toFixed(1)+"% per year";
+bars($("f3"),[3,6,10,15].map(function(s){return["Start $"+s+"M",(Math.pow(b/s,.25)-1)*100]}),function(x){return x.toFixed(1)+"%"},Math.max.apply(null,[3,6,10,15].map(function(s){return(Math.pow(b/s,.25)-1)*100})));
+var sh=b/V*100;bars($("f4"),[["Target $"+b+"M",sh],["Rest of $151M",100-sh]],function(x){return x.toFixed(1)+"%"},100);$("k1").textContent=sh.toFixed(1)+"%"}
+$("s1").addEventListener("input",calc);$("s2").addEventListener("input",calc);calc();
+var inv=[["Dozera Group",3000000],["Gurdial Singh",791000],["Alexander Mitchell",625000],["Richard Anderson",485000],["James Whitmore",420000],["William Carter",375000],["Michael Bennett",310000],["Robert Harrison",285000],["Daniel Foster",250000],["Christopher Walker",195000],["Thomas Reynolds",175000],["David Morgan",150000],["Edward Collins",125000],["Benjamin Scott",95000],["Jonathan Brooks",75000],["Samuel Parker",50000]];
+var tot=inv.reduce(function(a,r){return a+r[1]},0);
+bars($("f5"),inv.map(function(r){return[r[0],r[1]]}),function(x){return x>=1e6?"$"+(x/1e6).toFixed(2)+"M":"$"+Math.round(x/1e3)+"K"},3000000);
+$("t1").textContent=(inv[0][1]/tot*100).toFixed(1)+"%";$("t3").textContent=((inv[0][1]+inv[1][1]+inv[2][1])/tot*100).toFixed(1)+"%";$("t4").textContent="$"+Math.round(tot/inv.length/1e3)+"K";
+</script></body></html>
